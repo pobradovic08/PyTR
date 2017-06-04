@@ -14,17 +14,8 @@ class DeviceInterface:
         self.get_if_name()
 
     def get_if_name(self):
-        """ Establish SNMP session to {device} and get ifName for {ifIndex} """
-        session = Session(
-            hostname=self.device.hostname,
-            community=self.device.community,
-            version=2,
-            timeout=1,
-            retries=0,
-            abort_on_nonexistent=True
-        )
         try:
-            ifName_result = session.get('.1.3.6.1.2.1.31.1.1.1.1.' + str(self.ifIndex))
+            ifName_result = self.device.session.get('.1.3.6.1.2.1.31.1.1.1.1.' + str(self.ifIndex))
             self.ifName = ifName_result.value
             self._make_ptr()
         except EasySNMPNoSuchInstanceError:

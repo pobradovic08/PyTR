@@ -61,7 +61,7 @@ class Device:
         #TODO: Use settings from Config
         # Setup SNMP session
         try:
-            session = easysnmp.Session(
+            self.session = easysnmp.Session(
                 hostname=self.hostname,
                 community=self.community,
                 use_numeric=True,
@@ -83,7 +83,7 @@ class Device:
             # .1.3.6.1.2.1.4.20.1.2.10.170.1.1 = INTEGER: 10
             #       OID ends here-^|^- IP starts here     ^- ifIndex
             # etc...
-            interface_addresses_result = session.walk('.1.3.6.1.2.1.4.20.1.2')
+            interface_addresses_result = self.session.walk('.1.3.6.1.2.1.4.20.1.2')
             for interface_address_result in interface_addresses_result:
 
                 # IF-MIB::ifIndex later used to get IF-MIB::ifName
