@@ -5,17 +5,21 @@ from classes.config import Config
 class TestConfig(unittest.TestCase):
     def setUp(self):
         self.config = Config('test/configuration.json')
-        self.ns_servers = ['ns1.vektor.net', 'ns2.vektor.net', 'ns3.vektor.net', 'ns4.vektor.net']
+        self.ns_servers = ['dns1.domain.example', 'dns2.domain.example', 'dns3.domain.example', 'dns4.domain.example']
         self.ignore_rules_list = ['rule_1', 'rule_2']
         self.ignore_rules = {
             "rule_1": {
-                "hostname": "lb-node*"
+                "hostname": "hostname*"
             },
             "rule_2": {
-                "hostname": "cmts*",
+                "hostname": "hostname*",
                 "interface": "Et0/0/0"
             }
         }
+
+        self.default_community = 'public'
+        self.retries = 0
+        self.timeout = 1
 
     def test_file_open(self):
         self.assertIsInstance(Config('test/configuration.json'), Config)
@@ -31,3 +35,10 @@ class TestConfig(unittest.TestCase):
         self.assertListEqual(self.config.data['ignore'].keys(), self.ignore_rules_list)
         self.assertListEqual(self.config.get_ignore_rules().keys(), self.ignore_rules_list)
         self.assertEquals(self.config.get_ignore_rules(), self.ignore_rules)
+
+    def test_get_snmp(self):
+        self.assertEquals(self.config.get_snmp_community('hostname'), self.default_community)
+        self.assertEquals(self.config.get_snmp_community('1custom-host1'), self.default_community)
+        self.assertEquals(self.config.get_snmp_community(), self.default_community)
+        self.assertEquals(self.config.get_snmp_community('custom-host1'), 'custom_community')
+        self.assertEquals(self.config.get_snmp_community('asd.domain.example'), 'custom_domain')

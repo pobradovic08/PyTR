@@ -13,8 +13,10 @@
   },
   "snmp" : {
     "community": {
-      "*": "public",
-      "rfgw-gs-1.vektor.net": "custom"
+      "default": "public",
+      "override": {
+        "custom-host.*": "custom_community"
+      }
     },
     "retries": 0,
     "timeout": 1

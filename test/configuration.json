@@ -1,18 +1,33 @@
 {
   "dns": {
+    "update": {
+      "hostname": "dns.domain.example",
+      "key": "key"
+    },
     "servers": [
-      "ns1.vektor.net",
-      "ns2.vektor.net",
-      "ns3.vektor.net",
-      "ns4.vektor.net"
+      "dns1.domain.example",
+      "dns2.domain.example",
+      "dns3.domain.example",
+      "dns4.domain.example"
     ]
+  },
+  "snmp" : {
+    "community": {
+      "default": "public",
+      "override": {
+        "custom-host.*": "custom_community",
+        ".*domain.example": "custom_domain"
+      }
+    },
+    "retries": 0,
+    "timeout": 1
   },
   "ignore": {
     "rule_1": {
-      "hostname": "lb-node*"
+      "hostname": "hostname*"
     },
     "rule_2": {
-      "hostname": "cmts*",
+      "hostname": "hostname*",
       "interface": "Et0/0/0"
     }
   }
