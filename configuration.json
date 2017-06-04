@@ -13,7 +13,7 @@
   },
   "ignore": {
     "rule_1": {
-      "hostname": "lb-node*"
+      "hostname": "lb-node.*"
     },
     "rule_2": {
       "hostname": "cmts*",

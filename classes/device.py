@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
-import re
+import re, sre_constants
 
 import easysnmp
 from device_interface import DeviceInterface
 from dns_check import DnsCheck
+from config import Config
 import ConfigParser
 
 
@@ -16,12 +17,17 @@ class Device:
         self.community = community
         self.interfaces = {}
         self.ignored = False
-        config = ConfigParser.SafeConfigParser()
-        config.read('settings.cfg')
-        ignore_list = config.get('ignore', 'hostname').split(',')
-        for ignore in ignore_list:
-            if re.match(ignore, self.hostname):
-                self.ignored = True
+
+        configuration = Config()
+        ignore_rules = configuration.get_ignore_rules()
+
+        for rule_name, rule in ignore_rules.iteritems():
+            try:
+                if re.match(rule['hostname'], self.hostname):
+                    self.ignored = True
+            except sre_constants.error:
+                #TODO: Real logging, not this shit
+                print "Rule '%s' in configuration file invalid, skipping..." % rule_name
 
     def get_interfaces(self):
         if self.ignored:
