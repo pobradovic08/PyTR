@@ -53,7 +53,7 @@ class Config:
     def get_snmp_retries(self, default = 0):
         """
         Returns number of retries for SNMP queries
-        :param default: Default value returned if there's no value in Config. Must be 0 or positive integer
+        :param default: Default value returned if there's no value in Config. Must be int >= 0
         :return:
         """
 
@@ -70,6 +70,30 @@ class Config:
                 config_value = int(self.data['snmp']['retries'])
                 if config_value < 0:
                     raise ValueError("Invalid config file. SNMP retries must be 0 or positive integer")
+                return config_value
+
+            except ValueError:
+                print "Configuration file invalid (snmp->retries)"
+                return default
+        else:
+            return default
+
+
+    def get_snmp_timeout(self, default = 1):
+        """
+        Returns value for timeout
+        :param default: Default value returned if there's no value in Config. Must be positive value
+        :return:
+        """
+        default = float(default)
+        if default <= 0:
+            raise ValueError("Timeout must be positive")
+
+        if 'timeout' in self.data['snmp']:
+            try:
+                config_value = float(self.data['snmp']['timeout'])
+                if config_value <= 0:
+                    raise ValueError("Invalid config file. SNMP timeout must be positive")
                 return config_value
 
             except ValueError:
