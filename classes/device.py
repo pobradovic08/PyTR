@@ -2,12 +2,12 @@
 import re
 
 import easysnmp
-from dev_interface import DevInterface
+from device_interface import DeviceInterface
 from dns_check import DnsCheck
 import ConfigParser
 
 
-class Dev:
+class Device:
     def __init__(self, hostname, community):
         self.hostname = DnsCheck.get_fqdn(hostname)
         if not self.hostname:
@@ -42,7 +42,7 @@ class Dev:
             for interface_address_result in interface_addresses_result:
                 ifIndex = int(interface_address_result.value)
                 if ifIndex not in self.interfaces:
-                    self.interfaces[ifIndex] = DevInterface(self, ifIndex)
+                    self.interfaces[ifIndex] = DeviceInterface(self, ifIndex)
 
 
                 # Remove the part of the OID we used to walk on. Leave just the IP address part.

@@ -3,14 +3,14 @@
 
 import sys
 import dns.resolver
-from classes.dev_interface import DevInterface
-from classes.dev import Dev
+from classes.device_interface import DeviceInterface
+from classes.device import Device
 from classes.dns_check import DnsCheck
 
 reload(sys)
 sys.setdefaultencoding('utf8')
 
-d = Dev('lb-node1', 'nY[7z+dng')
+d = Device('lb-node1', 'nY[7z+dng')
 if d.get_interfaces():
     d.check_ptrs()
     print d

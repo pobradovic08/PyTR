@@ -5,7 +5,7 @@ from easysnmp import Session, EasySNMPNoSuchInstanceError
 from dns_check import DnsCheck
 
 
-class DevInterface:
+class DeviceInterface:
     def __init__(self, device, ifIndex):
         self.device = device
         self.ip_addresses = {}

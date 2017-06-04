@@ -1,6 +1,9 @@
 {
   "dns": {
-    "master"
+    "update": {
+      "hostname": "ns1.vektor.net",
+      "key": "key"
+    },
     "servers": [
       "ns1.vektor.net",
       "ns2.vektor.net",
