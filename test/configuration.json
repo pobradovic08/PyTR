@@ -1,0 +1,19 @@
+{
+  "dns": {
+    "servers": [
+      "ns1.vektor.net",
+      "ns2.vektor.net",
+      "ns3.vektor.net",
+      "ns4.vektor.net"
+    ]
+  },
+  "ignore": {
+    "rule_1": {
+      "hostname": "lb-node*"
+    },
+    "rule_2": {
+      "hostname": "cmts*",
+      "interface": "Et0/0/0"
+    }
+  }
+}
