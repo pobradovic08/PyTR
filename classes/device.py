@@ -116,21 +116,33 @@ class Device:
                     existing_ptr, status = DnsCheck.get_status(ip_address, self.hostname)
                 else:
                     existing_ptr, status = DnsCheck.get_status(ip_address, self.interfaces[interface].ptr)
-                # Update PTR status
+                # Update PTR status in interfaces dictionary
                 self.interfaces[interface].update_ptr_status(ip_address, existing_ptr, status)
 
     def __repr__(self):
+        """
+        Returns string representation of device status
+        Also contains table with all interfaces, current (and new) PTRs, IP addresses
+        :return:
+        """
+        # Top border
         str = '═' * 97 + "\n"
+        # Ignored device message
         if self.ignored:
             str += "\n\033[93m\033[07m\033[04m DEVICE ON IGNORE LIST \033[0m\n\n"
+        # Device information
         str += "\033[01mDevice:\t\t%s\n" % self.hostname
         str += "Interfaces:\t%d\n\033[0m" % len(self.interfaces)
+        # Print interface table
         if len(self.interfaces):
+            # Header
             str += '━' * 97 + "\n"
             str += "%-9s %-26s %-44s %s\n" % ('ifIndex', 'ifName', 'PTR', 'IP address')
             str += '─' * 97  + "\n"
+            # Interface details
             for interface in self.interfaces:
                 str += self.interfaces[interface].__repr__()
                 str += "\033[90m" + '┈' * 97 + "\033[0m\n"
+        # Bottom border
         str += '═' * 97  + "\n"
         return str
