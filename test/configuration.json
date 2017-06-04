@@ -19,8 +19,8 @@
         ".*domain.example": "custom_domain"
       }
     },
-    "retries": 0,
-    "timeout": 1
+    "retries": 143,
+    "timeout": 23
   },
   "ignore": {
     "rule_1": {

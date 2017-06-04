@@ -49,3 +49,13 @@ class Config:
         except KeyError:
             pass
         return default
+
+    def get_snmp_retries(self, default = 0):
+        if 'retries' in self.data['snmp']:
+            try:
+                return int(self.data['snmp']['retries'])
+            except ValueError:
+                print "Configuration file invalid (snmp->retries)"
+                return default
+        else:
+            return default

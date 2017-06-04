@@ -9,12 +9,14 @@ from config import Config
 
 class Device:
 
-    def __init__(self, hostname, community):
+    def __init__(self, hostname, config):
         """
         Initialize instance with empty interfaces array
         :param hostname:    Hostname of device. If it's not FQDN we will try to resolve to one
-        :param community:   SNMP v2 community
+        :param config:      Config instance
         """
+
+        self.config = config
         self.interfaces = {}
         self.ignored = False
 
@@ -28,7 +30,7 @@ class Device:
         self.ip = DnsCheck.get_a(self.hostname)
 
         # TODO: update to support v3
-        self.community = community
+        self.community = config.get_snmp_community(self.hostname)
 
         # Configuration
         configuration = Config()
@@ -65,7 +67,7 @@ class Device:
                 use_numeric=True,
                 version=2,
                 timeout=1,
-                retries=0
+                retries=self.config.get_snmp_retries()
             )
 
             """

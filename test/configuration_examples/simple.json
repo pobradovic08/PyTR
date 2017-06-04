@@ -1,0 +1,20 @@
+{
+  "dns": {
+    "update": {
+      "hostname": "dns.domain.example",
+      "key": "key"
+    },
+    "servers": [
+      "dns1.domain.example",
+      "dns2.domain.example",
+      "dns3.domain.example",
+      "dns4.domain.example"
+    ]
+  },
+  "snmp": {
+    "community": {
+      "default": "public"
+    }
+  },
+  "ignore": {}
+}
