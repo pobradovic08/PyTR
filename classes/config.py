@@ -51,9 +51,27 @@ class Config:
         return default
 
     def get_snmp_retries(self, default = 0):
+        """
+        Returns number of retries for SNMP queries
+        :param default: Default value returned if there's no value in Config. Must be 0 or positive integer
+        :return:
+        """
+
+        # Try integer conversion (raises ValueError on failure)
+        default = int(default)
+        # Raise ValueError if value is not positive (or 0)
+        if default < 0:
+            raise ValueError("SNMP retries value must be 0 or positive integer")
+
+        # Fetches snmp->retries from config file if it exists
         if 'retries' in self.data['snmp']:
             try:
-                return int(self.data['snmp']['retries'])
+                # If value in configuration file is wrong return default value in except
+                config_value = int(self.data['snmp']['retries'])
+                if config_value < 0:
+                    raise ValueError("Invalid config file. SNMP retries must be 0 or positive integer")
+                return config_value
+
             except ValueError:
                 print "Configuration file invalid (snmp->retries)"
                 return default

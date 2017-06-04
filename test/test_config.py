@@ -4,7 +4,7 @@ from classes.config import Config
 
 class TestConfig(unittest.TestCase):
     def setUp(self):
-        self.config = Config('test/configuration.json')
+        self.config = Config('test/configuration_examples/configuration.json')
         self.ns_servers = ['dns1.domain.example', 'dns2.domain.example', 'dns3.domain.example', 'dns4.domain.example']
         self.ignore_rules_list = ['rule_1', 'rule_2']
         self.ignore_rules = {
@@ -22,11 +22,11 @@ class TestConfig(unittest.TestCase):
         self.timeout = 1
 
     def test_file_open(self):
-        self.assertIsInstance(Config('test/configuration.json'), Config)
+        self.assertIsInstance(Config('test/configuration_examples/configuration.json'), Config)
         self.assertIsInstance(Config('test/configuration_examples/simple.json'), Config)
         self.assertIsInstance(Config(), Config)
         self.assertRaises(IOError, Config, 'config.json')
-        self.assertRaises(ValueError, Config, 'test/bad_json_file.json')
+        self.assertRaises(ValueError, Config, 'test/configuration_examples/bad_json_file.json')
 
     def test_get_ns_list(self):
         self.assertListEqual(self.config.data['dns']['servers'], self.ns_servers)
@@ -55,3 +55,8 @@ class TestConfig(unittest.TestCase):
         config = Config('test/configuration_examples/simple.json')
         self.assertEquals(config.get_snmp_retries(), 0)
         self.assertEquals(config.get_snmp_retries(443), 443)
+        self.assertEquals(config.get_snmp_retries(1.0), 1)
+        self.assertEquals(config.get_snmp_retries(1.9), 1)
+        self.assertEquals(config.get_snmp_retries(2.4), 2)
+        self.assertRaises(ValueError, config.get_snmp_retries, 'asd')
+        self.assertRaises(ValueError, config.get_snmp_retries, -1)
