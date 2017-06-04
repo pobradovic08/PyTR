@@ -11,6 +11,14 @@
       "dns4.domain.example"
     ]
   },
+  "snmp" : {
+    "community": {
+      "*": "public",
+      "rfgw-gs-1.vektor.net": "custom"
+    },
+    "retries": 0,
+    "timeout": 1
+  },
   "ignore": {
     "rule_1": {
       "hostname": "hostname*"

@@ -10,7 +10,7 @@ from classes.dns_check import DnsCheck
 reload(sys)
 sys.setdefaultencoding('utf8')
 
-d = Device('lb-node1', 'nY[7z+dng')
+d = Device('l3-sc-5', 'nY[7z+dng')
 if d.get_interfaces():
     d.check_ptrs()
     print d
