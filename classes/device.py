@@ -9,7 +9,7 @@ from config import Config
 
 class Device:
 
-    def __init__(self, hostname, config):
+    def __init__(self, hostname, config, dns = None):
         """
         Initialize instance with empty interfaces array
         :param hostname:    Hostname of device. If it's not FQDN we will try to resolve to one
@@ -19,6 +19,8 @@ class Device:
         self.config = config
         self.interfaces = {}
         self.ignored = False
+
+        self.dns = dns if dns else DnsCheck(self.config)
 
         # Try to get FQDN for the hostname
         # If it fails, use provided hostname
@@ -115,9 +117,9 @@ class Device:
             for ip_address in self.interfaces[interface].ip_addresses:
                 # If IP matches loopback IP, expected PTR is device.hostname
                 if ip_address == self.ip:
-                    existing_ptr, status = DnsCheck.get_status(ip_address, self.hostname)
+                    existing_ptr, status = self.dns.get_status(ip_address, self.hostname)
                 else:
-                    existing_ptr, status = DnsCheck.get_status(ip_address, self.interfaces[interface].ptr)
+                    existing_ptr, status = self.dns.get_status(ip_address, self.interfaces[interface].ptr)
                 # Update PTR status in interfaces dictionary
                 self.interfaces[interface].update_ptr_status(ip_address, existing_ptr, status)
 

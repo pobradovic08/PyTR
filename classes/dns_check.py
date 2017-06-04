@@ -2,8 +2,7 @@
 import socket
 import re
 import dns.resolver, dns.exception
-import ConfigParser
-import pprint
+from config import Config
 
 class DnsCheck:
 
@@ -12,6 +11,9 @@ class DnsCheck:
     STATUS_NOT_UPDATED = 2
     STATUS_NOT_CREATED = 3
     STATUS_NOT_AUTHORITATIVE = 4
+
+    def __init__(self, config = None):
+        self.config = config if config else Config()
 
     @staticmethod
     def get_fqdn(hostname):
@@ -35,35 +37,46 @@ class DnsCheck:
         DnsCheck.check_ip(ip_address)
         return socket.getfqdn(ip_address)
 
-    @staticmethod
-    def get_status(ip_address, expected_ptr):
-        DnsCheck.check_ip(ip_address)
+    def get_status(self, ip_address, expected_ptr):
+        """
+        Checks if expected and existing PTR for the IP address are the same.
+        There are 3 statuses returned:
+            - DnsCheck.STATUS_OK:                   Existing PTR is the same as expected one
+            - DnsCheck.STATUS_NOT_UPDATED:          Existing PTR is not the same as expected one
+            - DnsCheck.STATUS_NOT_CREATED:          There is no existing PTR
+            - DnsCheck.STATUS_NOT_AUTHORITATIVE:    PTR not OK but we don't control the DNS server
 
+        :param ip_address:      IP address to check
+        :param expected_ptr:    Expected PTR for provided IP address
+        :return:
+        """
+        DnsCheck.check_ip(ip_address)
         existing_ptr = DnsCheck.get_ptr(ip_address)
+        # There is no PTR
         if existing_ptr == ip_address:
-            if DnsCheck.is_authoritative(ip_address):
+            # Are we responsible for that PTR zone?
+            if self.is_authoritative(ip_address):
                 return None, DnsCheck.STATUS_NOT_CREATED
             else:
                 return None, DnsCheck.STATUS_NOT_AUTHORITATIVE
+        # PTR is the same as expected one
         elif existing_ptr == expected_ptr:
             return existing_ptr, DnsCheck.STATUS_OK
+        # PTR differs from expected one
         else:
-            if DnsCheck.is_authoritative(ip_address):
+            # Are we responsible for that PTR zone?
+            if self.is_authoritative(ip_address):
                 return existing_ptr, DnsCheck.STATUS_NOT_UPDATED
             else:
                 return existing_ptr, DnsCheck.STATUS_NOT_AUTHORITATIVE
 
-    @staticmethod
-    def is_authoritative(ip_address):
+    def is_authoritative(self, ip_address):
         """
+        Checks if we are responsible for PTR zone.
         Queries for SOA record for PTR zone and checks if mname is in servers list defined in config file
         """
         DnsCheck.check_ip(ip_address)
-
-        # Parse config file and get list of our nameservers
-        config = ConfigParser.SafeConfigParser()
-        config.read('settings.cfg')
-        ns_list = config.get('dns', 'servers').split(',')
+        ns_list = self.config.get_ns_servers()
 
         # Get SOA record. If master name is in ns servers list return true
         try:
