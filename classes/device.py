@@ -36,17 +36,8 @@ class Device:
 
         # Configuration
         configuration = Config()
-        ignore_rules = configuration.get_ignore_rules()
 
-        # Go trough each ignore rule and check
-        # if the hostname regexp matches device hostname
-        for rule_name, rule in ignore_rules.iteritems():
-            try:
-                if re.match(rule['hostname'], self.hostname):
-                    self.ignored = True
-            except sre_constants.error:
-                #TODO: Real logging, not this shit
-                print "Rule '%s' in configuration file invalid, skipping..." % rule_name
+        self.ignored = configuration.is_device_ignored(self.hostname)
 
     def get_interfaces(self):
         """

@@ -101,3 +101,20 @@ class Config:
                 return default
         else:
             return default
+
+
+    def is_device_ignored(self, hostname):
+        """
+        Go trough each ignore rule and check
+        if the Config hostname regexp matches provided hostname
+        :param hostname:  Device hostname
+        :return:
+        """
+        for rule_name, rule in self.get_ignore_rules().iteritems():
+            try:
+                if re.match(rule['hostname'], hostname):
+                    return True
+            except sre_constants.error:
+                #TODO: Real logging, not this shit
+                print "Rule '%s' in configuration file invalid, skipping..." % rule_name
+        return False
