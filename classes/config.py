@@ -25,7 +25,7 @@ class Config:
         :return:
         """
         try:
-            return self.data['ignore']
+            return self.data['ignored']
         except KeyError:
             return {}
 
@@ -110,11 +110,33 @@ class Config:
         :param hostname:  Device hostname
         :return:
         """
-        for rule_name, rule in self.get_ignore_rules().iteritems():
+        for hostname_rule, interface_rules in self.get_ignore_rules().iteritems():
             try:
-                if re.match(rule['hostname'], hostname):
+                if re.match('^' + hostname_rule + '$', hostname) and not len(interface_rules):
                     return True
             except sre_constants.error:
                 #TODO: Real logging, not this shit
-                print "Rule '%s' in configuration file invalid, skipping..." % rule_name
+                print "Rule '%s' in configuration file invalid, skipping..." % hostname_rule
+        return False
+
+    def is_interface_ignored(self, hostname, ifName):
+        """
+        Go trough each ignore rule and check
+        if the Config hostname regexp matches provided hostname
+        AND interface regexp matches provided ifName
+        :param hostname:    Device hostname
+        :param ifName:      Interface name
+        :return:
+        """
+        for hostname_rule, interface_rules in self.get_ignore_rules().iteritems():
+            try:
+                if re.match('^' + hostname_rule + '$', hostname):
+                    if not len(interface_rules):
+                        return True
+                    for interface_rule in interface_rules:
+                        if re.match('^' + interface_rule + '$', ifName):
+                            return True
+            except sre_constants.error:
+                #TODO: Real logging, not this shit
+                print "Rule '%s' in configuration file invalid, skipping..." % hostname_rule
         return False

@@ -22,13 +22,17 @@
     "retries": 143,
     "timeout": 23
   },
-  "ignore": {
-    "rule_1": {
-      "hostname": "hostname*"
-    },
-    "rule_2": {
-      "hostname": "hostname*",
-      "interface": "Et0/0/0"
-    }
+  "ignored": {
+    "test": [],
+    "lb-node.*": [],
+    "rfgw.*": [],
+    "cmts.*": [
+      "Et0/0/0"
+    ],
+    "xxx": [
+      "eth0",
+      "eth1",
+      "eth2.*"
+    ]
   }
 }
