@@ -15,14 +15,18 @@ class DeviceInterface:
 
     def get_if_name(self):
         try:
+            # Append interface index to IF-MIB::ifName OID
             ifName_result = self.device.session.get('.1.3.6.1.2.1.31.1.1.1.1.' + str(self.ifIndex))
             self.ifName = ifName_result.value
+            # Make PTR
             self._make_ptr()
         except EasySNMPNoSuchInstanceError:
             self.ifName = None
 
     def _make_ptr(self):
-        """ Generate PTR from hostname, interface name and domain """
+        """
+        Generate PTR from hostname, interface name and domain
+        """
         # Split device.hostname into two parts: (hostname).(domain.example)
         host, domain = self.device.hostname.split('.', 1)
         # Convert to lowercase and replace all chars not letters, numbers and dash (-) with dash
@@ -56,6 +60,7 @@ class DeviceInterface:
     def get_ptr_for_ip(self, ip_address):
         return self.ptr if not ip_address == self.device.ip else self.device.hostname + " ★"
 
+    #TODO: Refactor this, it's ugly
     def __repr__(self):
         str = ''
         for ip in self.ip_addresses:
