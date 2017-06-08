@@ -12,7 +12,7 @@ sys.setdefaultencoding('utf8')
 
 config = Config()
 
-d = Device('cmts-gs-1', config)
+d = Device('cmts-gs-1.vektor.net', config)
 if d.get_interfaces():
     d.check_ptrs()
     print d

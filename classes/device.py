@@ -51,7 +51,6 @@ class Device:
         if self.ignored:
             return True
 
-        #TODO: Use settings from Config
         # Setup SNMP session
         try:
             self.session = easysnmp.Session(
@@ -59,7 +58,7 @@ class Device:
                 community=self.community,
                 use_numeric=True,
                 version=2,
-                timeout=1,
+                timeout=self.config.get_snmp_timeout(),
                 retries=self.config.get_snmp_retries()
             )
 
