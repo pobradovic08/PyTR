@@ -105,6 +105,9 @@ class Device:
         """
         for interface in self.interfaces:
             for ip_address in self.interfaces[interface].ip_addresses:
+                if self.config.is_interface_ignored(self.hostname, self.interfaces[interface].ifName):
+                    self.interfaces[interface].update_ptr_status(ip_address, None, DnsCheck.STATUS_UNKNOWN)
+                    continue
                 # If IP matches loopback IP, expected PTR is device.hostname
                 if ip_address == self.ip:
                     existing_ptr, status = self.dns.get_status(ip_address, self.hostname)

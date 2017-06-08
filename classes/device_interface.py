@@ -69,12 +69,12 @@ class DeviceInterface:
             elif ip_status == DnsCheck.STATUS_NOT_CREATED:
                 str += "\033[01m\033[91m"
                 icon = '■'
-            # TODO: Add STATUS_UNKNOWN to differentiate between it and NOT_AUTHORITATIVE
             elif ip_status == DnsCheck.STATUS_UNKNOWN:
-                icon = ' '
-            else:
-                icon = '☓'
                 str += "\033[90m"
+                icon = 'i'
+            else:
+                str += "\033[90m"
+                icon = '☓'
 
             str += "%-9d %-24s %s %-44s %s\n" % (
                 self.ifIndex,
