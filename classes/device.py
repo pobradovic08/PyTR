@@ -183,7 +183,7 @@ class Device:
                     interface_rows.append(interface_row)
             # Print info instead of empty table
             if not len(interface_rows):
-                output_string += "No PTRs to update\n"
+                output_string += "│ %-94s│\n" % "No PTRs to update"
             else:
                 output_string += ''.join(interface_rows)
 

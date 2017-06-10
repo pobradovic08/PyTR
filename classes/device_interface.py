@@ -78,49 +78,85 @@ class DeviceInterface:
             string += "├" + '─' * 95 + "┤\n"
         return string
 
-    #TODO: Refactor this, it's ugly
+    def print_ok_row(self, ip):
+        if self.device.config.diff_only:
+            return None
+        color = "\033[92m"  # Green
+        icon = '■'
+        return "│%s%-24s %s %-44s %-23s\033[0;0m│\n" % (
+            color,
+            self.ifName,
+            icon,
+            self.get_ptr_for_ip(ip),
+            ip
+        )
+
+    def print_not_updated_row(self, ip):
+        color = "\033[93m"
+        icon = '┌'
+        output_string = "│%s%-24s %s %-44s %-23s\033[0;0m│\n" % (
+            color,
+            self.ifName,
+            icon,
+            self.ip_addresses[ip]['existing_ptr'],
+            ip
+        )
+        output_string += "│%s%24s └─► %s%-66s\033[0;0m│\n" % (
+            color,
+            ' ', "\033[01m",  # Bold
+            self.get_ptr_for_ip(ip)  # If IP is from A RR print hostname
+        )
+
+    def print_not_created_row(self, ip):
+        color = "\033[01m\033[91m" # Bold red
+        icon = '■'
+        return "│%s%-24s %s %-44s %-23s\033[0;0m│\n" % (
+            color,
+            self.ifName,
+            icon,
+            self.get_ptr_for_ip(ip),
+            ip
+        )
+
+    def print_unknown_row(self, ip):
+        if self.device.config.diff_only:
+            return None
+        color = "\033[90m"  # Grey
+        icon = 'i'
+        return "│%s%-24s %s %-44s %-23s\033[0;0m│\n" % (
+            color,
+            self.ifName,
+            icon,
+            self.get_ptr_for_ip(ip),
+            ip
+        )
+
+    def print_default_row(self, ip):
+        if self.device.config.diff_only:
+            return None
+        color = "\033[90m"  # Grey
+        icon = '☓'
+        return "│%s%-24s %s %-44s %-23s\033[0;0m│\n" % (
+            color,
+            self.ifName,
+            icon,
+            self.get_ptr_for_ip(ip),
+            ip
+        )
+
     def __repr__(self):
         output_array = []
         for ip in self.ip_addresses:
             output_string = ''
             ip_status = self.ip_addresses[ip]['status']
             if ip_status == DnsCheck.STATUS_OK:
-                if self.device.config.diff_only:
-                    continue
-                color = "\033[92m"
-                icon = '■'
+                output_array.append(self.print_ok_row(ip))
             elif ip_status == DnsCheck.STATUS_NOT_UPDATED:
-                color = "\033[93m"
-                icon = '┌'
+                output_array.append(self.print_not_updated_row(ip))
             elif ip_status == DnsCheck.STATUS_NOT_CREATED:
-                color = "\033[01m\033[91m"
-                icon = '■'
+                output_array.append(self.print_not_created_row(ip))
             elif ip_status == DnsCheck.STATUS_UNKNOWN:
-                if self.device.config.diff_only:
-                    continue
-                color = "\033[90m"
-                icon = 'i'
+                output_array.append(self.print_unknown_row(ip))
             else:
-                if self.device.config.diff_only:
-                    continue
-                color = "\033[90m"
-                icon = '☓'
-
-            output_string += "│%s%-24s %s %-44s %-23s\033[0;0m│\n" % (
-                color,
-                self.ifName,
-                icon,
-                self.get_ptr_for_ip(ip) if not ip_status == DnsCheck.STATUS_NOT_UPDATED else self.ip_addresses[ip][
-                    'existing_ptr'],
-                ip
-            )
-            if ip_status == DnsCheck.STATUS_NOT_UPDATED:
-                output_string += "│%s%24s └─► %s%-66s\033[0;0m│\n" % (
-                    color,
-                    ' ', "\033[01m",  # Bold
-                    self.get_ptr_for_ip(ip)  # If IP is from A RR print hostname
-                )
-            output_string += "\033[0;0m"
-            if len(output_string):
-                output_array.append(output_string)
-        return ''.join(output_array)
+                output_array.append(self.print_default_row(ip))
+        return ''.join(filter(None, output_array))
