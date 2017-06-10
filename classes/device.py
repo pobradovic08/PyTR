@@ -152,23 +152,25 @@ class Device:
         """
         # Table info header
         # Top border
-        output_string = '═' * 97 + "\n"
+        output_string = '╒' + '═' * 95 + '╕\n'
         # Ignored device message
         if self.ignored:
-            output_string += "\n\033[93m\033[07m\033[04m DEVICE ON IGNORE LIST \033[0m\n\n"
+            output_string += "│ %-94s│\n│ %-113s│\n│ %-94s│\n" % (
+                "",
+                "\033[93m\033[07m\033[04m DEVICE ON IGNORE LIST \033[0m",
+                ""
+            )
         # Device information
-        output_string += "\033[01m" # Formatting - bold
-        output_string += "Device:\t\t%s\n" % self.hostname
-        output_string += "Interfaces:\t%d\n" % self.get_number_of_interfaces()
-        output_string += "IP addresses:\t%d\n" % self.get_number_of_ip_addresses()
-        output_string += "\033[0m" # Formatting - reset
+        output_string += "│ %-103s│\n" % ("Device:       \033[01m%s\033[0m" % self.hostname)
+        output_string += "│ %-103s│\n" % ("Interfaces:   \033[01m%d\033[0m" % self.get_number_of_interfaces())
+        output_string += "│ %-103s│\n" % ("IP addresses: \033[01m%d\033[0m " % self.get_number_of_ip_addresses())
 
         # Print interface table
         if len(self.interfaces):
             # Table interface header
-            output_string += '━' * 97 + "\n"
-            output_string += "%-9s %-26s %-44s %s\n" % ('ifIndex', 'ifName', 'PTR', 'IP address')
-            output_string += '─' * 97  + "\n"
+            output_string += '╞' + '═' * 95 + "╡\n"
+            output_string += "│%-26s %-45s%-23s│\n" % ('ifName', 'PTR', 'IP address')
+            output_string += '╞' + '═' * 95 + "╡\n"
             # Interface details
             # DeviceInterface output list
             interface_rows = []
@@ -186,6 +188,6 @@ class Device:
                 output_string += ''.join(interface_rows)
 
         # Bottom border
-        output_string += '═' * 97  + "\n"
+        output_string += '╘' + '═' * 95 + '╛\n'
         return output_string
 

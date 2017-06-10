@@ -75,7 +75,7 @@ class DeviceInterface:
     def print_table_row(self):
         string = self.__repr__()
         if len(string):
-            string += "\033[90m" + '┈' * 97 + "\033[0m\n"
+            string += "├" + '─' * 95 + "┤\n"
         return string
 
     #TODO: Refactor this, it's ugly
@@ -87,27 +87,27 @@ class DeviceInterface:
             if ip_status == DnsCheck.STATUS_OK:
                 if self.device.config.diff_only:
                     continue
-                output_string += "\033[92m"
+                color = "\033[92m"
                 icon = '■'
             elif ip_status == DnsCheck.STATUS_NOT_UPDATED:
-                output_string += "\033[93m"
+                color = "\033[93m"
                 icon = '┌'
             elif ip_status == DnsCheck.STATUS_NOT_CREATED:
-                output_string += "\033[01m\033[91m"
+                color = "\033[01m\033[91m"
                 icon = '■'
             elif ip_status == DnsCheck.STATUS_UNKNOWN:
                 if self.device.config.diff_only:
                     continue
-                output_string += "\033[90m"
+                color = "\033[90m"
                 icon = 'i'
             else:
                 if self.device.config.diff_only:
                     continue
-                output_string += "\033[90m"
+                color = "\033[90m"
                 icon = '☓'
 
-            output_string += "%-9d %-24s %s %-44s %s\n" % (
-                self.ifIndex,
+            output_string += "│%s%-24s %s %-44s %-23s\033[0;0m│\n" % (
+                color,
                 self.ifName,
                 icon,
                 self.get_ptr_for_ip(ip) if not ip_status == DnsCheck.STATUS_NOT_UPDATED else self.ip_addresses[ip][
@@ -115,7 +115,8 @@ class DeviceInterface:
                 ip
             )
             if ip_status == DnsCheck.STATUS_NOT_UPDATED:
-                output_string += "%34s └─► %s%s\n" % (
+                output_string += "│%s%24s └─► %s%-66s\033[0;0m│\n" % (
+                    color,
                     ' ', "\033[01m",  # Bold
                     self.get_ptr_for_ip(ip)  # If IP is from A RR print hostname
                 )
