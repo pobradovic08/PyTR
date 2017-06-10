@@ -3,7 +3,7 @@
 class BaseInterface():
 
     def __init__(self, dispatcher):
-        dispatcher.register_interface(self)
+        dispatcher.register_connector(self)
 
     def load_devices(self):
         """
