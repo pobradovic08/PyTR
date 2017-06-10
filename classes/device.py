@@ -134,40 +134,48 @@ class Device:
 
         return num
 
-    # TODO: rewrite everything...
     def __repr__(self):
         """
         Returns string representation of device status
         Also contains table with all interfaces, current (and new) PTRs, IP addresses
         :return:
         """
+        # Table info header
         # Top border
-        str = '═' * 97 + "\n"
+        output_string = '═' * 97 + "\n"
         # Ignored device message
         if self.ignored:
-            str += "\n\033[93m\033[07m\033[04m DEVICE ON IGNORE LIST \033[0m\n\n"
+            output_string += "\n\033[93m\033[07m\033[04m DEVICE ON IGNORE LIST \033[0m\n\n"
         # Device information
-        str += "\033[01mDevice:\t\t%s\n" % self.hostname
-        str += "Interfaces:\t%d\n" % self.get_number_of_interfaces()
-        str += "IP addresses:\t%d\n\033[0m" % self.get_number_of_ip_addresses()
+        output_string += "\033[01m" # Formatting - bold
+        output_string += "Device:\t\t%s\n" % self.hostname
+        output_string += "Interfaces:\t%d\n" % self.get_number_of_interfaces()
+        output_string += "IP addresses:\t%d\n" % self.get_number_of_ip_addresses()
+        output_string += "\033[0m" # Formatting - reset
+
         # Print interface table
         if len(self.interfaces):
-            # Header
-            str += '━' * 97 + "\n"
-            str += "%-9s %-26s %-44s %s\n" % ('ifIndex', 'ifName', 'PTR', 'IP address')
-            str += '─' * 97  + "\n"
+            # Table interface header
+            output_string += '━' * 97 + "\n"
+            output_string += "%-9s %-26s %-44s %s\n" % ('ifIndex', 'ifName', 'PTR', 'IP address')
+            output_string += '─' * 97  + "\n"
             # Interface details
+            # DeviceInterface output list
             interface_rows = []
             for interface in self.interfaces:
-                if_row = self.interfaces[interface].print_table_row()
-                if if_row:
-                    interface_rows.append(if_row)
-                #str += self.interfaces[interface].__repr__()
-                #str += "\033[90m" + '┈' * 97 + "\033[0m\n"
+                # DeviceInterface output
+                interface_row = self.interfaces[interface].print_table_row()
+                # Interface row could be empty if interface status is OK and diff switch is used
+                # Avoid adding empty strings to interface_rows list
+                if interface_row:
+                    interface_rows.append(interface_row)
+            # Print info instead of empty table
             if not len(interface_rows):
-                str += "No PTRs to update\n"
+                output_string += "No PTRs to update\n"
             else:
-                str += ''.join(interface_rows)
+                output_string += ''.join(interface_rows)
+
         # Bottom border
-        str += '═' * 97  + "\n"
-        return str
+        output_string += '═' * 97  + "\n"
+        return output_string
+
