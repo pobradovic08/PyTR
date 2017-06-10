@@ -116,6 +116,24 @@ class Device:
                 # Update PTR status in interfaces dictionary
                 self.interfaces[interface].update_ptr_status(ip_address, existing_ptr, status)
 
+    def get_number_of_interfaces(self):
+        """
+        Return total number of interfaces on device
+        :return:
+        """
+        return len(self.interfaces)
+
+    def get_number_of_ip_addresses(self):
+        """
+        Return total number of IP addresses on device
+        :return:
+        """
+        num = 0
+        for interface in self.interfaces:
+            num += len(self.interfaces[interface].ip_addresses)
+
+        return num
+
     # TODO: rewrite everything...
     def __repr__(self):
         """
@@ -130,7 +148,8 @@ class Device:
             str += "\n\033[93m\033[07m\033[04m DEVICE ON IGNORE LIST \033[0m\n\n"
         # Device information
         str += "\033[01mDevice:\t\t%s\n" % self.hostname
-        str += "Interfaces:\t%d\n\033[0m" % len(self.interfaces)
+        str += "Interfaces:\t%d\n" % self.get_number_of_interfaces()
+        str += "IP addresses:\t%d\n\033[0m" % self.get_number_of_ip_addresses()
         # Print interface table
         if len(self.interfaces):
             # Header
