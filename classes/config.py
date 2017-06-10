@@ -4,13 +4,20 @@ import re, sre_constants
 
 class Config:
 
-    def __init__(self, filename = 'configuration.json', check_only = False, diff_only = False):
+    def __init__(
+            self,
+            filename = 'configuration.json',
+            check_only = False,
+            diff_only = False,
+            terse = False
+    ):
         """
         Provides interface to JSON configuration file.
         :param filename: Default file is configuration.json in script root directory
         """
         self.check_only = check_only
         self.diff_only = diff_only
+        self.terse = terse
 
         with open(filename) as data_file:
             self.data = json.load(data_file)

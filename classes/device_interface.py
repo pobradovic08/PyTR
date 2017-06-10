@@ -11,24 +11,20 @@ class DeviceInterface:
         self.ip_addresses = {}
         self.ifIndex = ifIndex
         self.ptr = None
+        self.short_ptr = None
         self.get_if_name()
 
     def get_if_name(self):
-        try:
-            # Append interface index to IF-MIB::ifName OID
-            ifName_result = self.device.session.get('.1.3.6.1.2.1.31.1.1.1.1.' + str(self.ifIndex))
-            self.ifName = ifName_result.value
-            # Make PTR
-            self._make_ptr()
-        except EasySNMPNoSuchInstanceError:
-            self.ifName = None
+        # Append interface index to IF-MIB::ifName OID
+        ifName_result = self.device.session.get('.1.3.6.1.2.1.31.1.1.1.1.' + str(self.ifIndex))
+        self.ifName = ifName_result.value
+        # Make PTR
+        self._make_ptr()
 
     def _make_ptr(self):
         """
         Generate PTR from hostname, interface name and domain
         """
-        # Split device.hostname into two parts: (hostname).(domain.example)
-        host, domain = self.device.hostname.split('.', 1)
         # Convert to lowercase and replace all chars not letters, numbers and dash (-) with dash
         interface = self.ifName.lower()
         interface = re.sub(r'[^a-zA-Z0-9-]', '-', interface)
@@ -43,10 +39,12 @@ class DeviceInterface:
                 #TODO: what if interface doesn't have group(2)?
                 pass
         # Move format string to config file?
-        name = '{host}-{interface}.{domain}'.format(
-            host=host, interface=interface, domain=domain
+        self.ptr = '{host}-{interface}.{domain}'.format(
+            host=self.device.host, interface=interface, domain=self.device.domain
         )
-        self.ptr = name
+        self.short_ptr = '{host}-{interface}'.format(
+            host=self.device.host, interface=interface
+        )
 
     def add_ip_address(self, ip_address):
         """ Add ip address to address list in case interface has multiple addresses """
@@ -62,6 +60,15 @@ class DeviceInterface:
             self.ip_addresses[ip_address]['status'] = status
 
     def get_ptr_for_ip(self, ip_address):
+        if self.device.config.terse:
+            return self.get_short_ptr(ip_address)
+        else:
+            return self.get_full_ptr(ip_address)
+
+    def get_short_ptr(self, ip_address):
+        return self.short_ptr if not ip_address == self.device.ip else self.device.host + " ★"
+
+    def get_full_ptr(self, ip_address):
         return self.ptr if not ip_address == self.device.ip else self.device.hostname + " ★"
 
 

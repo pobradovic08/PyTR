@@ -28,6 +28,9 @@ class Device:
         if not self.hostname:
             self.hostname = hostname
 
+        # Split device.hostname into two parts: (hostname).(domain.example)
+        self.host, self.domain = self.hostname.split('.', 1)
+
         # Get IN A record for device hostname
         self.ip = DnsCheck.get_a(self.hostname)
 
@@ -59,7 +62,8 @@ class Device:
                 use_numeric=True,
                 version=2,
                 timeout=self.config.get_snmp_timeout(),
-                retries=self.config.get_snmp_retries()
+                retries=self.config.get_snmp_retries(),
+                abort_on_nonexistent=True
             )
 
             """
@@ -83,7 +87,13 @@ class Device:
                 # If this is the first time encountering this ifIndex,
                 # create DeviceInstance
                 if ifIndex not in self.interfaces:
-                    self.interfaces[ifIndex] = DeviceInterface(self, ifIndex)
+                    # Some devices will have loopback IP and ifIndex
+                    # But no ifName associated with that ifIndex
+                    # We can skip those since we can't make PTRs
+                    try:
+                        self.interfaces[ifIndex] = DeviceInterface(self, ifIndex)
+                    except easysnmp.EasySNMPNoSuchInstanceError:
+                        continue
                 # Remove the part of the OID we used to walk on. Leave just the IP address part.
                 # Add it to interface
                 ip_address = '.'.join([
