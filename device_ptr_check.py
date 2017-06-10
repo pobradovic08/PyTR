@@ -2,17 +2,29 @@
 #-*- coding: utf-8 -*-
 
 import sys
-import dns.resolver
-from classes.device_interface import DeviceInterface
+import argparse
 from classes.device import Device
 from classes.config import Config
 
 reload(sys)
 sys.setdefaultencoding('utf8')
 
-config = Config()
+parser = argparse.ArgumentParser()
+parser.add_argument("hostname", type=str, help="device hostname (FQDN)")
+parser.add_argument("-c", "--check", help="check PTRs but don't update them",
+                    action="store_true")
+parser.add_argument("-d", "--diff", help="show only differences",
+                    action="store_true")
 
-d = Device('cmts-gs-1.vektor.net', config)
+args = parser.parse_args()
+
+hostname = args.hostname
+check_only = args.check
+diff_only = args.diff
+
+config = Config(check_only=check_only, diff_only=diff_only)
+
+d = Device(hostname, config)
 if d.get_interfaces():
     d.check_ptrs()
     print d

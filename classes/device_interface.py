@@ -36,8 +36,12 @@ class DeviceInterface:
         # Take first two letters from interface prefix (interface type)
         # Replace all letters from suffix (interface number) leaving just integers and separators
         if len(interface) > 10:
-            x = re.match(r"([^0-9]{2}).*?([0-9].*)", interface)
-            interface = x.group(1) + re.sub(r'[a-zA-Z]', '', x.group(2))
+            try:
+                x = re.match(r"([^0-9]{2}).*?([0-9].*)", interface)
+                interface = x.group(1) + re.sub(r'[a-zA-Z]', '', x.group(2))
+            except AttributeError:
+                #TODO: what if interface doesn't have group(2)?
+                pass
         # Move format string to config file?
         name = '{host}-{interface}.{domain}'.format(
             host=host, interface=interface, domain=domain
@@ -59,6 +63,13 @@ class DeviceInterface:
 
     def get_ptr_for_ip(self, ip_address):
         return self.ptr if not ip_address == self.device.ip else self.device.hostname + " ★"
+
+
+    def print_table_row(self):
+        string = self.__repr__()
+        if len(string):
+            string += "\033[90m" + '┈' * 97 + "\033[0m\n"
+        return string
 
     #TODO: Refactor this, it's ugly
     def __repr__(self):

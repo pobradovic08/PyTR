@@ -4,7 +4,7 @@ import re, sre_constants
 
 class Config:
 
-    def __init__(self, filename = 'configuration.json'):
+    def __init__(self, filename = 'configuration.json', check_only = False, diff_only = False):
         """
         Provides interface to JSON configuration file.
         :param filename: Default file is configuration.json in script root directory

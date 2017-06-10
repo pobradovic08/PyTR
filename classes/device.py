@@ -116,6 +116,7 @@ class Device:
                 # Update PTR status in interfaces dictionary
                 self.interfaces[interface].update_ptr_status(ip_address, existing_ptr, status)
 
+    # TODO: rewrite everything...
     def __repr__(self):
         """
         Returns string representation of device status
@@ -138,8 +139,9 @@ class Device:
             str += '─' * 97  + "\n"
             # Interface details
             for interface in self.interfaces:
-                str += self.interfaces[interface].__repr__()
-                str += "\033[90m" + '┈' * 97 + "\033[0m\n"
+                str += self.interfaces[interface].print_table_row()
+                #str += self.interfaces[interface].__repr__()
+                #str += "\033[90m" + '┈' * 97 + "\033[0m\n"
         # Bottom border
         str += '═' * 97  + "\n"
         return str
