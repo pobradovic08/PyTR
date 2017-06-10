@@ -73,26 +73,33 @@ class DeviceInterface:
 
     #TODO: Refactor this, it's ugly
     def __repr__(self):
-        str = ''
+        output_array = []
         for ip in self.ip_addresses:
+            output_string = ''
             ip_status = self.ip_addresses[ip]['status']
             if ip_status == DnsCheck.STATUS_OK:
-                str += "\033[92m"
+                if self.device.config.diff_only:
+                    continue
+                output_string += "\033[92m"
                 icon = '■'
             elif ip_status == DnsCheck.STATUS_NOT_UPDATED:
-                str += "\033[93m"
+                output_string += "\033[93m"
                 icon = '┌'
             elif ip_status == DnsCheck.STATUS_NOT_CREATED:
-                str += "\033[01m\033[91m"
+                output_string += "\033[01m\033[91m"
                 icon = '■'
             elif ip_status == DnsCheck.STATUS_UNKNOWN:
-                str += "\033[90m"
+                if self.device.config.diff_only:
+                    continue
+                output_string += "\033[90m"
                 icon = 'i'
             else:
-                str += "\033[90m"
+                if self.device.config.diff_only:
+                    continue
+                output_string += "\033[90m"
                 icon = '☓'
 
-            str += "%-9d %-24s %s %-44s %s\n" % (
+            output_string += "%-9d %-24s %s %-44s %s\n" % (
                 self.ifIndex,
                 self.ifName,
                 icon,
@@ -101,9 +108,11 @@ class DeviceInterface:
                 ip
             )
             if ip_status == DnsCheck.STATUS_NOT_UPDATED:
-                str += "%34s └─► %s%s\n" % (
+                output_string += "%34s └─► %s%s\n" % (
                     ' ', "\033[01m",  # Bold
                     self.get_ptr_for_ip(ip)  # If IP is from A RR print hostname
                 )
-            str += "\033[0;0m"
-        return str
+            output_string += "\033[0;0m"
+            if len(output_string):
+                output_array.append(output_string)
+        return ''.join(output_array)

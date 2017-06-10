@@ -138,10 +138,17 @@ class Device:
             str += "%-9s %-26s %-44s %s\n" % ('ifIndex', 'ifName', 'PTR', 'IP address')
             str += '─' * 97  + "\n"
             # Interface details
+            interface_rows = []
             for interface in self.interfaces:
-                str += self.interfaces[interface].print_table_row()
+                if_row = self.interfaces[interface].print_table_row()
+                if if_row:
+                    interface_rows.append(if_row)
                 #str += self.interfaces[interface].__repr__()
                 #str += "\033[90m" + '┈' * 97 + "\033[0m\n"
+            if not len(interface_rows):
+                str += "No PTRs to update\n"
+            else:
+                str += ''.join(interface_rows)
         # Bottom border
         str += '═' * 97  + "\n"
         return str

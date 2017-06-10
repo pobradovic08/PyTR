@@ -9,6 +9,9 @@ class Config:
         Provides interface to JSON configuration file.
         :param filename: Default file is configuration.json in script root directory
         """
+        self.check_only = check_only
+        self.diff_only = diff_only
+
         with open(filename) as data_file:
             self.data = json.load(data_file)
 
