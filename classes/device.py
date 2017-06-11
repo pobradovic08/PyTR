@@ -149,7 +149,7 @@ class Device:
 
         return num
 
-    def __repr__(self):
+    def detailed_table(self):
         """
         Returns string representation of device status
         Also contains table with all interfaces, current (and new) PTRs, IP addresses

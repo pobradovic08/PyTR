@@ -40,7 +40,7 @@ for device in dispatcher.devices:
     dispatcher.devices[device] = Device(device, config)
     if dispatcher.devices[device].get_interfaces():
         dispatcher.devices[device].check_ptrs()
-        print dispatcher.devices[device]
+        print dispatcher.devices[device].detailed_table()
 
     go_trough -= 1
     if go_trough <= 0:

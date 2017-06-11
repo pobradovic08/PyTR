@@ -72,12 +72,6 @@ class DeviceInterface:
         return self.ptr if not ip_address == self.device.ip else self.device.hostname + " ★"
 
 
-    def print_table_row(self):
-        string = self.__repr__()
-        if len(string):
-            string += "├" + '─' * 95 + "┤\n"
-        return string
-
     def print_ok_row(self, ip):
         if self.device.config.diff_only:
             return None
@@ -157,7 +151,7 @@ class DeviceInterface:
             ip
         )
 
-    def __repr__(self):
+    def print_table_row(self):
         output_array = []
         for ip in self.ip_addresses:
             output_string = ''
@@ -174,4 +168,8 @@ class DeviceInterface:
                 output_array.append(self.print_ignored_row(ip))
             else:
                 output_array.append(self.print_default_row(ip))
-        return ''.join(filter(None, output_array))
+        string = ''.join(filter(None, output_array))
+
+        if len(string):
+            string += "├" + '─' * 95 + "┤\n"
+        return string

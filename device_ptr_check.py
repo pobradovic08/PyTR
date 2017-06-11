@@ -32,6 +32,6 @@ config = Config(check_only=check_only,
 d = Device(hostname, config)
 if d.get_interfaces():
     d.check_ptrs()
-    print d
+    print d.detailed_table()
 else:
     print "Error connecting to %s" % d.hostname
