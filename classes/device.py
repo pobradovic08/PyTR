@@ -23,7 +23,7 @@ class Device:
 
         # Try to get FQDN for the hostname
         # If it fails, use provided hostname
-        self.hostname = DnsCheck.get_fqdn(hostname)
+        self.hostname = self.dns.get_fqdn(hostname)
         if not self.hostname:
             self.hostname = hostname
 
@@ -31,7 +31,7 @@ class Device:
         self.host, self.domain = self.hostname.split('.', 1)
 
         # Get IN A record for device hostname
-        self.ip = DnsCheck.get_a(self.hostname)
+        self.ip = self.dns.get_a(self.hostname)
 
         # TODO: update to support v3
         self.community = config.get_snmp_community(self.hostname)
