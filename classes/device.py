@@ -8,8 +8,7 @@ from config import Config
 
 
 class Device:
-
-    def __init__(self, hostname, config, dns = None):
+    def __init__(self, hostname, config, dns=None):
         """
         Initialize instance with empty interfaces array
         :param hostname:    Hostname of device. If it's not FQDN we will try to resolve to one
@@ -115,14 +114,20 @@ class Device:
         """
         for interface in self.interfaces:
             for ip_address in self.interfaces[interface].ip_addresses:
-                if self.config.is_interface_ignored(self.hostname, self.interfaces[interface].ifName):
+                # Check if interface or IP is ignored
+                if self.config.is_interface_ignored(
+                        self.hostname,
+                        self.interfaces[interface].ifName
+                ) or self.config.is_ip_ignored(ip_address):
                     self.interfaces[interface].update_ptr_status(ip_address, None, DnsCheck.STATUS_UNKNOWN)
                     continue
+
                 # If IP matches loopback IP, expected PTR is device.hostname
                 if ip_address == self.ip:
                     existing_ptr, status = self.dns.get_status(ip_address, self.hostname)
                 else:
                     existing_ptr, status = self.dns.get_status(ip_address, self.interfaces[interface].ptr)
+
                 # Update PTR status in interfaces dictionary
                 self.interfaces[interface].update_ptr_status(ip_address, existing_ptr, status)
 
@@ -190,4 +195,3 @@ class Device:
         # Bottom border
         output_string += '╘' + '═' * 95 + '╛\n'
         return output_string
-
