@@ -23,6 +23,30 @@ class Config:
         with open(filename) as data_file:
             self.data = json.load(data_file)
 
+    def set_check_only(self, check_only):
+        """
+        set check only flag
+        :param check_only:
+        :return:
+        """
+        self.check_only = bool(check_only)
+
+    def set_diff_only(self, diff_only):
+        """
+        set diff only flag
+        :param diff_only:
+        :return:
+        """
+        self.diff_only = bool(diff_only)
+
+    def set_terse(self, terse):
+        """
+        Set terse output flag
+        :param terse:
+        :return:
+        """
+        self.terse = bool(terse)
+
     def get_connector_config(self, connector_name):
         """
         Returns config specific to connector class
