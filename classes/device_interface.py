@@ -122,6 +122,19 @@ class DeviceInterface:
         if self.device.config.diff_only:
             return None
         color = "\033[90m"  # Grey
+        icon = ' '
+        return "│%s%-24s %s %-44s %-23s\033[0;0m│\n" % (
+            color,
+            self.ifName,
+            icon,
+            self.get_ptr_for_ip(ip),
+            ip
+        )
+
+    def print_ignored_row(self, ip):
+        if self.device.config.diff_only:
+            return None
+        color = "\033[90m"  # Grey
         icon = 'i'
         return "│%s%-24s %s %-44s %-23s\033[0;0m│\n" % (
             color,
@@ -157,6 +170,8 @@ class DeviceInterface:
                 output_array.append(self.print_not_created_row(ip))
             elif ip_status == DnsCheck.STATUS_UNKNOWN:
                 output_array.append(self.print_unknown_row(ip))
+            elif ip_status == DnsCheck.STATUS_IGNORED:
+                output_array.append(self.print_ignored_row(ip))
             else:
                 output_array.append(self.print_default_row(ip))
         return ''.join(filter(None, output_array))

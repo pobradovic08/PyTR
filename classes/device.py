@@ -119,7 +119,7 @@ class Device:
                         self.hostname,
                         self.interfaces[interface].ifName
                 ) or self.config.is_ip_ignored(ip_address):
-                    self.interfaces[interface].update_ptr_status(ip_address, None, DnsCheck.STATUS_UNKNOWN)
+                    self.interfaces[interface].update_ptr_status(ip_address, None, DnsCheck.STATUS_IGNORED)
                     continue
 
                 # If IP matches loopback IP, expected PTR is device.hostname

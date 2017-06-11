@@ -1,25 +1,25 @@
-#-*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 import socket
 import re
 import dns.resolver, dns.exception
 from config import Config
 
-class DnsCheck:
 
+class DnsCheck:
     STATUS_UNKNOWN = 0
     STATUS_OK = 1
     STATUS_NOT_UPDATED = 2
     STATUS_NOT_CREATED = 3
     STATUS_NOT_AUTHORITATIVE = 4
+    STATUS_IGNORED = 5
 
-    def __init__(self, config = None):
+    def __init__(self, config=None):
         self.config = config if config else Config()
         self.resolver = dns.resolver.Resolver()
         self.resolver.nameservers = self.config.get_ns_search_servers()
         self.resolver.search = []
         for domain in self.config.get_ns_search_domains():
             self.resolver.search.append(dns.name.from_text(domain))
-
 
     def get_fqdn(self, hostname):
         if not len(hostname):
@@ -53,6 +53,7 @@ class DnsCheck:
             - DnsCheck.STATUS_NOT_UPDATED:          Existing PTR is not the same as expected one
             - DnsCheck.STATUS_NOT_CREATED:          There is no existing PTR
             - DnsCheck.STATUS_NOT_AUTHORITATIVE:    PTR not OK but we don't control the DNS server
+            - DnsCheck.STATUS_IGNORED:              Interface or IP ignored
 
         :param ip_address:      IP address to check
         :param expected_ptr:    Expected PTR for provided IP address
