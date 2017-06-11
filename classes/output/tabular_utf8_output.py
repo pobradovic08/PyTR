@@ -7,11 +7,79 @@ from classes.dns_check import DnsCheck
 class TabularUtf8Output(Base):
 
     @staticmethod
+    def display_summary(dispatcher):
+        horizontal_border = (
+            '═' * 37,
+            '═' * 6,
+            '═' * 8,
+            '═' * 8,
+            '═' * 10,
+            '═' * 10,
+            '═' * 10,
+        )
+        output_string = "╒%s╤%s╤%s╤%s╤%s╤%s╤%s╕\n" % horizontal_border
+        output_string += "│\033[01m%-37s\033[0;0m│\033[01m\033[92m%-6s\033[0;0m│\033[01m\033[93m%-8s\033[0;0m│"\
+                        "\033[01m\033[91m%-8s\033[0;0m│\033[01m\033[90m%-10s\033[0;0m│\033[01m\033[90m%-10s\033[0;0m│"\
+                         "\033[01m\033[90m%-10s\033[0;0m│\n" % (
+            'Device',
+            ' OK',
+            ' UPDATE',
+            ' CREATE',
+            ' NO AUTH',
+            ' IGNORED',
+            ' UNKNOWN'
+        )
+        output_string += "╞%s╪%s╪%s╪%s╪%s╪%s╪%s╡\n" % horizontal_border
+
+        output_array = []
+
+        for device in dispatcher.devices:
+            if not dispatcher.devices[device]:
+                continue
+            output_array.append(TabularUtf8Output.display_device_summary(dispatcher.devices[device]))
+
+        output_string += ''.join(filter(None, output_array))
+
+        output_string += "╘%s╧%s╧%s╧%s╧%s╧%s╧%s╛\n" % horizontal_border
+
+        return output_string
+
+    @staticmethod
+    def display_device_summary(device):
+        """
+        Returns summary table of all interfaces with number of interfaces and ip address statuses
+        :return:
+        """
+        interfaces = {
+            DnsCheck.STATUS_OK: 0,
+            DnsCheck.STATUS_NOT_UPDATED: 0,
+            DnsCheck.STATUS_NOT_AUTHORITATIVE: 0,
+            DnsCheck.STATUS_NOT_CREATED: 0,
+            DnsCheck.STATUS_IGNORED: 0,
+            DnsCheck.STATUS_UNKNOWN:0
+        }
+        for interface in device.interfaces:
+            for ip in device.interfaces[interface].ip_addresses:
+                interfaces[device.interfaces[interface].ip_addresses[ip]['status']] += 1
+
+        output_string = "│%-37s│ %-15s │ %-17s │ %-17s │ %-19s │ %-19s │ %-19s │\n" % (
+            device.hostname,
+            TabularUtf8Output._paint_positive_num(interfaces[DnsCheck.STATUS_OK], "\033[92m"),
+            TabularUtf8Output._paint_positive_num(interfaces[DnsCheck.STATUS_NOT_UPDATED], "\033[93m"),
+            TabularUtf8Output._paint_positive_num(interfaces[DnsCheck.STATUS_NOT_CREATED], "\033[91m"),
+            TabularUtf8Output._paint_positive_num(interfaces[DnsCheck.STATUS_NOT_AUTHORITATIVE],"\033[90m"),
+            TabularUtf8Output._paint_positive_num(interfaces[DnsCheck.STATUS_IGNORED], "\033[90m"),
+            TabularUtf8Output._paint_positive_num(interfaces[DnsCheck.STATUS_UNKNOWN], "\033[90m")
+        )
+
+        return output_string
+
+    @staticmethod
     def display_device_detailed(device):
         """
-        Returns string representation of device status
+        Returns detailed representation of device status
         Also contains table with all interfaces, current (and new) PTRs, IP addresses
-        :return:
+        :return: string
         """
         # Table info header
         # Top border
@@ -107,6 +175,7 @@ class TabularUtf8Output(Base):
             ' ', "\033[01m",  # Bold
             interface.get_ptr_for_ip(ip)  # If IP is from A RR print hostname
         )
+        return output_string
 
     @staticmethod
     def print_not_created_row(interface, ip):
@@ -161,3 +230,7 @@ class TabularUtf8Output(Base):
             interface.get_ptr_for_ip(ip),
             ip
         )
+
+    @staticmethod
+    def _paint_positive_num(number, color, default='\033[90m'):
+        return "%s%d%s" % (color if number else default, number, '\033[0;0m')

@@ -19,9 +19,5 @@ class Base:
         raise NotImplementedError
 
     @staticmethod
-    def display_interface_summary(device_interface):
-        raise NotImplementedError
-
-    @staticmethod
     def display_interface_detailed(device_interface):
         raise NotImplementedError

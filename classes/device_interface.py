@@ -67,7 +67,7 @@ class DeviceInterface:
             return self.get_full_ptr(ip_address)
 
     def get_short_ptr(self, ip_address):
-        return self.short_ptr if not ip_address == self.device.ip else self.device.host + " ★"
+        return self.short_ptr if not ip_address == self.device.ip else self.device.host
 
     def get_full_ptr(self, ip_address):
-        return self.ptr if not ip_address == self.device.ip else self.device.hostname + " ★"
+        return self.ptr if not ip_address == self.device.ip else self.device.hostname

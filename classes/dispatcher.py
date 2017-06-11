@@ -87,7 +87,7 @@ class Dispatcher:
             hostname = self.dns.get_fqdn(device)
             if hostname:
                 if hostname not in self.devices:
-                    self.devices[hostname] = {}
+                    self.devices[hostname] = None
             else:
                 #TODO: Log wrong hostname
                 pass
