@@ -1,5 +1,6 @@
 #-*- coding: utf-8 -*-
 import json
+import ipaddress
 import re, sre_constants
 
 class Config:
@@ -171,3 +172,15 @@ class Config:
                 #TODO: Real logging, not this shit
                 print "Rule '%s' in configuration file invalid, skipping..." % hostname_rule
         return False
+
+    def is_ip_ignored(self, ip_address):
+            for ip_rule in self.get_ip_ignore_rules():
+                try:
+                    network = ipaddress.IPv4Network(ip_rule)
+                    if ipaddress.IPv4Address(ip_address) in network:
+                        return True
+                except ipaddress.AddressValueError:
+                    continue
+                except ipaddress.NetmaskValueError:
+                    continue
+            return False

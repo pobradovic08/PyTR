@@ -99,6 +99,7 @@ class DnsCheck:
         return zone
 
     @staticmethod
+    # TODO: replace with real check from ipaddress module
     def check_ip(ip_address):
         if not re.match(r"^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$", ip_address):
             raise ValueError('IP address format not valid')

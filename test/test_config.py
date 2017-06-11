@@ -1,4 +1,5 @@
 import unittest
+import ipaddress
 from classes.config import Config
 
 
@@ -20,6 +21,12 @@ class TestConfig(unittest.TestCase):
                 "eth2.*"
             ]
         }
+        self.ip_ignore_rules = [
+            "127.0.0.0/8",
+            "256.0.0.0",
+            "109.0.0.0/33",
+            "1.1.1.1"
+        ]
 
         self.default_community = 'public'
         self.retries = 0
@@ -44,8 +51,8 @@ class TestConfig(unittest.TestCase):
         self.assertEquals(config.get_device_ignore_rules(), {})
 
     def test_get_ip_ignored(self):
-        self.assertListEqual(['127.0.0.0/8'], self.config.data['ignored']['ip'])
-        self.assertListEqual(['127.0.0.0/8'], self.config.get_ip_ignore_rules())
+        self.assertListEqual(sorted(self.ip_ignore_rules), sorted(self.config.data['ignored']['ip']))
+        self.assertListEqual(sorted(self.ip_ignore_rules), sorted(self.config.get_ip_ignore_rules()))
         config = Config('test/configuration_examples/simple.json')
         self.assertEquals(config.get_ip_ignore_rules(), [])
 
@@ -71,6 +78,17 @@ class TestConfig(unittest.TestCase):
         self.assertFalse(self.config.is_interface_ignored('xxx', 'eth01'))
         self.assertFalse(self.config.is_interface_ignored('xxx', '1eth0'))
         self.assertTrue(self.config.is_interface_ignored('test', 'ethasdasd'))
+
+    def test_is_ip_ignored(self):
+        self.assertTrue(self.config.is_ip_ignored(u'127.0.0.0'))
+        self.assertTrue(self.config.is_ip_ignored(u'127.0.0.1'))
+        self.assertTrue(self.config.is_ip_ignored(u'127.255.255.255'))
+        self.assertFalse(self.config.is_ip_ignored(u'126.255.255.255'))
+        self.assertFalse(self.config.is_ip_ignored(u'109.122.96.23'))
+        self.assertTrue(self.config.is_ip_ignored(u'1.1.1.1'))
+        self.assertFalse(self.config.is_ip_ignored(u'1.1.1.2'))
+        self.assertFalse(self.config.is_ip_ignored(u'1.1.1.0'))
+
 
     def test_get_snmp(self):
         self.assertEquals(self.config.get_snmp_community('hostname'), self.default_community)
