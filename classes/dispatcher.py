@@ -1,18 +1,18 @@
 #-*- coding: utf-8 -*-
 
 import re
-from classes.config import Config
+import os
+import imp
 
 class Dispatcher:
     """
-    Main class of the program
 
     Registers connectors (interfaces) to various input and output methods
     Maintains the dict of devices and ptrs
 
     """
 
-    def __init__(self, config):
+    def __init__(self, config, auto_load=True):
         # List of registered connectors
         self.__connectors = []
 
@@ -24,6 +24,18 @@ class Dispatcher:
 
         # Config
         self.config = config
+
+        if auto_load:
+            # Autoload all connectors
+            ignored_files = ['base.py', '__init__.py']
+            path = os.path.dirname(os.path.abspath(__file__ )) + '/interfaces'
+            for filename in [f for f in os.listdir(path) if f.endswith('.py') and f not in ignored_files]:
+                py = filename[:-3]
+                class_name =  ''.join([x.capitalize() for x in py.split('_')])
+                mod = imp.load_source(class_name, path + '/' + filename)
+                # Instantiate class
+                if hasattr(mod, class_name):
+                    getattr(mod, class_name)(self)
 
     def register_connector(self, connector):
         """

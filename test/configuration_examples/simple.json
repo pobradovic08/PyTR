@@ -1,6 +1,13 @@
 {
   "connector": {
-
+    "observium": {
+      "mysql": {
+        "host": "localhost",
+        "user": "dnsscript",
+        "passwd": "password",
+        "db": "observium"
+      }
+    }
   },
   "dns": {
     "update": {

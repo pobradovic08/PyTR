@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 import unittest
-from classes.interfaces.base_connector import BaseConnector
+from classes.interfaces.base import BaseConnector
 from classes.dispatcher import Dispatcher
 from classes.config import Config
 
@@ -17,7 +17,10 @@ class Test2Connector(BaseConnector):
 
 class TestDispatcher(unittest.TestCase):
     def setUp(self):
-        self.dispatcher = Dispatcher(Config(filename='test/configuration_examples/simple.json'))
+        self.dispatcher = Dispatcher(
+            Config(filename='test/configuration_examples/simple.json'),
+            auto_load=False
+        )
 
     def test_register_connector(self):
         self.assertListEqual([], self.dispatcher.get_connector_list())
