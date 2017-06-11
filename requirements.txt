@@ -1,3 +1,4 @@
 ipaddress>=1.0.18
 dnspython>=1.15.0
 easysnmp>=0.2.4
+mysql-connector-python-rf>=2.2.2

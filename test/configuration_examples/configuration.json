@@ -2,6 +2,14 @@
   "connector": {
     "test": {
       "key": "value"
+    },
+    "observium": {
+      "mysql": {
+        "host": "localhost",
+        "user": "dnsscript",
+        "password": "password",
+        "database": "observium"
+      }
     }
   },
   "dns": {
