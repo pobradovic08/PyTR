@@ -12,7 +12,19 @@
       "dns2.domain.example",
       "dns3.domain.example",
       "dns4.domain.example"
-    ]
+    ],
+    "search": {
+      "servers": [
+        "109.122.98.6",
+        "109.122.98.114",
+        "109.122.98.119",
+        "109.122.98.115"
+      ],
+      "domains": [
+        "vektor.net",
+        "radijusvektor.rs"
+      ]
+    }
   },
   "snmp" : {
     "community": {
