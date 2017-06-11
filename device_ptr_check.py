@@ -5,6 +5,8 @@ import sys
 import argparse
 from classes.device import Device
 from classes.config import Config
+from classes.dns_check import DnsCheck
+from classes.output.tabular_utf8_output import TabularUtf8Output
 
 reload(sys)
 sys.setdefaultencoding('utf8')
@@ -29,9 +31,14 @@ config = Config(check_only=check_only,
                 diff_only=diff_only,
                 terse=terse)
 
-d = Device(hostname, config)
-if d.get_interfaces():
-    d.check_ptrs()
-    print d.detailed_table()
-else:
-    print "Error connecting to %s" % d.hostname
+dns = DnsCheck(config)
+output = TabularUtf8Output()
+
+fqdn = dns.get_fqdn(hostname)
+if fqdn:
+    d = Device(fqdn, config)
+    if d.get_interfaces():
+        d.check_ptrs()
+        print output.display_device_detailed(d)
+    else:
+        print "Error connecting to %s" % d.hostname

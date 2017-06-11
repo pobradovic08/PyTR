@@ -7,6 +7,8 @@ from classes.dispatcher import Dispatcher
 from classes.config import Config
 from classes.device import Device
 
+from classes.output.tabular_utf8_output import TabularUtf8Output
+
 reload(sys)
 sys.setdefaultencoding('utf8')
 
@@ -30,6 +32,8 @@ config = Config(check_only=check_only,
 
 dispatcher = Dispatcher(config)
 
+output = TabularUtf8Output()
+
 print "Loaded connectors: %s" % ', '.join(dispatcher.get_connector_list())
 dispatcher.load()
 print "Loaded %d device(s) from %d connector(s)" % (len(dispatcher.devices), len(dispatcher.get_connector_list()))
@@ -40,7 +44,8 @@ for device in dispatcher.devices:
     dispatcher.devices[device] = Device(device, config, dispatcher.dns)
     if dispatcher.devices[device].get_interfaces():
         dispatcher.devices[device].check_ptrs()
-        print dispatcher.devices[device].detailed_table()
+        print output.display_device_detailed(dispatcher.devices[device])
+        #print dispatcher.devices[device].detailed_table()
 
     go_trough -= 1
     if go_trough <= 0:
