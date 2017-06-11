@@ -35,6 +35,7 @@ class DeviceInterface:
             try:
                 x = re.match(r"([^0-9]{2}).*?([0-9].*)", interface)
                 interface = x.group(1) + re.sub(r'[a-zA-Z]', '', x.group(2))
+                interface = interface.strip('-')    # Mikrotik stuff
             except AttributeError:
                 #TODO: what if interface doesn't have group(2)?
                 pass
