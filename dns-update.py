@@ -5,6 +5,7 @@ import sys
 import argparse
 from classes.dispatcher import Dispatcher
 from classes.config import Config
+from classes.device import Device
 
 reload(sys)
 sys.setdefaultencoding('utf8')
@@ -31,4 +32,15 @@ dispatcher = Dispatcher(config)
 
 print "Loaded connectors: %s" % ', '.join(dispatcher.get_connector_list())
 dispatcher.load()
-print dispatcher.devices
+print "Loaded %d device(s) from %d connector(s)" % (len(dispatcher.devices), len(dispatcher.get_connector_list()))
+
+go_trough = 2
+
+for device in dispatcher.devices:
+    dispatcher.devices[device] = Device(device, config)
+    if dispatcher.devices[device].get_interfaces():
+        print dispatcher.devices[device]
+
+    go_trough -= 1
+    if go_trough <= 0:
+        exit(1)
