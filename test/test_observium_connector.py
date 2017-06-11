@@ -11,4 +11,4 @@ class TestObserviumConnector(unittest.TestCase):
         self.connector = ObserviumConnector(self.dispatcher)
 
     def test_test(self):
-        self.assertTrue(True)
+        print self.connector.load_devices()
