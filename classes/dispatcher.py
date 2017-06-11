@@ -4,6 +4,8 @@ import re
 import os
 import imp
 
+from classes.dns_check import DnsCheck
+
 class Dispatcher:
     """
 
@@ -24,6 +26,9 @@ class Dispatcher:
 
         # Config
         self.config = config
+
+        # DNS
+        self.dns = DnsCheck(self.config)
 
         if auto_load:
             # Autoload all connectors
@@ -79,5 +84,10 @@ class Dispatcher:
 
         # Populate devices dict from temporary list
         for device in device_list:
-            if device not in self.devices:
-                self.devices[device] = {}
+            hostname = self.dns.get_fqdn(device)
+            if hostname:
+                if hostname not in self.devices:
+                    self.devices[hostname] = {}
+            else:
+                #TODO: Log wrong hostname
+                pass

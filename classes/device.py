@@ -11,7 +11,7 @@ class Device:
     def __init__(self, hostname, config, dns=None):
         """
         Initialize instance with empty interfaces array
-        :param hostname:    Hostname of device. If it's not FQDN we will try to resolve to one
+        :param hostname:    Hostname of device. Must be FQDN
         :param config:      Config instance
         """
 
@@ -21,11 +21,7 @@ class Device:
 
         self.dns = dns if dns else DnsCheck(self.config)
 
-        # Try to get FQDN for the hostname
-        # If it fails, use provided hostname
-        self.hostname = self.dns.get_fqdn(hostname)
-        if not self.hostname:
-            self.hostname = hostname
+        self.hostname = hostname
 
         # Split device.hostname into two parts: (hostname).(domain.example)
         self.host, self.domain = self.hostname.split('.', 1)

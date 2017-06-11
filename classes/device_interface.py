@@ -154,7 +154,6 @@ class DeviceInterface:
     def print_table_row(self):
         output_array = []
         for ip in self.ip_addresses:
-            output_string = ''
             ip_status = self.ip_addresses[ip]['status']
             if ip_status == DnsCheck.STATUS_OK:
                 output_array.append(self.print_ok_row(ip))

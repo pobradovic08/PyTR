@@ -37,7 +37,7 @@ print "Loaded %d device(s) from %d connector(s)" % (len(dispatcher.devices), len
 go_trough = 5
 
 for device in dispatcher.devices:
-    dispatcher.devices[device] = Device(device, config)
+    dispatcher.devices[device] = Device(device, config, dispatcher.dns)
     if dispatcher.devices[device].get_interfaces():
         dispatcher.devices[device].check_ptrs()
         print dispatcher.devices[device].detailed_table()

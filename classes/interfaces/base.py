@@ -1,6 +1,6 @@
 #-*- coding: utf-8 -*-
 
-class BaseConnector():
+class BaseConnector:
     """
     Interface for Connectors
     Connector class should be named as `ExampleConnector` where Example is connector name
