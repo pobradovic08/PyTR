@@ -14,19 +14,27 @@ class DnsCheck:
 
     def __init__(self, config = None):
         self.config = config if config else Config()
+        self.resolver = dns.resolver.Resolver()
+        self.resolver.nameservers = self.config.get_ns_search_servers()
+        self.resolver.search = []
+        for domain in self.config.get_ns_search_domains():
+            self.resolver.search.append(dns.name.from_text(domain))
 
-    @staticmethod
-    def get_fqdn(hostname):
+
+    def get_fqdn(self, hostname):
+        if not len(hostname):
+            return False
         try:
-            answers = dns.resolver.query(hostname, 'A')
+            answers = self.resolver.query(hostname, 'A')
             return answers.qname.to_text().rstrip('.')
         except dns.exception.DNSException:
             return False
 
-    @staticmethod
-    def get_a(hostname):
+    def get_a(self, hostname):
+        if not len(hostname):
+            return False
         try:
-            answers = dns.resolver.query(hostname, 'A')
+            answers = self.resolver.query(hostname, 'A')
             for rdata in answers:
                 return rdata.to_text()
         except dns.exception.DNSException:

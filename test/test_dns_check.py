@@ -2,11 +2,29 @@
 
 import unittest
 from classes.dns_check import DnsCheck
+import dns.resolver, dns.name
+import socket
 
 class TestDnsCheck(unittest.TestCase):
 
     def setUp(self):
         self.dns = DnsCheck()
+
+    def test_fqdn_query(self):
+        self.assertFalse(self.dns.get_fqdn('asdasd'))
+        self.assertFalse(self.dns.get_fqdn(''))
+        self.assertFalse(self.dns.get_fqdn('.'))
+        self.assertEquals('pavle.vektor.net', self.dns.get_fqdn('pavle'))
+        self.assertEquals('cmts-sc-1.vektor.net', self.dns.get_fqdn('cmts-sc-1'))
+        self.assertEquals('imap.radijusvektor.rs', self.dns.get_fqdn('imap'))
+
+    def test_a_query(self):
+        self.assertFalse(self.dns.get_a('asdasd'))
+        self.assertFalse(self.dns.get_a(''))
+        self.assertFalse(self.dns.get_a('.'))
+        self.assertEquals('109.122.96.23', self.dns.get_a('pavle'))
+        self.assertEquals('91.185.98.237', self.dns.get_a('cmts-sc-1'))
+        self.assertEquals('109.122.98.37', self.dns.get_a('imap'))
 
     def test_check_ip(self):
         self.assertTrue(DnsCheck.check_ip('109.122.98.168'))

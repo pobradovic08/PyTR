@@ -65,6 +65,20 @@ class Config:
         """
         return self.data['dns']['servers']
 
+    def get_ns_search_domains(self):
+        """
+        Returns 'dns'->'search' dictionary of domains to search
+        :return:
+        """
+        return self.data['dns']['search']['domains']
+
+    def get_ns_search_servers(self):
+        """
+        Returns 'dns'->'search' dictionary of domains to search
+        :return:
+        """
+        return self.data['dns']['search']['servers']
+
     def get_device_ignore_rules(self):
         """
         Returns 'ignore' dictionary
