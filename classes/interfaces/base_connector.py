@@ -1,9 +1,17 @@
 #-*- coding: utf-8 -*-
 
-class BaseInterface():
+class BaseConnector():
+    """
+    Interface for Connectors
+    Connector class should be named as `ExampleConnector` where Example is connector name
+    Connector name is used for fetching connector's configuration
+    """
 
     def __init__(self, dispatcher):
+        # Register connector with dispatcher
         dispatcher.register_connector(self)
+        # Get connector's config
+        self.config = dispatcher.get_connector_config(self)
 
     def load_devices(self):
         """

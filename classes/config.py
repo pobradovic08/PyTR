@@ -22,6 +22,17 @@ class Config:
         with open(filename) as data_file:
             self.data = json.load(data_file)
 
+    def get_connector_config(self, connector_name):
+        """
+        Returns config specific to connector class
+        :param connector_name: connector name (derived from class name)
+        :return:
+        """
+        if connector_name in self.data['connector']:
+            return self.data['connector'][connector_name]
+        else:
+            return {}
+
     def get_ns_servers(self):
         """
         Returns 'dns'->'servers' dictionary

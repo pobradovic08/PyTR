@@ -1,5 +1,8 @@
 #-*- coding: utf-8 -*-
 
+import re
+from classes.config import Config
+
 class Dispatcher:
     """
     Main class of the program
@@ -9,7 +12,7 @@ class Dispatcher:
 
     """
 
-    def __init__(self):
+    def __init__(self, config):
         # List of registered connectors
         self.__connectors = []
 
@@ -19,6 +22,9 @@ class Dispatcher:
         # Dict of devices. Keyed by hostname (FQDN)
         self.devices = {}
 
+        # Config
+        self.config = config
+
     def register_connector(self, connector):
         """
         Register connector.
@@ -27,6 +33,16 @@ class Dispatcher:
         :return:
         """
         self.__connectors.append(connector)
+
+    def get_connector_list(self):
+        return [x.__class__.__name__ for x in self.__connectors]
+
+    def get_connector_config(self, connector):
+        class_name = connector.__class__.__name__
+        connector_name = re.match('(.*)Connector', class_name)
+        if connector_name.group(1):
+            return self.config.get_connector_config(connector_name.group(1).lower())
+
 
     def save_ptr(self, ptr):
         """

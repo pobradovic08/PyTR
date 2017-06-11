@@ -1,4 +1,7 @@
 {
+  "connector": {
+
+  },
   "dns": {
     "update": {
       "hostname": "dns.domain.example",
