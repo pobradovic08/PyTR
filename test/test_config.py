@@ -36,12 +36,18 @@ class TestConfig(unittest.TestCase):
         self.assertListEqual(self.config.data['dns']['servers'], self.ns_servers)
         self.assertListEqual(self.config.get_ns_servers(), self.ns_servers)
 
-    def test_get_ignored(self):
-        self.assertListEqual(sorted(self.config.data['ignored'].keys()), self.ignore_rules_list)
-        self.assertListEqual(sorted(self.config.get_ignore_rules().keys()), self.ignore_rules_list)
-        self.assertEquals(self.config.get_ignore_rules(), self.ignore_rules)
+    def test_get_device_ignored(self):
+        self.assertListEqual(sorted(self.config.data['ignored']['device'].keys()), self.ignore_rules_list)
+        self.assertListEqual(sorted(self.config.get_device_ignore_rules().keys()), self.ignore_rules_list)
+        self.assertEquals(self.config.get_device_ignore_rules(), self.ignore_rules)
         config = Config('test/configuration_examples/simple.json')
-        self.assertEquals(config.get_ignore_rules(), {})
+        self.assertEquals(config.get_device_ignore_rules(), {})
+
+    def test_get_ip_ignored(self):
+        self.assertListEqual(['127.0.0.0/8'], self.config.data['ignored']['ip'])
+        self.assertListEqual(['127.0.0.0/8'], self.config.get_ip_ignore_rules())
+        config = Config('test/configuration_examples/simple.json')
+        self.assertEquals(config.get_ip_ignore_rules(), [])
 
     def test_is_device_ignored(self):
         self.assertTrue(self.config.is_device_ignored('lb-node1.vektor.net'))

@@ -28,16 +28,21 @@
     "timeout": 23
   },
   "ignored": {
-    "test": [],
-    "lb-node.*": [],
-    "rfgw.*": [],
-    "cmts.*": [
-      "Et0/0/0"
-    ],
-    "xxx": [
-      "eth0",
-      "eth1",
-      "eth2.*"
+    "device": {
+      "test": [],
+      "lb-node.*": [],
+      "rfgw.*": [],
+      "cmts.*": [
+        "Et0/0/0"
+      ],
+      "xxx": [
+        "eth0",
+        "eth1",
+        "eth2.*"
+      ]
+    },
+    "ip": [
+      "127.0.0.0/8"
     ]
   }
 }

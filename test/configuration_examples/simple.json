@@ -19,5 +19,8 @@
       "default": "public"
     }
   },
-  "ignored": {}
+  "ignored": {
+    "device": {},
+    "ip": []
+  }
 }

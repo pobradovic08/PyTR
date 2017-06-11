@@ -25,12 +25,15 @@
     "timeout": 1
   },
   "ignore": {
-    "rule_1": {
-      "hostname": "hostname*"
+    "device": {
+      "hostname.*": [],
+      "hostname": [
+        "Et0/0/0",
+        "Et0/0/1"
+      ]
     },
-    "rule_2": {
-      "hostname": "hostname*",
-      "interface": "Et0/0/0"
-    }
+    "ip": [
+      "127.0.0.0/8"
+    ]
   }
 }

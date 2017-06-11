@@ -40,13 +40,23 @@ class Config:
         """
         return self.data['dns']['servers']
 
-    def get_ignore_rules(self):
+    def get_device_ignore_rules(self):
         """
         Returns 'ignore' dictionary
         :return:
         """
         try:
-            return self.data['ignored']
+            return self.data['ignored']['device']
+        except KeyError:
+            return {}
+
+    def get_ip_ignore_rules(self):
+        """
+        Returs 'ignore' -> 'ip'
+        :return:
+        """
+        try:
+            return self.data['ignored']['ip']
         except KeyError:
             return {}
 
@@ -131,7 +141,7 @@ class Config:
         :param hostname:  Device hostname
         :return:
         """
-        for hostname_rule, interface_rules in self.get_ignore_rules().iteritems():
+        for hostname_rule, interface_rules in self.get_device_ignore_rules().iteritems():
             try:
                 if re.match('^' + hostname_rule + '$', hostname) and not len(interface_rules):
                     return True
@@ -149,7 +159,7 @@ class Config:
         :param ifName:      Interface name
         :return:
         """
-        for hostname_rule, interface_rules in self.get_ignore_rules().iteritems():
+        for hostname_rule, interface_rules in self.get_device_ignore_rules().iteritems():
             try:
                 if re.match('^' + hostname_rule + '$', hostname):
                     if not len(interface_rules):
