@@ -1,6 +1,6 @@
 #-*- coding: utf-8 -*-
 
-class Base:
+class BaseOutput:
 
     @staticmethod
     def display_summary(dispatcher):

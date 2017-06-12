@@ -3,9 +3,11 @@
 
 import sys
 import argparse
-from classes.device import Device
-from classes.config import Config
-from classes.dns_check import DnsCheck
+
+from classes import Device
+from classes import Config
+from classes import DnsCheck
+
 from classes.output.tabular_utf8_output import TabularUtf8Output
 
 reload(sys)

@@ -1,6 +1,6 @@
 import unittest
 import ipaddress
-from classes.config import Config
+from classes import Config
 
 
 class TestConfig(unittest.TestCase):

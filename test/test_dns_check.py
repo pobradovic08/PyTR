@@ -1,9 +1,8 @@
 #!/usr/bin/python
 
 import unittest
-from classes.dns_check import DnsCheck
-import dns.resolver, dns.name
-import socket
+
+from classes import DnsCheck
 
 class TestDnsCheck(unittest.TestCase):
 

@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 
-from classes.output.base import Base
-from classes.dns_check import DnsCheck
+from classes.output import BaseOutput
+from classes import DnsCheck
 
 
-class TabularUtf8Output(Base):
+class TabularUtf8Output(BaseOutput):
 
     @staticmethod
     def display_summary(dispatcher):

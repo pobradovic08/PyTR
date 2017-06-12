@@ -2,8 +2,8 @@
 
 import unittest
 from classes.interfaces.base import BaseConnector
-from classes.dispatcher import Dispatcher
-from classes.config import Config
+from classes import Dispatcher
+from classes import Config
 
 
 class TestConnector(BaseConnector):

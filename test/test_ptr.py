@@ -1,7 +1,7 @@
 #-*- coding: utf-8 -*-
 
 import unittest
-from classes.ptr import Ptr
+from classes import Ptr
 
 class TestPtr(unittest.TestCase):
 

@@ -1,7 +1,7 @@
 import unittest
 from classes.interfaces.observium_connector import ObserviumConnector
-from classes.dispatcher import Dispatcher
-from classes.config import Config
+from classes import Dispatcher
+from classes import Config
 
 
 class TestObserviumConnector(unittest.TestCase):
