@@ -20,5 +20,11 @@ class TestPtr(unittest.TestCase):
         self.assertEquals(ptr['device'], obj.device)
         self.assertEquals(ptr['interface'], obj.interface)
         self.assertEquals(ptr['ptr'], obj.ptr)
+        self.assertEquals(Ptr.STATUS_UNKNOWN, obj.status)
+
+        ptr['status'] = Ptr.STATUS_IGNORED
+        obj = Ptr(**ptr)
+        self.assertEquals(Ptr.STATUS_IGNORED, obj.status)
+
         ptr['ip'] = 'x.x.x.x'
         self.assertRaises(ValueError, Ptr, **ptr)
