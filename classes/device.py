@@ -144,3 +144,13 @@ class Device:
             num += len(self.interfaces[interface].ip_addresses)
 
         return num
+
+    def get_ptrs(self):
+        """
+        Return dictionary of PTR records from all interfaces
+        :return:
+        """
+        ptrs = {}
+        for interface in self.interfaces:
+            ptrs.update(self.interfaces[interface].get_ptrs())
+        return ptrs
