@@ -3,6 +3,7 @@
 import re
 from easysnmp import Session, EasySNMPNoSuchInstanceError
 from dns_check import DnsCheck
+from ptr import Ptr
 
 
 class DeviceInterface:
@@ -15,6 +16,10 @@ class DeviceInterface:
         self.get_if_name()
 
     def get_if_name(self):
+        """
+        Get ifName SNMP table and make PTRs
+        :return:
+        """
         # Append interface index to IF-MIB::ifName OID
         ifName_result = self.device.session.get('.1.3.6.1.2.1.31.1.1.1.1.' + str(self.ifIndex))
         self.ifName = ifName_result.value
@@ -48,7 +53,11 @@ class DeviceInterface:
         )
 
     def add_ip_address(self, ip_address):
-        """ Add ip address to address list in case interface has multiple addresses """
+        """
+        Add ip address to address list in case interface has multiple addresses
+        :param ip_address:  IP address
+        :return:
+        """
         if ip_address not in self.ip_addresses:
             self.ip_addresses[ip_address] = {
                 'existing_ptr': None,
@@ -56,18 +65,62 @@ class DeviceInterface:
             }
 
     def update_ptr_status(self, ip_address, ptr, status):
+        """
+        Update PTR status
+        :param ip_address:  IP address
+        :param ptr: PTR record
+        :param status: PTR status
+        :return:
+        """
         if ip_address in self.ip_addresses:
             self.ip_addresses[ip_address]['existing_ptr'] = ptr
             self.ip_addresses[ip_address]['status'] = status
 
     def get_ptr_for_ip(self, ip_address):
+        """
+        Depending on selected output mode return short or FQDN PTRs
+        :param ip_address: IP address
+        :return:
+        """
         if self.device.config.terse:
-            return self.get_short_ptr(ip_address)
+            return self._get_short_ptr(ip_address)
         else:
-            return self.get_full_ptr(ip_address)
+            return self._get_full_ptr(ip_address)
 
-    def get_short_ptr(self, ip_address):
+    def _get_short_ptr(self, ip_address):
+        """
+        Returns short (no domain) PTR for given IP address
+        :param ip_address:  IP address
+        :return:
+        """
         return self.short_ptr if not ip_address == self.device.ip else self.device.host
 
-    def get_full_ptr(self, ip_address):
+    def _get_full_ptr(self, ip_address):
+        """
+        Returns full (FQDN) PTR for given IP address
+        :param ip_address:
+        :return:
+        """
         return self.ptr if not ip_address == self.device.ip else self.device.hostname
+
+    def get_ptrs(self):
+        """
+        Return ptr records for this interface.
+        Each IP address has it's own PTR record.
+        Loopback IP has a hostname as PTR
+        :return:
+        """
+        ptrs = {}
+        for ip in self.ip_addresses:
+            try:
+                ptrs[ip] = Ptr(
+                    ip=ip,
+                    device=self.device.hostname,
+                    interface=self.ifName,
+                    ptr=self._get_full_ptr(ip),
+                    status=self.ip_addresses[ip]['status']
+                )
+            except ValueError:
+                # TODO: Logging
+                continue
+        return ptrs
