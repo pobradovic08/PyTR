@@ -6,11 +6,19 @@ from classes.ptr import Ptr
 class TestPtr(unittest.TestCase):
 
     def test_instantiation(self):
-        ptr_ok = {
-            'ip': '10.10.10.10',
+
+        ptr = {
+            'ip': u'10.10.10.10',
             'device': 'cmts-sc-1.vektor.net',
             'interface': 'Ethernet0/0/0',
             'ptr': 'cmts-sc-1-et0-0-0.vektor.net'
         }
 
-        self.assertIsInstance(Ptr(**ptr_ok), Ptr)
+        obj = Ptr(**ptr)
+        self.assertIsInstance(obj, Ptr)
+        self.assertEquals(ptr['ip'], str(obj.ip))
+        self.assertEquals(ptr['device'], obj.device)
+        self.assertEquals(ptr['interface'], obj.interface)
+        self.assertEquals(ptr['ptr'], obj.ptr)
+        ptr['ip'] = 'x.x.x.x'
+        self.assertRaises(ValueError, Ptr, **ptr)
