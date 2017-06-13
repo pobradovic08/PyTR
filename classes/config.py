@@ -1,16 +1,18 @@
-#-*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
+
 import json
 import ipaddress
-import re, sre_constants
+import re
+import sre_constants
+
 
 class Config:
-
     def __init__(
             self,
-            filename = 'configuration.json',
-            check_only = False,
-            diff_only = False,
-            terse = False
+            filename='configuration.json',
+            check_only=False,
+            diff_only=False,
+            terse=False
     ):
         """
         Provides interface to JSON configuration file.
@@ -120,7 +122,7 @@ class Config:
             pass
         return default
 
-    def get_snmp_retries(self, default = 0):
+    def get_snmp_retries(self, default=0):
         """
         Returns number of retries for SNMP queries
         :param default: Default value returned if there's no value in Config. Must be int >= 0
@@ -148,8 +150,7 @@ class Config:
         else:
             return default
 
-
-    def get_snmp_timeout(self, default = 1):
+    def get_snmp_timeout(self, default=1):
         """
         Returns value for timeout
         :param default: Default value returned if there's no value in Config. Must be positive value
@@ -172,7 +173,6 @@ class Config:
         else:
             return default
 
-
     def is_device_ignored(self, hostname):
         """
         Go trough each ignore rule and check
@@ -185,17 +185,17 @@ class Config:
                 if re.match('^' + hostname_rule + '$', hostname) and not len(interface_rules):
                     return True
             except sre_constants.error:
-                #TODO: Real logging, not this shit
+                # TODO: Real logging, not this shit
                 print "Rule '%s' in configuration file invalid, skipping..." % hostname_rule
         return False
 
-    def is_interface_ignored(self, hostname, ifName):
+    def is_interface_ignored(self, hostname, if_name):
         """
         Go trough each ignore rule and check
         if the Config hostname regexp matches provided hostname
         AND interface regexp matches provided ifName
         :param hostname:    Device hostname
-        :param ifName:      Interface name
+        :param if_name:      Interface name
         :return:
         """
         for hostname_rule, interface_rules in self.get_device_ignore_rules().iteritems():
@@ -204,21 +204,21 @@ class Config:
                     if not len(interface_rules):
                         return True
                     for interface_rule in interface_rules:
-                        if re.match('^' + interface_rule + '$', ifName):
+                        if re.match('^' + interface_rule + '$', if_name):
                             return True
             except sre_constants.error:
-                #TODO: Real logging, not this shit
+                # TODO: Real logging, not this shit
                 print "Rule '%s' in configuration file invalid, skipping..." % hostname_rule
         return False
 
     def is_ip_ignored(self, ip_address):
-            for ip_rule in self.get_ip_ignore_rules():
-                try:
-                    network = ipaddress.IPv4Network(ip_rule)
-                    if ipaddress.IPv4Address(ip_address) in network:
-                        return True
-                except ipaddress.AddressValueError:
-                    continue
-                except ipaddress.NetmaskValueError:
-                    continue
-            return False
+        for ip_rule in self.get_ip_ignore_rules():
+            try:
+                network = ipaddress.IPv4Network(ip_rule)
+                if ipaddress.IPv4Address(ip_address) in network:
+                    return True
+            except ipaddress.AddressValueError:
+                continue
+            except ipaddress.NetmaskValueError:
+                continue
+        return False

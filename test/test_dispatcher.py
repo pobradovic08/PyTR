@@ -1,4 +1,4 @@
-#!/usr/bin/python
+# -*- coding: utf-8 -*-
 
 import unittest
 from classes.interfaces.base import BaseConnector
@@ -7,10 +7,17 @@ from classes import Config
 
 
 class TestConnector(BaseConnector):
+    def save_ptr(self, ptr):
+        pass
+
     def load_devices(self):
         return ['cmts-sc-1.vektor.net', 'cmts-sc-2.vektor.net', 'cmts-gs-1.vektor.net']
 
+
 class Test2Connector(BaseConnector):
+    def save_ptr(self, ptr):
+        pass
+
     def load_devices(self):
         return ['noc.vektor.net']
 
@@ -24,20 +31,20 @@ class TestDispatcher(unittest.TestCase):
 
     def test_register_connector(self):
         self.assertListEqual([], self.dispatcher.get_connector_list())
-        connector = TestConnector(self.dispatcher)
+        TestConnector(self.dispatcher)
         self.assertListEqual(['TestConnector'], self.dispatcher.get_connector_list())
-        connector2 = Test2Connector(self.dispatcher)
+        Test2Connector(self.dispatcher)
         self.assertListEqual(['TestConnector', 'Test2Connector'], self.dispatcher.get_connector_list())
 
     def test_connector_load(self):
         self.assertListEqual([], self.dispatcher.devices.keys())
-        connector = TestConnector(self.dispatcher)
+        TestConnector(self.dispatcher)
         self.dispatcher.load()
         self.assertListEqual(
             sorted(['cmts-sc-1.vektor.net', 'cmts-sc-2.vektor.net', 'cmts-gs-1.vektor.net']),
             sorted(self.dispatcher.devices.keys())
         )
-        connector2 = Test2Connector(self.dispatcher)
+        Test2Connector(self.dispatcher)
         self.dispatcher.load()
         self.assertListEqual(
             sorted(['cmts-sc-1.vektor.net', 'cmts-sc-2.vektor.net', 'cmts-gs-1.vektor.net', 'noc.vektor.net']),
@@ -54,4 +61,3 @@ class TestDispatcher(unittest.TestCase):
 
         connector2 = Test2Connector(dispatcher)
         self.assertDictEqual({}, connector2.config)
-

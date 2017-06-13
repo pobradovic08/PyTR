@@ -1,9 +1,9 @@
-#-*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 
 import ipaddress
 
-class Ptr:
 
+class Ptr:
     STATUS_UNKNOWN = 0
     STATUS_OK = 1
     STATUS_NOT_UPDATED = 2
@@ -20,7 +20,6 @@ class Ptr:
         self.interface = interface
         self.ptr = ptr
         self.status = status
-
 
     def __repr__(self):
         return "%s (%s)" % (self.ptr, self.ip)

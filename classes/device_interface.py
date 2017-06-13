@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
 
 import re
-from easysnmp import Session, EasySNMPNoSuchInstanceError
 from dns_check import DnsCheck
 from ptr import Ptr
 
 
 class DeviceInterface:
-    def __init__(self, device, ifIndex):
+    def __init__(self, device, if_index):
         self.device = device
         self.ip_addresses = {}
-        self.ifIndex = ifIndex
+        self.if_index = if_index
+        self.if_name = None
         self.ptr = None
         self.short_ptr = None
         self.get_if_name()
@@ -21,8 +21,8 @@ class DeviceInterface:
         :return:
         """
         # Append interface index to IF-MIB::ifName OID
-        ifName_result = self.device.session.get('.1.3.6.1.2.1.31.1.1.1.1.' + str(self.ifIndex))
-        self.ifName = ifName_result.value
+        if_name_result = self.device.session.get('.1.3.6.1.2.1.31.1.1.1.1.' + str(self.if_index))
+        self.if_name = if_name_result.value
         # Make PTR
         self._make_ptr()
 
@@ -31,7 +31,7 @@ class DeviceInterface:
         Generate PTR from hostname, interface name and domain
         """
         # Convert to lowercase and replace all chars not letters, numbers and dash (-) with dash
-        interface = self.ifName.lower()
+        interface = self.if_name.lower()
         interface = re.sub(r'[^a-zA-Z0-9-]', '-', interface)
         # If interface name is longer than 10 characters (ios-xr etc.)
         # Take first two letters from interface prefix (interface type)
@@ -42,7 +42,7 @@ class DeviceInterface:
                 interface = x.group(1) + re.sub(r'[a-zA-Z]', '', x.group(2))
                 interface = interface.strip('-')    # Mikrotik stuff
             except AttributeError:
-                #TODO: what if interface doesn't have group(2)?
+                # TODO: what if interface doesn't have group(2)?
                 pass
         # Move format string to config file?
         self.ptr = '{host}-{interface}.{domain}'.format(
@@ -116,7 +116,7 @@ class DeviceInterface:
                 ptrs[ip] = Ptr(
                     ip=ip,
                     device=self.device.hostname,
-                    interface=self.ifName,
+                    interface=self.if_name,
                     ptr=self._get_full_ptr(ip),
                     status=self.ip_addresses[ip]['status']
                 )

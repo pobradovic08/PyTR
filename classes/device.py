@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-import re, sre_constants
-
 import easysnmp
+import re
+
+from config import Config
 from device_interface import DeviceInterface
 from dns_check import DnsCheck
-from config import Config
 
 
 class Device:
@@ -15,6 +15,7 @@ class Device:
         :param config:      Config instance
         """
 
+        self.session = None
         self.config = config
         self.interfaces = {}
         self.ignored = False
@@ -78,15 +79,15 @@ class Device:
             for interface_address_result in interface_addresses_result:
 
                 # IF-MIB::ifIndex later used to get IF-MIB::ifName
-                ifIndex = int(interface_address_result.value)
+                if_index = int(interface_address_result.value)
                 # If this is the first time encountering this ifIndex,
                 # create DeviceInstance
-                if ifIndex not in self.interfaces:
+                if if_index not in self.interfaces:
                     # Some devices will have loopback IP and ifIndex
                     # But no ifName associated with that ifIndex
                     # We can skip those since we can't make PTRs
                     try:
-                        self.interfaces[ifIndex] = DeviceInterface(self, ifIndex)
+                        self.interfaces[if_index] = DeviceInterface(self, if_index)
                     except easysnmp.EasySNMPNoSuchInstanceError:
                         continue
                 # Remove the part of the OID we used to walk on. Leave just the IP address part.
@@ -95,7 +96,7 @@ class Device:
                     re.sub(oid_pattern, '', interface_address_result.oid),
                     interface_address_result.oid_index
                 ])
-                self.interfaces[ifIndex].add_ip_address(ip_address)
+                self.interfaces[if_index].add_ip_address(ip_address)
 
             return True
         except easysnmp.EasySNMPError:

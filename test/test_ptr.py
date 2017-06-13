@@ -1,12 +1,11 @@
-#-*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 
 import unittest
 from classes import Ptr
 
+
 class TestPtr(unittest.TestCase):
-
     def test_instantiation(self):
-
         ptr = {
             'ip': u'10.10.10.10',
             'device': 'cmts-sc-1.vektor.net',

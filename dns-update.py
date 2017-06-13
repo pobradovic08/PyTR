@@ -1,5 +1,5 @@
 #!/usr/bin/python
-#-*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 
 import sys
 import argparse
@@ -44,10 +44,10 @@ for device in dispatcher.devices:
     dispatcher.devices[device] = Device(device, config, dispatcher.dns)
     if dispatcher.devices[device].get_interfaces():
         dispatcher.devices[device].check_ptrs()
-        #print output.display_device_detailed(dispatcher.devices[device])
-        #print output.display_device_summary(dispatcher.devices[device])
-        #print dispatcher.devices[device].detailed_table()
+        # print output.display_device_detailed(dispatcher.devices[device])
+        # print output.display_device_summary(dispatcher.devices[device])
+        # print dispatcher.devices[device].detailed_table()
 
-    # go_trough -= 1
-    # if go_trough <= 0:
+        # go_trough -= 1
+        # if go_trough <= 0:
 print output.display_summary(dispatcher)

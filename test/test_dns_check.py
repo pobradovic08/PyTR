@@ -4,8 +4,8 @@ import unittest
 
 from classes import DnsCheck
 
-class TestDnsCheck(unittest.TestCase):
 
+class TestDnsCheck(unittest.TestCase):
     def setUp(self):
         self.dns = DnsCheck()
 

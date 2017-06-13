@@ -1,6 +1,9 @@
-#-*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
+
 
 class BaseOutput:
+    def __init__(self):
+        pass
 
     @staticmethod
     def display_summary(dispatcher):

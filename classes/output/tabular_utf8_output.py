@@ -6,6 +6,13 @@ from classes import DnsCheck
 
 class TabularUtf8Output(BaseOutput):
 
+    def __init__(self):
+        pass
+
+    @staticmethod
+    def display_detailed(dispatcher):
+        pass
+
     @staticmethod
     def display_summary(dispatcher):
         horizontal_border = (
@@ -18,17 +25,17 @@ class TabularUtf8Output(BaseOutput):
             '═' * 10,
         )
         output_string = "╒%s╤%s╤%s╤%s╤%s╤%s╤%s╕\n" % horizontal_border
-        output_string += "│\033[01m%-37s\033[0;0m│\033[01m\033[92m%-6s\033[0;0m│\033[01m\033[93m%-8s\033[0;0m│"\
-                        "\033[01m\033[91m%-8s\033[0;0m│\033[01m\033[90m%-10s\033[0;0m│\033[01m\033[90m%-10s\033[0;0m│"\
+        output_string += "│\033[01m%-37s\033[0;0m│\033[01m\033[92m%-6s\033[0;0m│\033[01m\033[93m%-8s\033[0;0m│" \
+                         "\033[01m\033[91m%-8s\033[0;0m│\033[01m\033[90m%-10s\033[0;0m│\033[01m\033[90m%-10s\033[0;0m│"\
                          "\033[01m\033[90m%-10s\033[0;0m│\n" % (
-            'Device',
-            ' OK',
-            ' UPDATE',
-            ' CREATE',
-            ' NO AUTH',
-            ' IGNORED',
-            ' UNKNOWN'
-        )
+                             'Device',
+                             ' OK',
+                             ' UPDATE',
+                             ' CREATE',
+                             ' NO AUTH',
+                             ' IGNORED',
+                             ' UNKNOWN'
+                         )
         output_string += "╞%s╪%s╪%s╪%s╪%s╪%s╪%s╡\n" % horizontal_border
 
         output_array = []
@@ -56,7 +63,7 @@ class TabularUtf8Output(BaseOutput):
             DnsCheck.STATUS_NOT_AUTHORITATIVE: 0,
             DnsCheck.STATUS_NOT_CREATED: 0,
             DnsCheck.STATUS_IGNORED: 0,
-            DnsCheck.STATUS_UNKNOWN:0
+            DnsCheck.STATUS_UNKNOWN: 0
         }
         for interface in device.interfaces:
             for ip in device.interfaces[interface].ip_addresses:
@@ -67,7 +74,7 @@ class TabularUtf8Output(BaseOutput):
             TabularUtf8Output._paint_positive_num(interfaces[DnsCheck.STATUS_OK], "\033[92m"),
             TabularUtf8Output._paint_positive_num(interfaces[DnsCheck.STATUS_NOT_UPDATED], "\033[93m"),
             TabularUtf8Output._paint_positive_num(interfaces[DnsCheck.STATUS_NOT_CREATED], "\033[91m"),
-            TabularUtf8Output._paint_positive_num(interfaces[DnsCheck.STATUS_NOT_AUTHORITATIVE],"\033[90m"),
+            TabularUtf8Output._paint_positive_num(interfaces[DnsCheck.STATUS_NOT_AUTHORITATIVE], "\033[90m"),
             TabularUtf8Output._paint_positive_num(interfaces[DnsCheck.STATUS_IGNORED], "\033[90m"),
             TabularUtf8Output._paint_positive_num(interfaces[DnsCheck.STATUS_UNKNOWN], "\033[90m")
         )

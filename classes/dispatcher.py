@@ -1,10 +1,11 @@
-#-*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 
 import re
 import os
 import imp
 
 from classes.dns_check import DnsCheck
+
 
 class Dispatcher:
     """
@@ -33,10 +34,10 @@ class Dispatcher:
         if auto_load:
             # Autoload all connectors
             ignored_files = ['base.py', '__init__.py']
-            path = os.path.dirname(os.path.abspath(__file__ )) + '/interfaces'
+            path = os.path.dirname(os.path.abspath(__file__)) + '/interfaces'
             for filename in [f for f in os.listdir(path) if f.endswith('.py') and f not in ignored_files]:
                 py = filename[:-3]
-                class_name =  ''.join([x.capitalize() for x in py.split('_')])
+                class_name = ''.join([x.capitalize() for x in py.split('_')])
                 mod = imp.load_source(class_name, path + '/' + filename)
                 # Instantiate class
                 if hasattr(mod, class_name):
@@ -59,7 +60,6 @@ class Dispatcher:
         connector_name = re.match('(.*)Connector', class_name)
         if connector_name.group(1):
             return self.config.get_connector_config(connector_name.group(1).lower())
-
 
     def save_ptr(self, ptr):
         """
@@ -89,5 +89,5 @@ class Dispatcher:
                 if hostname not in self.devices:
                     self.devices[hostname] = None
             else:
-                #TODO: Log wrong hostname
+                # TODO: Log wrong hostname
                 pass

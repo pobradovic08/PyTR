@@ -1,11 +1,10 @@
-#-*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 
 from classes.interfaces.base import BaseConnector
 import MySQLdb
 
 
 class ObserviumConnector(BaseConnector):
-
     def __init__(self, dispatcher):
         BaseConnector.__init__(self, dispatcher)
         mysql_data = self.config['mysql']

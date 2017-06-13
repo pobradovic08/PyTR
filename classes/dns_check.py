@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 import socket
 import re
-import dns.resolver, dns.exception
+import dns.resolver
+import dns.exception
 from config import Config
 
 

@@ -1,4 +1,5 @@
-#-*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
+
 
 class BaseConnector:
     """
@@ -33,4 +34,3 @@ class BaseConnector:
         :return:
         """
         raise NotImplementedError()
-

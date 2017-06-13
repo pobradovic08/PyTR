@@ -1,5 +1,4 @@
 import unittest
-import ipaddress
 from classes import Config
 
 
@@ -88,7 +87,6 @@ class TestConfig(unittest.TestCase):
         self.assertTrue(self.config.is_ip_ignored(u'1.1.1.1'))
         self.assertFalse(self.config.is_ip_ignored(u'1.1.1.2'))
         self.assertFalse(self.config.is_ip_ignored(u'1.1.1.0'))
-
 
     def test_get_snmp(self):
         self.assertEquals(self.config.get_snmp_community('hostname'), self.default_community)
