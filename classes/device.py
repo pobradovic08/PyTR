@@ -154,5 +154,4 @@ class Device:
         ptrs = {}
         for interface in self.interfaces:
             ptrs.update(self.interfaces[interface].get_ptrs())
-            exit(0)
         return ptrs

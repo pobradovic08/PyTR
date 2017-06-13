@@ -39,17 +39,25 @@ dispatcher.load()
 total_devices = len(dispatcher.devices)
 print "Loaded %d device(s) from %d connector(s)" % (total_devices, len(dispatcher.get_connector_list()))
 
+# Number of devices we've finished so far
 iterator = 0
 for device in dispatcher.devices.keys():
+    # Create Device instance from hostname
     dispatcher.devices[device] = Device(device, config, dispatcher.dns)
+    # Fetch interfaces
     if dispatcher.devices[device].get_interfaces():
+        # Check PTRs
         dispatcher.devices[device].check_ptrs()
         # print output.display_device_detailed(dispatcher.devices[device])
         # print output.display_device_summary(dispatcher.devices[device])
 
     iterator += 1
+    # Print progress bar.
+    # It will not go to a new line after finishing. Has to be done manually
     percent_complete = int(iterator*100/total_devices)
     output.print_progress_bar(percent_complete)
 
+# New line to fix the progress bar \r magic.
 print
+
 print output.display_summary(dispatcher)
