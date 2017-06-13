@@ -3,6 +3,7 @@
 
 import sys
 import argparse
+import logging
 
 from classes import Device
 from classes import Config
@@ -12,6 +13,12 @@ from classes.output.tabular_utf8_output import TabularUtf8Output
 
 reload(sys)
 sys.setdefaultencoding('utf8')
+
+logging.basicConfig(
+    filename=__file__.rstrip('.py') + '.log',
+    format="%(asctime)s - %(levelname)s - %(name)s:%(funcName)s - %(message)s",
+    level=logging.DEBUG
+)
 
 parser = argparse.ArgumentParser()
 parser.add_argument("hostname", type=str, help="device hostname (FQDN)")
