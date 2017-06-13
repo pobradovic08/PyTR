@@ -4,6 +4,7 @@ import json
 import ipaddress
 import re
 import sre_constants
+import logging
 
 
 class Config:
@@ -18,12 +19,18 @@ class Config:
         Provides interface to JSON configuration file.
         :param filename: Default file is configuration.json in script root directory
         """
+        self.logger = logging.getLogger('dns_update.config')
         self.check_only = check_only
         self.diff_only = diff_only
         self.terse = terse
 
         with open(filename) as data_file:
-            self.data = json.load(data_file)
+            try:
+                self.data = json.load(data_file)
+                self.logger.info("Loaded '%s' configuration file" % filename)
+            except ValueError:
+                self.logger.critical("Couldn't parse '%s' configuration file. Exiting..." % filename)
+                exit(1)
 
     def set_check_only(self, check_only):
         """
@@ -32,6 +39,7 @@ class Config:
         :return:
         """
         self.check_only = bool(check_only)
+        self.logger.debug("Check only set to: %s" % check_only)
 
     def set_diff_only(self, diff_only):
         """
@@ -40,6 +48,7 @@ class Config:
         :return:
         """
         self.diff_only = bool(diff_only)
+        self.logger.debug("Show only differences set to: %s" % diff_only)
 
     def set_terse(self, terse):
         """
@@ -48,6 +57,7 @@ class Config:
         :return:
         """
         self.terse = bool(terse)
+        self.logger.debug("Terse output set to: %s" % terse)
 
     def get_connector_config(self, connector_name):
         """
@@ -55,9 +65,12 @@ class Config:
         :param connector_name: connector name (derived from class name)
         :return:
         """
+        self.logger.debug("Get config for connector '%s'" % connector_name)
         if connector_name in self.data['connector']:
+            self.logger.info("Config for connector '%s' loaded" % connector_name)
             return self.data['connector'][connector_name]
         else:
+            self.logger.warning("No config found for connector '%s'" % connector_name)
             return {}
 
     def get_ns_servers(self):
@@ -65,21 +78,33 @@ class Config:
         Returns 'dns'->'servers' dictionary
         :return:
         """
-        return self.data['dns']['servers']
+        try:
+            return self.data['dns']['servers']
+        except KeyError:
+            self.logger.critical("Couldn't find list of DNS servers in configuration file. Exiting...")
+            exit(1)
 
     def get_ns_search_domains(self):
         """
         Returns 'dns'->'search' dictionary of domains to search
         :return:
         """
-        return self.data['dns']['search']['domains']
+        try:
+            return self.data['dns']['search']['domains']
+        except KeyError:
+            self.logger.critical("Couldn't find list of domains to search for in configuration file. Exiting...")
+            exit(1)
 
     def get_ns_search_servers(self):
         """
         Returns 'dns'->'search' dictionary of domains to search
         :return:
         """
-        return self.data['dns']['search']['servers']
+        try:
+            return self.data['dns']['search']['servers']
+        except KeyError:
+            self.logger.critical("Couldn't find list of DNS servers to query in configuration file. Exiting...")
+            exit(1)
 
     def get_device_ignore_rules(self):
         """
@@ -89,6 +114,7 @@ class Config:
         try:
             return self.data['ignored']['device']
         except KeyError:
+            self.logger.warning("No ignored devices object in configuration file")
             return {}
 
     def get_ip_ignore_rules(self):
@@ -99,6 +125,7 @@ class Config:
         try:
             return self.data['ignored']['ip']
         except KeyError:
+            self.logger.warning("No ignored IPs object in configuration file")
             return {}
 
     def get_snmp_community(self, hostname=None):
@@ -106,21 +133,32 @@ class Config:
         Returns SNMP community for given hostname
         :return:
         """
-        default = self.data['snmp']['community']['default']
-        if not hostname:
-            return default
         try:
-            overridden = self.data['snmp']['community']['override']
-            for hostname_match, community in overridden.iteritems():
-                try:
-                    if re.match(hostname_match, hostname):
-                        return community
-                except sre_constants.error:
-                    print "Custom SNMP community rule in Config not valid"
-                    continue
+            default = self.data['snmp']['community']['default']
+            if not hostname:
+                self.logger.info("No device specified, returning default community '%s'" % default)
+                return default
+
+            try:
+                overridden = self.data['snmp']['community']['override']
+                for hostname_match, community in overridden.iteritems():
+                    try:
+                        if re.match(hostname_match, hostname):
+                            self.logger.info("Community for '%s' found: '%s'" % (hostname, community))
+                            return community
+                    except sre_constants.error:
+                        self.logger.error("Custom SNMP community rule '%s' not valid." % hostname_match)
+                        continue
+            except KeyError:
+                self.logger.warning("No custom community object in configuration file")
+                pass
+
+            self.logger.info("No custom rules found for hostname, returning default community '%s'" % default)
+            return default
+
         except KeyError:
-            pass
-        return default
+            self.logger.critical("No default snmp community found configuration file. Exiting...")
+            exit(1)
 
     def get_snmp_retries(self, default=0):
         """
@@ -128,9 +166,13 @@ class Config:
         :param default: Default value returned if there's no value in Config. Must be int >= 0
         :return:
         """
-
         # Try integer conversion (raises ValueError on failure)
-        default = int(default)
+        try:
+            default = int(default)
+            self.logger.debug("Called with default number of retries of: %s" % default)
+        except ValueError:
+            self.logger.critical("Retry count not integer, raise ValueError")
+            raise ValueError("Default number of retries must be integer")
         # Raise ValueError if value is not positive (or 0)
         if default < 0:
             raise ValueError("SNMP retries value must be 0 or positive integer")
@@ -141,13 +183,19 @@ class Config:
                 # If value in configuration file is wrong return default value in except
                 config_value = int(self.data['snmp']['retries'])
                 if config_value < 0:
-                    raise ValueError("Invalid config file. SNMP retries must be 0 or positive integer")
+                    self.logger.warning(
+                        "Retry count in configuration file not positive integer. Returning default value of: %d"
+                        % default
+                    )
+                    return default
+                self.logger.info("Retry count value in configuration file is: %d" % config_value)
                 return config_value
 
             except ValueError:
-                print "Configuration file invalid (snmp->retries)"
+                self.logger.warning("Retry count not integer. Returning default value of: %d" % default)
                 return default
         else:
+            self.logger.warning("No value set in configuration. Returning default value of: %d" % default)
             return default
 
     def get_snmp_timeout(self, default=1):
@@ -158,19 +206,27 @@ class Config:
         """
         default = float(default)
         if default <= 0:
+            self.logger.critical("Timeout must be positive, raise ValueError")
             raise ValueError("Timeout must be positive")
 
         if 'timeout' in self.data['snmp']:
             try:
                 config_value = float(self.data['snmp']['timeout'])
                 if config_value <= 0:
-                    raise ValueError("Invalid config file. SNMP timeout must be positive")
+                    self.logger.warning(
+                        "Timeout value in configuration not positive. Return default value of %d" % default
+                    )
+                    return default
+                self.logger.info("Timeout value in configuration file is: %f" % config_value)
                 return config_value
 
             except ValueError:
-                print "Configuration file invalid (snmp->retries)"
+                self.logger.warning(
+                    "Timeout value in configuration is invalid. Return default value of %d" % default
+                )
                 return default
         else:
+            self.logger.warning("No value set in configuration. Returning default value of: %d" % default)
             return default
 
     def is_device_ignored(self, hostname):
@@ -180,13 +236,15 @@ class Config:
         :param hostname:  Device hostname
         :return:
         """
+        self.logger.debug("Checking if '%s' is on ignore list" % hostname)
         for hostname_rule, interface_rules in self.get_device_ignore_rules().iteritems():
             try:
                 if re.match('^' + hostname_rule + '$', hostname) and not len(interface_rules):
+                    self.logger.info("Device '%s' on ignore list." % hostname)
                     return True
             except sre_constants.error:
-                # TODO: Real logging, not this shit
-                print "Rule '%s' in configuration file invalid, skipping..." % hostname_rule
+                self.logger.error("Rule '%s' in configuration file invalid, skipping..." % hostname_rule)
+        self.logger.debug("Device '%s' NOT on ignore list." % hostname)
         return False
 
     def is_interface_ignored(self, hostname, if_name):
@@ -198,27 +256,35 @@ class Config:
         :param if_name:      Interface name
         :return:
         """
+        self.logger.debug("Checking if interface '%s' on '%s' is on ignore list" % (if_name, hostname))
         for hostname_rule, interface_rules in self.get_device_ignore_rules().iteritems():
             try:
                 if re.match('^' + hostname_rule + '$', hostname):
                     if not len(interface_rules):
+                        self.logger.info("All interfaces for device '%s' are ignored" % hostname)
                         return True
                     for interface_rule in interface_rules:
                         if re.match('^' + interface_rule + '$', if_name):
+                            self.logger.info("Interface '%s' on '%s' on ignore list." % (if_name, hostname))
                             return True
-            except sre_constants.error:
-                # TODO: Real logging, not this shit
-                print "Rule '%s' in configuration file invalid, skipping..." % hostname_rule
+            except sre_constants.error as e:
+                self.logger.error("Rule in configuration file invalid: %s" % e)
+        self.logger.debug("Interface '%s' on '%s' NOT on ignore list." % (if_name, hostname))
         return False
 
     def is_ip_ignored(self, ip_address):
+        self.logger.debug("Checking if IP '%s' is on ignore list" % ip_address)
         for ip_rule in self.get_ip_ignore_rules():
             try:
                 network = ipaddress.IPv4Network(ip_rule)
                 if ipaddress.IPv4Address(ip_address) in network:
+                    self.logger.info("IP '%s' is on ignore list." % ip_address)
                     return True
             except ipaddress.AddressValueError:
+                self.logger.error("Invalid address in '%s' configuration rule" % ip_rule)
                 continue
             except ipaddress.NetmaskValueError:
+                self.logger.error("Invalid mask in '%s' configuration rule" % ip_rule)
                 continue
+        self.logger.debug("IP '%s' NOT on ignore list." % ip_address)
         return False

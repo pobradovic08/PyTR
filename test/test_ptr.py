@@ -8,7 +8,7 @@ from classes import Ptr
 class TestPtr(unittest.TestCase):
     def test_instantiation(self):
         logging.basicConfig(
-            filename=__file__.rstrip('.py|.pyc') + '.log',
+            filename='test/unittest.log',
             format="%(asctime)s - %(levelname)s - %(name)s:%(funcName)s - %(message)s",
             level=logging.DEBUG,
             filemode='w'

@@ -6,7 +6,7 @@ from classes import Config
 class TestConfig(unittest.TestCase):
     def setUp(self):
         logging.basicConfig(
-            filename=__file__.rstrip('.py|.pyc') + '.log',
+            filename='test/unittest.log',
             format="%(asctime)s - %(levelname)s - %(name)s:%(funcName)s - %(message)s",
             level=logging.DEBUG,
             filemode='w'
