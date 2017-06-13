@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import sys
 from classes.output import BaseOutput
 from classes import DnsCheck
 
@@ -7,7 +8,7 @@ from classes import DnsCheck
 class TabularUtf8Output(BaseOutput):
 
     def __init__(self):
-        pass
+        BaseOutput.__init__(self)
 
     @staticmethod
     def display_detailed(dispatcher):
@@ -237,6 +238,16 @@ class TabularUtf8Output(BaseOutput):
             interface.get_ptr_for_ip(ip),
             ip
         )
+
+    @staticmethod
+    def print_progress_bar(percent):
+        sys.stdout.write("\r│%-90s│ %3d%%" % (
+            str(
+                '▌' * int(TabularUtf8Output._lvmap(percent, 0, 100, 0, 90))  +
+                ' ' * int(TabularUtf8Output._lvmap(100-percent, 0, 100, 0, 90))
+            )
+            , percent))
+        sys.stdout.flush()
 
     @staticmethod
     def _paint_positive_num(number, color, default='\033[90m'):

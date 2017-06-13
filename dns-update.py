@@ -3,6 +3,7 @@
 
 import sys
 import argparse
+import time
 from classes import Dispatcher
 from classes import Config
 from classes import Device
@@ -36,18 +37,21 @@ output = TabularUtf8Output()
 
 print "Loaded connectors: %s" % ', '.join(dispatcher.get_connector_list())
 dispatcher.load()
-print "Loaded %d device(s) from %d connector(s)" % (len(dispatcher.devices), len(dispatcher.get_connector_list()))
+total_devices = len(dispatcher.devices)
+print "Loaded %d device(s) from %d connector(s)" % (total_devices, len(dispatcher.get_connector_list()))
 
-# go_trough = 20
-
-for device in dispatcher.devices:
+iterator = 0
+for device in dispatcher.devices.keys()[:3]:
     dispatcher.devices[device] = Device(device, config, dispatcher.dns)
     if dispatcher.devices[device].get_interfaces():
         dispatcher.devices[device].check_ptrs()
         # print output.display_device_detailed(dispatcher.devices[device])
         # print output.display_device_summary(dispatcher.devices[device])
-        # print dispatcher.devices[device].detailed_table()
 
-        # go_trough -= 1
-        # if go_trough <= 0:
+    time.sleep(1)
+    iterator += 1
+    percent_complete = int(iterator*100/3)
+    output.print_progress_bar(percent_complete)
+
+print
 print output.display_summary(dispatcher)

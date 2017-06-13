@@ -114,7 +114,7 @@ class Device:
                 # Check if interface or IP is ignored
                 if self.config.is_interface_ignored(
                         self.hostname,
-                        self.interfaces[interface].ifName
+                        self.interfaces[interface].if_name
                 ) or self.config.is_ip_ignored(ip_address):
                     self.interfaces[interface].update_ptr_status(ip_address, None, DnsCheck.STATUS_IGNORED)
                     continue
@@ -154,4 +154,5 @@ class Device:
         ptrs = {}
         for interface in self.interfaces:
             ptrs.update(self.interfaces[interface].get_ptrs())
+            exit(0)
         return ptrs
