@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import unittest
+import logging
 from classes.interfaces.base import BaseConnector
 from classes import Dispatcher
 from classes import Config
@@ -24,6 +25,12 @@ class Test2Connector(BaseConnector):
 
 class TestDispatcher(unittest.TestCase):
     def setUp(self):
+        logging.basicConfig(
+            filename=__file__.rstrip('.py|.pyc') + '.log',
+            format="%(asctime)s - %(levelname)s - %(name)s:%(funcName)s - %(message)s",
+            level=logging.DEBUG,
+            filemode='w'
+        )
         self.dispatcher = Dispatcher(
             Config(filename='test/configuration_examples/simple.json'),
             auto_load=False

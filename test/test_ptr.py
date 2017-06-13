@@ -1,11 +1,18 @@
 # -*- coding: utf-8 -*-
 
 import unittest
+import logging
 from classes import Ptr
 
 
 class TestPtr(unittest.TestCase):
     def test_instantiation(self):
+        logging.basicConfig(
+            filename=__file__.rstrip('.py|.pyc') + '.log',
+            format="%(asctime)s - %(levelname)s - %(name)s:%(funcName)s - %(message)s",
+            level=logging.DEBUG,
+            filemode='w'
+        )
         ptr = {
             'ip': u'10.10.10.10',
             'device': 'cmts-sc-1.vektor.net',

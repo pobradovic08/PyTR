@@ -41,7 +41,8 @@
       "default": "public",
       "override": {
         "custom-host.*": "custom_community",
-        ".*domain.example": "custom_domain"
+        ".*domain.example": "custom_domain",
+        "*domain.example": "bad one"
       }
     },
     "retries": 143,

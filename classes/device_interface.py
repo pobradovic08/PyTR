@@ -45,7 +45,7 @@ class DeviceInterface:
             try:
                 x = re.match(r"([^0-9]{2}).*?([0-9].*)", interface)
                 interface = x.group(1) + re.sub(r'[a-zA-Z]', '', x.group(2))
-                interface = interface.strip('-')    # Mikrotik stuff
+                interface = interface.strip('-')  # Mikrotik stuff
                 self.logger.debug("Interface part of the PTR shortened to '%s'" % interface)
             except AttributeError:
                 # TODO: what if interface has 10+ chars but have group(2) (number suffix)? Fix above pls
@@ -65,7 +65,7 @@ class DeviceInterface:
         :param ip_address:  IP address
         :return:
         """
-        self.logger.debug("Called with '%s'" % (ip_address))
+        self.logger.debug("Called with '%s'" % ip_address)
         if ip_address not in self.ip_addresses:
             self.ip_addresses[ip_address] = {
                 'existing_ptr': None,
@@ -83,7 +83,7 @@ class DeviceInterface:
         :param status: PTR status
         :return:
         """
-        self.logger.debug("Called for IP: %s" % (ip_address))
+        self.logger.debug("Called for IP: %s" % ip_address)
         if ip_address in self.ip_addresses:
             self.ip_addresses[ip_address]['existing_ptr'] = ptr
             self.ip_addresses[ip_address]['status'] = status
@@ -97,7 +97,7 @@ class DeviceInterface:
         :param ip_address: IP address
         :return:
         """
-        self.logger.debug("Called for IP: %s" % (ip_address))
+        self.logger.debug("Called for IP: %s" % ip_address)
         if self.device.config.terse:
             return self._get_short_ptr(ip_address)
         else:

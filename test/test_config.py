@@ -1,9 +1,16 @@
 import unittest
+import logging
 from classes import Config
 
 
 class TestConfig(unittest.TestCase):
     def setUp(self):
+        logging.basicConfig(
+            filename=__file__.rstrip('.py|.pyc') + '.log',
+            format="%(asctime)s - %(levelname)s - %(name)s:%(funcName)s - %(message)s",
+            level=logging.DEBUG,
+            filemode='w'
+        )
         self.config = Config('test/configuration_examples/configuration.json')
         self.ns_servers = ['dns1.domain.example', 'dns2.domain.example', 'dns3.domain.example', 'dns4.domain.example']
         self.ignore_rules_list = sorted(['lb-node.*', 'cmts.*', 'rfgw.*', 'test', 'xxx'])
@@ -36,7 +43,7 @@ class TestConfig(unittest.TestCase):
         self.assertIsInstance(Config('test/configuration_examples/simple.json'), Config)
         self.assertIsInstance(Config(), Config)
         self.assertRaises(IOError, Config, 'config.json')
-        self.assertRaises(ValueError, Config, 'test/configuration_examples/bad_json_file.json')
+        self.assertRaises(SystemExit, Config, 'test/configuration_examples/bad_json_file.json')
 
     def test_get_ns_list(self):
         self.assertListEqual(self.config.data['dns']['servers'], self.ns_servers)

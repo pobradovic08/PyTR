@@ -1,12 +1,18 @@
 #!/usr/bin/python
 
 import unittest
-
+import logging
 from classes import DnsCheck
 
 
 class TestDnsCheck(unittest.TestCase):
     def setUp(self):
+        logging.basicConfig(
+            filename=__file__.rstrip('.py|.pyc') + '.log',
+            format="%(asctime)s - %(levelname)s - %(name)s:%(funcName)s - %(message)s",
+            level=logging.DEBUG,
+            filemode='w'
+        )
         self.dns = DnsCheck()
 
     def test_fqdn_query(self):
