@@ -6,7 +6,6 @@ from classes import DnsCheck
 
 
 class TabularUtf8Output(BaseOutput):
-
     def __init__(self):
         BaseOutput.__init__(self)
 
@@ -27,8 +26,8 @@ class TabularUtf8Output(BaseOutput):
         )
         output_string = "╒%s╤%s╤%s╤%s╤%s╤%s╤%s╕\n" % horizontal_border
         output_string += "│\033[01m%-37s\033[0;0m│\033[01m\033[92m%-6s\033[0;0m│\033[01m\033[93m%-8s\033[0;0m│" \
-                         "\033[01m\033[91m%-8s\033[0;0m│\033[01m\033[90m%-10s\033[0;0m│\033[01m\033[90m%-10s\033[0;0m│"\
-                         "\033[01m\033[90m%-10s\033[0;0m│\n" % (
+                         "\033[01m\033[91m%-8s\033[0;0m│\033[01m\033[90m%-10s\033[0;0m│" \
+                         "\033[01m\033[90m%-10s\033[0;0m│\033[01m\033[90m%-10s\033[0;0m│\n" % (
                              'Device',
                              ' OK',
                              ' UPDATE',
@@ -161,7 +160,7 @@ class TabularUtf8Output(BaseOutput):
         icon = '■'
         return "│%s%-24s %s %-44s %-23s\033[0;0m│\n" % (
             color,
-            interface.ifName,
+            interface.if_name,
             icon,
             interface.get_ptr_for_ip(ip),
             ip
@@ -173,7 +172,7 @@ class TabularUtf8Output(BaseOutput):
         icon = '┌'
         output_string = "│%s%-24s %s %-44s %-23s\033[0;0m│\n" % (
             color,
-            interface.ifName,
+            interface.if_name,
             icon,
             interface.ip_addresses[ip]['existing_ptr'],
             ip
@@ -191,7 +190,7 @@ class TabularUtf8Output(BaseOutput):
         icon = '■'
         return "│%s%-24s %s %-44s %-23s\033[0;0m│\n" % (
             color,
-            interface.ifName,
+            interface.if_name,
             icon,
             interface.get_ptr_for_ip(ip),
             ip
@@ -205,7 +204,7 @@ class TabularUtf8Output(BaseOutput):
         icon = ' '
         return "│%s%-24s %s %-44s %-23s\033[0;0m│\n" % (
             color,
-            interface.ifName,
+            interface.if_name,
             icon,
             interface.get_ptr_for_ip(ip),
             ip
@@ -219,7 +218,7 @@ class TabularUtf8Output(BaseOutput):
         icon = 'i'
         return "│%s%-24s %s %-44s %-23s\033[0;0m│\n" % (
             color,
-            interface.ifName,
+            interface.if_name,
             icon,
             interface.get_ptr_for_ip(ip),
             ip
@@ -233,21 +232,21 @@ class TabularUtf8Output(BaseOutput):
         icon = '☓'
         return "│%s%-24s %s %-44s %-23s\033[0;0m│\n" % (
             color,
-            interface.ifName,
+            interface.if_name,
             icon,
             interface.get_ptr_for_ip(ip),
             ip
         )
 
     @staticmethod
-    def print_progress_bar(percent, bar_width = 90):
+    def print_progress_bar(percent, bar_width=90):
         completed_bars = int(TabularUtf8Output._lvmap(percent, 0, 100, 0, 90))
         sys.stdout.write("\r│%s│ %3d%%" % (
             str(
-                '▌' *  completed_bars +
-                ' ' * (90 - completed_bars)
-            )
-            , percent))
+                '▌' * completed_bars +
+                ' ' * (bar_width - completed_bars)
+            ),
+            percent))
         sys.stdout.flush()
 
     @staticmethod
