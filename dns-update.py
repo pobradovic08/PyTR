@@ -3,7 +3,6 @@
 
 import sys
 import argparse
-import time
 from classes import Dispatcher
 from classes import Config
 from classes import Device
@@ -41,16 +40,15 @@ total_devices = len(dispatcher.devices)
 print "Loaded %d device(s) from %d connector(s)" % (total_devices, len(dispatcher.get_connector_list()))
 
 iterator = 0
-for device in dispatcher.devices.keys()[:3]:
+for device in dispatcher.devices.keys():
     dispatcher.devices[device] = Device(device, config, dispatcher.dns)
     if dispatcher.devices[device].get_interfaces():
         dispatcher.devices[device].check_ptrs()
         # print output.display_device_detailed(dispatcher.devices[device])
         # print output.display_device_summary(dispatcher.devices[device])
 
-    time.sleep(1)
     iterator += 1
-    percent_complete = int(iterator*100/3)
+    percent_complete = int(iterator*100/total_devices)
     output.print_progress_bar(percent_complete)
 
 print

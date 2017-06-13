@@ -240,11 +240,12 @@ class TabularUtf8Output(BaseOutput):
         )
 
     @staticmethod
-    def print_progress_bar(percent):
-        sys.stdout.write("\r│%-90s│ %3d%%" % (
+    def print_progress_bar(percent, bar_width = 90):
+        completed_bars = int(TabularUtf8Output._lvmap(percent, 0, 100, 0, 90))
+        sys.stdout.write("\r│%s│ %3d%%" % (
             str(
-                '▌' * int(TabularUtf8Output._lvmap(percent, 0, 100, 0, 90))  +
-                ' ' * int(TabularUtf8Output._lvmap(100-percent, 0, 100, 0, 90))
+                '▌' *  completed_bars +
+                ' ' * (90 - completed_bars)
             )
             , percent))
         sys.stdout.flush()
