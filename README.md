@@ -1,6 +1,21 @@
 **Still under development and not functional!**
 
 # DNS PTR updater
+
+>This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+>
+>This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+>
+>You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
 DNS PTR updater collects interface (IP address, IF-MIB::ifName)
 details for a given list of devices, checks and updates PTR RR for those
 IP addresses. Resulting PTR has a form of:
@@ -8,16 +23,18 @@ IP addresses. Resulting PTR has a form of:
 `hostname-ifname.domain.example`
 
 DNS PTR updater features _Connectors_ for importing and exporting list fo
-devices or existing PTR lists from/to 3rd party data sources.
+devices or existing PTR lists from/to 3rd party data sources. Currently
+implemented connectors:
+- Observium (requires MySQL database access)
 
 It also features flexible JSON configuration file for simple implementation
 of rules for:
-- Ignoring devices or/and interfaces (regexp matching of hostname or ifName)
-- Ignoring IP addresses (matching prefixes in CIDR notation)
+- Ignoring devices or/and interfaces (regexp matching of hostname or `ifName`)
+- Ignoring IP addresses (matching prefixes in CIDR notation — `192.0.2.0/24`)
 - Default and per host community strings (regexp matching of hostname)
 - List of name servers to query
 - List of name servers to update
-- List of domain names to build FQDN from
+- List of domain names to build FQDN with
 - Connector configuration
 
 ## Device PTR check
@@ -45,7 +62,7 @@ PTR, IP address and a current status of PTR.
 ├───────────────────────────────────────────────────────────────────────────────────────────────┤
 │BVI65                    i r-sc-3-bvi65.domain.example                  10.137.148.1           │
 ├───────────────────────────────────────────────────────────────────────────────────────────────┤
-│Loopback0                ◆ r-sc-3.domain.example                        192.0.2.249            │
+│Loopback0                ● r-sc-3.domain.example                        192.0.2.249            │
 ├───────────────────────────────────────────────────────────────────────────────────────────────┤
 │BVI67                    i r-sc-3-bvi67.domain.example                  172.28.16.1            │
 ├───────────────────────────────────────────────────────────────────────────────────────────────┤
@@ -59,13 +76,14 @@ PTR, IP address and a current status of PTR.
 ╘═══════════════════════════════════════════════════════════════════════════════════════════════╛
 ~~~~
 
-## Batch DNS PTR update
+## Batch PTR update
 `dns-update.py` is a Python script that loads devices and PTRs from external sources
-(via Connectors). It merges the list of PTRs loaded through Connector with
+(via Connectors). It merges the list of PTRs loaded through Connectors with
 the PTR list it obtained from each device.
 ~~~~
 Loaded connectors: ObserviumConnector
 Loaded 10 device(s) from 1 connector(s)
+Fetching data from devices:
 │▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌│ 100%
 ╒═════════════════════════════════════╤══════╤════════╤════════╤══════════╤══════════╤══════════╕
 │Device                               │ OK   │ UPDATE │ CREATE │ NO AUTH  │ IGNORED  │ UNKNOWN  │
@@ -82,3 +100,18 @@ Loaded 10 device(s) from 1 connector(s)
 │asa-bo-2.domain.example              │ 2    │ 0      │ 0      │ 0        │ 0        │ 0        │
 ╘═════════════════════════════════════╧══════╧════════╧════════╧══════════╧══════════╧══════════╛
 ~~~~
+
+## General information
+### Code structure
+_N/A_
+### PTR statuses
+|Status|Value|Description|
+|------|:-----:|-----------|
+|`STATUS_UNKNOWN` | `0` | PTR status wasn't checked yet |
+|`STATUS_OK` | `1` | PTR exists and is in equal to generated PTR
+|`STATUS_NOT_UPDATED` | `2` | PTR exists but differs from generated PTR
+|`STATUS_NOT_CREATED` | `3` | PTR doesn't exists
+|`STATUS_NOT_AUTHORITATIVE` | `4` | None of the configured DNS servers are authoritative DNS server for this PTR
+|`STATUS_IGNORED` | `5` | Not checked. Device, interface or IP address are on ignore list
+
+## Connectors

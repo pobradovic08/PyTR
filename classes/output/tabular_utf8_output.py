@@ -173,7 +173,7 @@ class TabularUtf8Output(BaseOutput):
         if interface.device.config.diff_only:
             return None
         color = "\033[92m"  # Green
-        icon = '◆'
+        icon = '●'
         return "│%s%-24s %s %-44s %-23s\033[0;0m│\n" % (
             color,
             interface.if_name,

@@ -54,7 +54,7 @@ print "Loaded connectors: %s" % ', '.join(dispatcher.get_connector_list())
 dispatcher.load()
 total_devices = len(dispatcher.devices)
 print "Loaded %d device(s) from %d connector(s)" % (total_devices, len(dispatcher.get_connector_list()))
-
+print "Fetching data from devices:"
 # Number of devices we've finished so far
 iterator = 0
 for device in dispatcher.devices.keys():
