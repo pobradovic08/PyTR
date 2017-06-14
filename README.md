@@ -103,15 +103,29 @@ Fetching data from devices:
 
 ## General information
 ### Code structure
-_N/A_
+Basic structure looks like this:
+~~~~
+├── classes
+│   ├── interfaces
+│   └── output
+└── test
+    └── configuration_examples
+~~~~
+
+- `classes/` - main program classes
+- `classes/interfaces/` - Autoloaded Connector classes
+- `classes/output/` - Output classes
+- `test` - Unit tests
+- `test/configuration_examples` - Config files for unit tests
+
 ### PTR statuses
 |Status|Value|Description|
 |------|:-----:|-----------|
-|`STATUS_UNKNOWN` | `0` | PTR status wasn't checked yet |
-|`STATUS_OK` | `1` | PTR exists and is in equal to generated PTR
+|`STATUS_UNKNOWN` | `0` | PTR status not checked yet |
+|`STATUS_OK` | `1` | PTR exists and is equal to generated PTR
 |`STATUS_NOT_UPDATED` | `2` | PTR exists but differs from generated PTR
 |`STATUS_NOT_CREATED` | `3` | PTR doesn't exists
-|`STATUS_NOT_AUTHORITATIVE` | `4` | None of the configured DNS servers are authoritative DNS server for this PTR
+|`STATUS_NOT_AUTHORITATIVE` | `4` | None of the configured DNS servers are authoritative for this PTR zone
 |`STATUS_IGNORED` | `5` | Not checked. Device, interface or IP address are on ignore list
 
 ## Connectors
