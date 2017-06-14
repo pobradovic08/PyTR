@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import ipaddress
-
+import logging
 
 class Ptr:
     STATUS_UNKNOWN = 0
@@ -12,6 +12,7 @@ class Ptr:
     STATUS_IGNORED = 5
 
     def __init__(self, ip, ptr, device, interface, status=STATUS_UNKNOWN):
+        self.logger = logging.getLogger('dns_update.ptr')
         try:
             self.ip = ipaddress.IPv4Address(ip)
         except ipaddress.AddressValueError as e:

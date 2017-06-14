@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import socket
-import re
 import dns.resolver
 import dns.exception
 import logging
