@@ -65,5 +65,13 @@ if fqdn:
     if d.get_interfaces():
         d.check_ptrs()
         print output.display_device_detailed(d)
+
+        # Filter all PTRs that don't have status equal to STATUS_NOT_UPDATED or STATUS_NOT_CREATED
+        ptrs_for_update = {
+            k: v for k, v in d.get_ptrs().iteritems()
+            if v.status in
+               (DnsCheck.STATUS_NOT_UPDATED, DnsCheck.STATUS_NOT_CREATED)
+        }
+        #print ptrs_for_update
     else:
         print "Error connecting to %s" % d.hostname
