@@ -1,3 +1,5 @@
+**Still under development and not functional!**
+
 # DNS PTR updater
 DNS PTR updater collects interface (IP address, IF-MIB::ifName)
 details for a given list of devices, checks and updates PTR RR for those
