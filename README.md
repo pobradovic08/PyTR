@@ -23,7 +23,7 @@ of rules for:
 ## Device PTR check
 `device_ptr_check` is a Python script that displays info about specific device.
 It shows a list of interfaces that have IP addresses configured, existing
-PTR, IP address and a status current status of PTR.
+PTR, IP address and a current status of PTR.
 ~~~~
 ╒═══════════════════════════════════════════════════════════════════════════════════════════════╕
 │ Device:       r-sc-3.domain.example                                                           │
@@ -57,4 +57,28 @@ PTR, IP address and a status current status of PTR.
 │                         └─► r-sc-3-bu1-230.domain.example                                     │
 ├───────────────────────────────────────────────────────────────────────────────────────────────┤
 ╘═══════════════════════════════════════════════════════════════════════════════════════════════╛
+~~~~
+
+## Batch DNS PTR update
+`dns-update.py` is a Python script that loads devices and PTRs from external sources
+(via Connectors). It merges the list of PTRs loaded through Connector with
+the PTR list it obtained from each device.
+~~~~
+Loaded connectors: ObserviumConnector
+Loaded 10 device(s) from 1 connector(s)
+│▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌│ 100%
+╒═════════════════════════════════════╤══════╤════════╤════════╤══════════╤══════════╤══════════╕
+│Device                               │ OK   │ UPDATE │ CREATE │ NO AUTH  │ IGNORED  │ UNKNOWN  │
+╞═════════════════════════════════════╪══════╪════════╪════════╪══════════╪══════════╪══════════╡
+│dhcp.domain.example                  │ 1    │ 0      │ 0      │ 0        │ 1        │ 0        │
+│imap.different-domain.example        │ 0    │ 2      │ 1      │ 0        │ 1        │ 0        │
+│mtik-pb-2.domain.example             │ 1    │ 2      │ 0      │ 0        │ 0        │ 0        │
+│edge-nv-1.domain.example             │ 5    │ 0      │ 0      │ 1        │ 1        │ 0        │
+│cns2.domain.example                  │ 1    │ 1      │ 0      │ 0        │ 1        │ 0        │
+│olt-sc-1.domain.example              │ 2    │ 0      │ 0      │ 0        │ 0        │ 0        │
+│r-kp-1.domain.example                │ 11   │ 1      │ 1      │ 0        │ 0        │ 0        │
+│asa-bg-1.domain.example              │ 2    │ 0      │ 0      │ 0        │ 0        │ 0        │
+│avas.domain.example                  │ 1    │ 0      │ 0      │ 0        │ 1        │ 0        │
+│asa-bo-2.domain.example              │ 2    │ 0      │ 0      │ 0        │ 0        │ 0        │
+╘═════════════════════════════════════╧══════╧════════╧════════╧══════════╧══════════╧══════════╛
 ~~~~
