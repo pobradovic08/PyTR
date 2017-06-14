@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import easysnmp
 import re
+import logging
 
 from config import Config
 from device_interface import DeviceInterface
@@ -14,29 +15,20 @@ class Device:
         :param hostname:    Hostname of device. Must be FQDN
         :param config:      Config instance
         """
-
+        self.logger = logging.getLogger('dns_update.device:%s' % hostname)
         self.session = None
         self.config = config
         self.interfaces = {}
         self.ignored = False
-
         self.dns = dns if dns else DnsCheck(self.config)
-
         self.hostname = hostname
-
         # Split device.hostname into two parts: (hostname).(domain.example)
         self.host, self.domain = self.hostname.split('.', 1)
-
         # Get IN A record for device hostname
         self.ip = self.dns.get_a(self.hostname)
-
         # TODO: update to support v3
         self.community = config.get_snmp_community(self.hostname)
-
-        # Configuration
-        configuration = Config()
-
-        self.ignored = configuration.is_device_ignored(self.hostname)
+        self.ignored = self.config.is_device_ignored(self.hostname)
 
     def get_interfaces(self):
         """
@@ -48,10 +40,12 @@ class Device:
         # If device is on ignore list skip interface discovery
         # Interfaces dictionary will be empty
         if self.ignored:
+            self.logger.info("Device ignored. SKipping...")
             return True
 
         # Setup SNMP session
         try:
+            self.logger.debug("Establishing SNMP session to '%s'" % self.hostname)
             self.session = easysnmp.Session(
                 hostname=self.hostname,
                 community=self.community,
@@ -75,8 +69,9 @@ class Device:
             # .1.3.6.1.2.1.4.20.1.2.10.170.1.1 = INTEGER: 10
             #       OID ends here-^|^- IP starts here     ^- ifIndex
             # etc...
-            interface_addresses_result = self.session.walk('.1.3.6.1.2.1.4.20.1.2')
-            for interface_address_result in interface_addresses_result:
+            interface_address_results = self.session.walk('.1.3.6.1.2.1.4.20.1.2')
+            self.logger.info("Device has %d IP addresses" % len(interface_address_results))
+            for interface_address_result in interface_address_results:
 
                 # IF-MIB::ifIndex later used to get IF-MIB::ifName
                 if_index = int(interface_address_result.value)
@@ -87,8 +82,10 @@ class Device:
                     # But no ifName associated with that ifIndex
                     # We can skip those since we can't make PTRs
                     try:
+                        self.logger.debug("Create DeviceInterface object for ifIndex:%d" % if_index)
                         self.interfaces[if_index] = DeviceInterface(self, if_index)
                     except easysnmp.EasySNMPNoSuchInstanceError:
+                        self.logger.warning("SNMP returned NOSUCHINSTANCE for ifIndex:%d" % if_index)
                         continue
                 # Remove the part of the OID we used to walk on. Leave just the IP address part.
                 # Add it to interface
@@ -96,10 +93,12 @@ class Device:
                     re.sub(oid_pattern, '', interface_address_result.oid),
                     interface_address_result.oid_index
                 ])
+                self.logger.debug("Found '%s' address on ifIndex:%d" % (self.host, if_index))
                 self.interfaces[if_index].add_ip_address(ip_address)
 
             return True
-        except easysnmp.EasySNMPError:
+        except easysnmp.EasySNMPError as e:
+            self.logger.error("Failed to connect to '%s': %s" % (self.hostname, e))
             return False
 
     def check_ptrs(self):
@@ -109,14 +108,26 @@ class Device:
         Those IPs have PTR pointing to device hostname rather than name in hostname-interface.domain.example format
         :return:
         """
+        self.logger.debug("Check PTRs for %d interfaces" % len(self.interfaces))
         for interface in self.interfaces:
+            self.logger.debug(
+                "Interface '%s' has %d IP address(es)" % (
+                    self.interfaces[interface].if_name,
+                    len(self.interfaces[interface].ip_addresses)
+                )
+            )
             for ip_address in self.interfaces[interface].ip_addresses:
                 # Check if interface or IP is ignored
+                # TODO: Move interface ignore check up one level to avoid checking the same interface multiple times
                 if self.config.is_interface_ignored(
                         self.hostname,
                         self.interfaces[interface].if_name
                 ) or self.config.is_ip_ignored(ip_address):
                     self.interfaces[interface].update_ptr_status(ip_address, None, DnsCheck.STATUS_IGNORED)
+                    self.logger.info("Interface '%s' or IP address '%s' are on ignore list" % (
+                        self.interfaces[interface].if_name,
+                        ip_address
+                    ))
                     continue
 
                 # If IP matches loopback IP, expected PTR is device.hostname
@@ -126,6 +137,7 @@ class Device:
                     existing_ptr, status = self.dns.get_status(ip_address, self.interfaces[interface].ptr)
 
                 # Update PTR status in interfaces dictionary
+                self.logger.debug("Update DeviceInterface PTR status for '%s' to '%d'" % (ip_address, status))
                 self.interfaces[interface].update_ptr_status(ip_address, existing_ptr, status)
 
     def get_number_of_interfaces(self):
@@ -133,6 +145,7 @@ class Device:
         Return total number of interfaces on device
         :return:
         """
+        self.logger.debug("Returned number of interfaces: %d" % len(self.interfaces))
         return len(self.interfaces)
 
     def get_number_of_ip_addresses(self):
@@ -143,7 +156,7 @@ class Device:
         num = 0
         for interface in self.interfaces:
             num += len(self.interfaces[interface].ip_addresses)
-
+        self.logger.debug("Returned number of IP addresses: %d" % num)
         return num
 
     def get_ptrs(self):
@@ -154,4 +167,5 @@ class Device:
         ptrs = {}
         for interface in self.interfaces:
             ptrs.update(self.interfaces[interface].get_ptrs())
+        self.logger.debug("Returned number of PTRs from %d interfaces: %d" % (len(self.interfaces), len(ptrs)))
         return ptrs
