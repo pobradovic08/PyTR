@@ -3,7 +3,7 @@
 import re
 import os
 import imp
-
+import logging
 from classes.dns_check import DnsCheck
 
 
@@ -16,18 +16,15 @@ class Dispatcher:
     """
 
     def __init__(self, config, auto_load=True):
+        self.logger = logging.getLogger('dns_update.dispatcher')
         # List of registered connectors
         self.__connectors = []
-
         # List of modified PTRs
         self.unsaved_ptrs = []
-
         # Dict of devices. Keyed by hostname (FQDN)
         self.devices = {}
-
         # Config
         self.config = config
-
         # DNS
         self.dns = DnsCheck(self.config)
 
@@ -35,6 +32,7 @@ class Dispatcher:
             # Autoload all connectors
             ignored_files = ['base.py', '__init__.py']
             path = os.path.dirname(os.path.abspath(__file__)) + '/interfaces'
+            self.logger.info("Autoload enabled. Searching: '%s'" % path)
             for filename in [f for f in os.listdir(path) if f.endswith('.py') and f not in ignored_files]:
                 py = filename[:-3]
                 class_name = ''.join([x.capitalize() for x in py.split('_')])
@@ -42,6 +40,9 @@ class Dispatcher:
                 # Instantiate class
                 if hasattr(mod, class_name):
                     getattr(mod, class_name)(self)
+                    self.logger.info("Connector '%s' successfully loaded" % class_name)
+                else:
+                    self.logger.error("Connector '%s' couldn't be loaded" % class_name)
 
     def register_connector(self, connector):
         """
@@ -50,6 +51,7 @@ class Dispatcher:
         :param connector: Connector object
         :return:
         """
+        self.logger.debug("Register connector '%s; to dispatcher" % connector.__class__.__name__)
         self.__connectors.append(connector)
 
     def get_connector_list(self):
@@ -58,8 +60,12 @@ class Dispatcher:
     def get_connector_config(self, connector):
         class_name = connector.__class__.__name__
         connector_name = re.match('(.*)Connector', class_name)
+        self.logger.debug("Search for ['%s'] in configuration file" % connector_name)
         if connector_name.group(1):
+            self.logger.debug("Configuration for '%s' found" % class_name)
             return self.config.get_connector_config(connector_name.group(1).lower())
+        else:
+            self.logger.warning("Configuration for '%s' not found" % class_name)
 
     def save_ptr(self, ptr):
         """
@@ -67,6 +73,7 @@ class Dispatcher:
         :param ptr: PTR dict
         :return:
         """
+        self.logger.info("Dispatch save PTR command for %s to all (%d) connectors" % (ptr, len(self.__connectors)))
         for connector in self.__connectors:
             connector.save_ptr(ptr)
 
@@ -78,6 +85,8 @@ class Dispatcher:
         """
         # Temporary list
         device_list = []
+
+        self.logger.info("Dispatch load command to all (%d) connectors" % len(self.__connectors))
         # Concatenate device list from each connector to temporary list
         for connector in self.__connectors:
             device_list += connector.load_devices()
@@ -89,5 +98,7 @@ class Dispatcher:
                 if hostname not in self.devices:
                     self.devices[hostname] = None
             else:
-                # TODO: Log wrong hostname
+                self.logger.warning("Hostname '%s' couldn't be resolved" % hostname)
                 pass
+
+        self.logger.info("Loaded %d device(s) from %d connectors" % (len(device_list), len(self.__connectors)))
