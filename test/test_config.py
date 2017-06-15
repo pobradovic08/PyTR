@@ -67,7 +67,7 @@ class TestConfig(unittest.TestCase):
     def test_file_open(self):
         self.assertIsInstance(Config('test/configuration_examples/configuration.json'), Config)
         self.assertIsInstance(Config('test/configuration_examples/simple.json'), Config)
-        self.assertIsInstance(Config(), Config)
+        self.assertIsInstance(Config('test/configuration_examples/simple.json'), Config)
         self.assertRaises(IOError, Config, 'config.json')
         self.assertRaises(SystemExit, Config, 'test/configuration_examples/bad_json_file.json')
 
