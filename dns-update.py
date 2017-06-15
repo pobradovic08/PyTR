@@ -17,13 +17,13 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-import sys
 import argparse
-from classes import Dispatcher
+import sys
+
 from classes import Config
 from classes import Device
-
-from classes.output.tabular_utf8_output import TabularUtf8Output
+from classes import Dispatcher
+from classes.output.tabular_utf8 import TabularUtf8Output
 
 reload(sys)
 sys.setdefaultencoding('utf8')

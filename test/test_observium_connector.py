@@ -16,11 +16,12 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-import unittest
 import logging
-from classes.connectors.observium_connector import ObserviumConnector
-from classes import Dispatcher
+import unittest
+
 from classes import Config
+from classes import Dispatcher
+from classes.connectors.observium.observium_connector import ObserviumConnector
 
 
 class TestObserviumConnector(unittest.TestCase):

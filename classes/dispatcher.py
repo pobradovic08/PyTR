@@ -49,10 +49,11 @@ class Dispatcher:
             ignored_files = ['base.py', '__init__.py']
             path = os.path.dirname(os.path.abspath(__file__)) + '/connectors'
             self.logger.info("Autoload enabled. Searching: '%s'" % path)
-            for filename in [f for f in os.listdir(path) if f.endswith('.py') and f not in ignored_files]:
+            for dirname in [d for d in os.listdir(path) if os.path.isdir(path + '/' + d)]:
+                filename = dirname + '_connector.py'
                 py = filename[:-3]
                 class_name = ''.join([x.capitalize() for x in py.split('_')])
-                mod = imp.load_source(class_name, path + '/' + filename)
+                mod = imp.load_source(class_name, path + '/' + dirname + '/' + filename)
                 # Instantiate class
                 if hasattr(mod, class_name):
                     getattr(mod, class_name)(self)

@@ -108,15 +108,13 @@ Basic structure looks like this:
 ├── classes
 │   ├── connectors
 │   └── output
-├── data
 └── test
     └── configuration_examples
 ~~~~
 
 - `classes/` - main program classes
-- `classes/connectors/` - Autoloaded Connector classes
+- `classes/connectors/` - Autoloaded Connector modules
 - `classes/output/` - Output classes
-- `data` - Various resources
 - `test` - Unit tests
 - `test/configuration_examples` - Config files for unit tests
 
