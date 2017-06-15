@@ -6,9 +6,9 @@
     "observium": {
       "mysql": {
         "host": "localhost",
-        "user": "dnsscript",
-        "passwd": "password",
-        "db": "observium"
+        "user": "travis",
+        "passwd": "",
+        "db": "dnsupdate"
       }
     }
   },
@@ -18,7 +18,10 @@
       "key": "key"
     },
     "servers": [
-      "dns1.domain.example",
+      "ns1.google.com",
+      "ns2.google.com",
+      "ns3.google.com",
+      "ns4.google.com",
       "dns2.domain.example",
       "dns3.domain.example",
       "dns4.domain.example"

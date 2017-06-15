@@ -30,7 +30,15 @@ class TestConfig(unittest.TestCase):
             filemode='w'
         )
         self.config = Config('test/configuration_examples/configuration.json')
-        self.ns_servers = ['dns1.domain.example', 'dns2.domain.example', 'dns3.domain.example', 'dns4.domain.example']
+        self.ns_servers = [
+            'ns1.google.com',
+            'ns2.google.com',
+            'ns3.google.com',
+            'ns4.google.com',
+            'dns2.domain.example',
+            'dns3.domain.example',
+            'dns4.domain.example'
+        ]
         self.ignore_rules_list = sorted(['lb-node.*', 'cmts.*', 'rfgw.*', 'test', 'xxx'])
         self.ignore_rules = {
             "test": [],

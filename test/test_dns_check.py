@@ -18,6 +18,7 @@
 import unittest
 import logging
 from classes import DnsCheck
+from classes import Config
 
 
 class TestDnsCheck(unittest.TestCase):
@@ -28,7 +29,7 @@ class TestDnsCheck(unittest.TestCase):
             level=logging.DEBUG,
             filemode='w'
         )
-        self.dns = DnsCheck()
+        self.dns = DnsCheck(config=Config('test/configuration_examples/configuration.json'))
 
     def test_fqdn_query(self):
         self.assertFalse(self.dns.get_fqdn('asdasd'))
@@ -61,15 +62,19 @@ class TestDnsCheck(unittest.TestCase):
         self.assertRaises(ValueError, DnsCheck.get_ptr_zone, '109.122.96')
 
     def test_is_authoritative(self):
-        self.assertTrue(self.dns.is_authoritative('109.122.98.168'))
-        self.assertTrue(self.dns.is_authoritative('109.122.96.23'))
+        self.assertTrue(self.dns.is_authoritative('8.8.8.8'))
+        self.assertTrue(self.dns.is_authoritative('8.8.8.255'))
         self.assertFalse(self.dns.is_authoritative('89.216.119.169'))
-        self.assertFalse(self.dns.is_authoritative('8.8.8.8'))
+        self.assertFalse(self.dns.is_authoritative('109.122.98.1'))
         self.assertFalse(self.dns.is_authoritative('1.1.1.1'))
 
     def test_check_status(self):
-        self.assertEqual(DnsCheck.STATUS_OK, self.dns.get_status('91.185.98.222', 'r-sc-1.vektor.net')[1])
-        self.assertEqual(DnsCheck.STATUS_NOT_UPDATED, self.dns.get_status('91.185.98.222', 'r-sc-1-lo0.vektor.net')[1])
-        self.assertEqual(DnsCheck.STATUS_NOT_CREATED, self.dns.get_status('109.122.96.50', 'r-sc-1-lo0.vektor.net')[1])
-        self.assertEqual(DnsCheck.STATUS_NOT_AUTHORITATIVE, self.dns.get_status('8.8.8.8', 'r-sc-1-lo0.vektor.net')[1])
+        self.assertEqual(DnsCheck.STATUS_OK,
+                         self.dns.get_status('91.185.98.222', 'r-sc-1.vektor.net')[1])
+        self.assertEqual(DnsCheck.STATUS_NOT_UPDATED,
+                         self.dns.get_status('8.8.8.8', 'r-sc-1-lo0.vektor.net')[1])
+        self.assertEqual(DnsCheck.STATUS_NOT_CREATED,
+                         self.dns.get_status('8.8.8.255', 'r-sc-1-lo0.vektor.net')[1])
+        self.assertEqual(DnsCheck.STATUS_NOT_AUTHORITATIVE,
+                         self.dns.get_status('109.122.98.1', 'r-sc-1-lo0.vektor.net')[1])
         self.assertRaises(ValueError, self.dns.get_status, '109.122.96', 'r-sc-1.vektor.net')
