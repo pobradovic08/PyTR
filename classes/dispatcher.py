@@ -47,7 +47,7 @@ class Dispatcher:
         if auto_load:
             # Autoload all connectors
             ignored_files = ['base.py', '__init__.py']
-            path = os.path.dirname(os.path.abspath(__file__)) + '/interfaces'
+            path = os.path.dirname(os.path.abspath(__file__)) + '/connectors'
             self.logger.info("Autoload enabled. Searching: '%s'" % path)
             for filename in [f for f in os.listdir(path) if f.endswith('.py') and f not in ignored_files]:
                 py = filename[:-3]

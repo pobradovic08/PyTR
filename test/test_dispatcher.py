@@ -18,7 +18,7 @@
 
 import unittest
 import logging
-from classes.interfaces.base import BaseConnector
+from classes.connectors.base import BaseConnector
 from classes import Dispatcher
 from classes import Config
 

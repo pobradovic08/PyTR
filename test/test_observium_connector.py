@@ -18,7 +18,7 @@
 
 import unittest
 import logging
-from classes.interfaces.observium_connector import ObserviumConnector
+from classes.connectors.observium_connector import ObserviumConnector
 from classes import Dispatcher
 from classes import Config
 

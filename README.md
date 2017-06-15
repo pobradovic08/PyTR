@@ -18,16 +18,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 DNS PTR updater collects interface (IP address, IF-MIB::ifName)
 details for a given list of devices, checks and updates PTR RR for those
-IP addresses. Resulting PTR has a form of:
-
-`hostname-ifname.domain.example`
-
-DNS PTR updater features _Connectors_ for importing and exporting list fo
+IP addresses. DNS PTR updater features [_Connectors_](#connectors) for importing and exporting list of
 devices or existing PTR lists from/to 3rd party data sources. Currently
 implemented connectors:
 - Observium (requires MySQL database access)
 
-It also features flexible JSON configuration file for simple implementation
+It features flexible JSON configuration file for simple implementation
 of rules for:
 - Ignoring devices or/and interfaces (regexp matching of hostname or `ifName`)
 - Ignoring IP addresses (matching prefixes in CIDR notation — `192.0.2.0/24`)
@@ -36,6 +32,10 @@ of rules for:
 - List of name servers to update
 - List of domain names to build FQDN with
 - Connector configuration
+
+Resulting PTR has a form of:
+
+`hostname-ifname.domain.example`
 
 ## Device PTR check
 `device_ptr_check` is a Python script that displays info about specific device.

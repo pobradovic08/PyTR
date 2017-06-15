@@ -16,7 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-from classes.interfaces.base import BaseConnector
+from classes.connectors.base import BaseConnector
 import logging
 import MySQLdb
 
