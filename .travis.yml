@@ -3,9 +3,6 @@ python:
   - "2.6"
   - "2.7"
 env:
-  - NET_SNMP_VERSION=5.6
-  - NET_SNMP_VERSION=5.6.2.1
-  - NET_SNMP_VERSION=5.7.2
   - NET_SNMP_VERSION=5.7.3
 
 before_install:
@@ -36,14 +33,6 @@ before_install:
   - rm -rf net-snmp-$NET_SNMP_VERSION
   # Display the build version of Net-SNMP
   - net-snmp-config --version
-  # Install the SNMP MIBs
-  - sudo apt-get install -y snmp-mibs-downloader
-  # Start up SNMPD with our test config
-  - snmpd -C -c tests/snmpd.conf
-  # Ensure that all mibs are loaded by the SNMP client/client library
-  # SNMP will prefer $HOME/.snmp/snmp.conf over /usr/local/etc/snmp.conf
-  - mkdir -m 0755 ~/.snmp
-  - echo 'mibs +ALL' > ~/.snmp/snmp.conf
 install:
   - pip install -r requirements.txt
 script: python -m unittest discover
