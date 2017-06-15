@@ -1,10 +1,10 @@
 language: python
 python:
-  - "2.6"
   - "2.7"
 env:
   - NET_SNMP_VERSION=5.7.3
-
+services:
+  - mysql
 before_install:
   # Install build dependencies
   - sudo apt-get update
@@ -33,6 +33,7 @@ before_install:
   - rm -rf net-snmp-$NET_SNMP_VERSION
   # Display the build version of Net-SNMP
   - net-snmp-config --version
+  - mysql -e 'CREATE DATABASE IF NOT EXISTS dnsupdate;'
 install:
   - pip install -r requirements.txt
 script: python -m unittest discover
