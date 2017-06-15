@@ -23,6 +23,7 @@ import sre_constants
 import logging
 import os
 
+
 class Config:
     def __init__(
             self,
@@ -39,7 +40,6 @@ class Config:
         self.check_only = check_only
         self.diff_only = diff_only
         self.terse = terse
-
 
         filename = os.path.dirname(os.path.abspath(__file__)) + '/../' + filename
         with open(filename) as data_file:

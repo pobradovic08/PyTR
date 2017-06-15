@@ -1,15 +1,23 @@
 {
   "connector": {
     "test": {
+      "enabled": true,
       "key": "value"
     },
+    "test2": {
+      "enabled": true
+    },
     "observium": {
+      "enabled": true,
       "mysql": {
         "host": "localhost",
         "user": "travis",
         "passwd": "",
         "db": "dnsupdate"
       }
+    },
+    "sqlite": {
+      "enabled": false
     }
   },
   "dns": {

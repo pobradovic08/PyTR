@@ -1,5 +1,11 @@
 {
   "connector": {
+    "test": {
+      "enabled": true
+    },
+    "test2": {
+      "enabled": true
+    },
     "observium": {
       "mysql": {
         "host": "localhost",

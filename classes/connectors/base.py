@@ -15,6 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import re
 
 class BaseConnector:
     """
@@ -24,10 +25,15 @@ class BaseConnector:
     """
 
     def __init__(self, dispatcher):
-        # Register connector with dispatcher
-        dispatcher.register_connector(self)
         # Get connector's config
         self.config = dispatcher.get_connector_config(self)
+        # Register connector with dispatcher if it's not disabled in config file
+        if "enabled" in self.config and self.config["enabled"]:
+            dispatcher.register_connector(self)
+
+    def get_connector_name(self):
+        connector_name = re.match('(.*)Connector', self.__class__.__name__)
+        return connector_name.group(1).lower()
 
     def load_devices(self):
         """

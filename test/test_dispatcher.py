@@ -38,6 +38,13 @@ class Test2Connector(BaseConnector):
     def load_devices(self):
         return ['noc.vektor.net']
 
+class Test3Connector(BaseConnector):
+    def save_ptr(self, ptr):
+        pass
+
+    def load_devices(self):
+        pass
+
 
 class TestDispatcher(unittest.TestCase):
     def setUp(self):
@@ -58,6 +65,9 @@ class TestDispatcher(unittest.TestCase):
         self.assertListEqual(['TestConnector'], self.dispatcher.get_connector_list())
         Test2Connector(self.dispatcher)
         self.assertListEqual(['TestConnector', 'Test2Connector'], self.dispatcher.get_connector_list())
+        # Test3 doesn't have enabled flag set. Should be ignored
+        Test3Connector(self.dispatcher)
+        self.assertListEqual(['TestConnector', 'Test2Connector'], self.dispatcher.get_connector_list())
 
     def test_connector_load(self):
         self.assertListEqual([], self.dispatcher.devices.keys())
@@ -76,11 +86,24 @@ class TestDispatcher(unittest.TestCase):
 
     def test_get_connector_config(self):
         connector = TestConnector(self.dispatcher)
-        self.assertDictEqual({}, connector.config)
+        self.assertDictEqual(
+            {
+                'enabled': True
+            },
+            connector.config)
 
         dispatcher = Dispatcher(Config(filename='test/configuration_examples/configuration.json'))
         connector = TestConnector(dispatcher)
-        self.assertDictEqual({'key': 'value'}, connector.config)
+        self.assertDictEqual(
+            {
+                'enabled': True,
+                'key': 'value'
+            },
+            connector.config)
 
         connector2 = Test2Connector(dispatcher)
-        self.assertDictEqual({}, connector2.config)
+        self.assertDictEqual(
+            {
+                'enabled': True
+            },
+            connector2.config)

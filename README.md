@@ -106,15 +106,17 @@ Fetching data from devices:
 Basic structure looks like this:
 ~~~~
 ├── classes
-│   ├── interfaces
+│   ├── connectors
 │   └── output
+├── data
 └── test
     └── configuration_examples
 ~~~~
 
 - `classes/` - main program classes
-- `classes/interfaces/` - Autoloaded Connector classes
+- `classes/connectors/` - Autoloaded Connector classes
 - `classes/output/` - Output classes
+- `data` - Various resources
 - `test` - Unit tests
 - `test/configuration_examples` - Config files for unit tests
 

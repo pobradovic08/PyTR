@@ -75,11 +75,11 @@ class Dispatcher:
 
     def get_connector_config(self, connector):
         class_name = connector.__class__.__name__
-        connector_name = re.match('(.*)Connector', class_name)
+        connector_name = connector.get_connector_name()
         self.logger.debug("Search for ['%s'] in configuration file" % connector_name)
-        if connector_name.group(1):
+        if connector_name:
             self.logger.debug("Configuration for '%s' found" % class_name)
-            return self.config.get_connector_config(connector_name.group(1).lower())
+            return self.config.get_connector_config(connector_name)
         else:
             self.logger.warning("Configuration for '%s' not found" % class_name)
 
