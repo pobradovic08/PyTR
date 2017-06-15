@@ -1,6 +1,6 @@
 **Still under development and not functional!**
 
-# DNS PTR updater
+# DNS PTR updater [![Build Status](https://travis-ci.org/pobradovic08/dns-update.svg?branch=master)](https://travis-ci.org/pobradovic08/dns-update)
 
 >This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
