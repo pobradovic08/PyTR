@@ -61,7 +61,7 @@ class SqliteConnector(BaseConnector):
                 ptr=ptr_row[3],
                 status=ptr_row[4]
             )
-            ptrs[ptr.ip_address] = ptr
+            ptrs[str(ptr.ip_address)] = ptr
 
         return ptrs
 

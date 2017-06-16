@@ -38,9 +38,9 @@ class TestSqliteConnector(unittest.TestCase):
         self.connector.create_ptr_table()
         ptr = {
             'ip_address': u'10.10.10.10',
-            'hostname': 'cmts-sc-1.vektor.net',
+            'hostname': 'cmts-sc-1.domain.example',
             'if_name': 'Ethernet0/0/0',
-            'ptr': 'cmts-sc-1-et0-0-0.vektor.net'
+            'ptr': 'cmts-sc-1-et0-0-0.domain.example'
         }
         self.connector.save_ptr(Ptr(**ptr))
 
@@ -51,6 +51,12 @@ class TestSqliteConnector(unittest.TestCase):
         ptrs = self.connector.load_ptrs()
         self.assertEquals(1, len(ptrs))
         self.assertListEqual(['10.10.10.10'], [str(x) for x in ptrs.keys()])
+        self.assertEquals('10.10.10.10', str(ptrs['10.10.10.10'].ip_address))
+        self.assertEquals('cmts-sc-1.domain.example', ptrs['10.10.10.10'].hostname)
+        self.assertEquals('Ethernet0/0/0', ptrs['10.10.10.10'].if_name)
+        self.assertEquals('cmts-sc-1-et0-0-0.domain.example', ptrs['10.10.10.10'].ptr)
+        self.assertEquals('10.10.10.in-addr.arpa.', ptrs['10.10.10.10'].get_ptr_zone())
+
 
 
     def test_drop_ptr_table(self):

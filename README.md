@@ -22,6 +22,7 @@ IP addresses. DNS PTR updater features [_Connectors_](#connectors) for importing
 devices or existing PTR lists from/to 3rd party data sources. Currently
 implemented connectors:
 - Observium (requires MySQL database access)
+- Local SQLite database
 
 It features flexible JSON configuration file for simple implementation
 of rules for:
