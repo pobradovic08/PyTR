@@ -55,3 +55,10 @@ class ObserviumConnector(BaseConnector):
         :return:
         """
         pass
+
+    def load_ptrs(self):
+        """
+        No PTR records in Observium
+        :return:
+        """
+        pass

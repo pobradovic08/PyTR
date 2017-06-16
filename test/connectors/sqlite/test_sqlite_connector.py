@@ -15,48 +15,44 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-
-import unittest
 import logging
+import unittest
+import sqlite3
+
+from classes import Config
+from classes import Dispatcher
 from classes import Ptr
+from classes.connectors.sqlite.sqlite_connector import SqliteConnector
 
 
-class TestPtr(unittest.TestCase):
-    def test_instantiation(self):
+class TestSqliteConnector(unittest.TestCase):
+    def setUp(self):
         logging.basicConfig(
             filename='test/unittest.log',
             format="%(asctime)s - %(levelname)s - %(name)s:%(funcName)s - %(message)s",
             level=logging.DEBUG,
             filemode='w'
         )
+        self.dispatcher = Dispatcher(Config(filename='test/configuration_examples/configuration.json'))
+        self.connector = SqliteConnector(self.dispatcher)
+        self.connector.create_ptr_table()
         ptr = {
             'ip_address': u'10.10.10.10',
             'hostname': 'cmts-sc-1.vektor.net',
             'if_name': 'Ethernet0/0/0',
             'ptr': 'cmts-sc-1-et0-0-0.vektor.net'
         }
+        self.connector.save_ptr(Ptr(**ptr))
 
-        obj = Ptr(**ptr)
-        self.assertIsInstance(obj, Ptr)
-        self.assertEquals(ptr['ip_address'], str(obj.ip_address))
-        self.assertEquals(ptr['hostname'], obj.hostname)
-        self.assertEquals(ptr['if_name'], obj.if_name)
-        self.assertEquals(ptr['ptr'], obj.ptr)
-        self.assertEquals(Ptr.STATUS_UNKNOWN, obj.status)
+    def tearDown(self):
+        self.connector.drop_ptr_table()
 
-        ptr['status'] = Ptr.STATUS_IGNORED
-        obj = Ptr(**ptr)
-        self.assertEquals(Ptr.STATUS_IGNORED, obj.status)
+    def test_load_ptrs(self):
+        ptrs = self.connector.load_ptrs()
+        self.assertEquals(1, len(ptrs))
+        self.assertListEqual(['10.10.10.10'], [str(x) for x in ptrs.keys()])
 
-        ptr['ip_address'] = 'x.x.x.x'
-        self.assertRaises(ValueError, Ptr, **ptr)
 
-    def test_ptr_zone(self):
-        ptr = Ptr(
-            ip_address = u'10.20.30.40',
-            hostname = 'cmts-sc-1.vektor.net',
-            if_name = 'Ethernet0/0/0',
-            ptr = 'cmts-sc-1-et0-0-0.vektor.net'
-        )
-
-        self.assertEquals('30.20.10.in-addr.arpa.', ptr.get_ptr_zone())
+    def test_drop_ptr_table(self):
+        self.connector.drop_ptr_table()
+        self.assertRaises(sqlite3.OperationalError, self.connector.load_ptrs)

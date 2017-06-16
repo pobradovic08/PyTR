@@ -42,6 +42,16 @@ class BaseConnector:
         """
         raise NotImplementedError()
 
+    def load_ptrs(self):
+        """
+        Builds a dict of PTRs formatted like:
+        {
+            ip_address: Ptr()
+        }
+        :return:
+        """
+        raise NotImplementedError()
+
     def save_ptr(self, ptr):
         """
         Saves passed PTR record to destination. PTR record is in format:

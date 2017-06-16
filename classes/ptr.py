@@ -28,16 +28,29 @@ class Ptr:
     STATUS_NOT_AUTHORITATIVE = 4
     STATUS_IGNORED = 5
 
-    def __init__(self, ip, ptr, device, interface, status=STATUS_UNKNOWN):
+    def __init__(self, ip_address, ptr, hostname, if_name, status=STATUS_UNKNOWN):
+        # type: (unicode, str, str, str, str) -> None
         self.logger = logging.getLogger('dns_update.ptr')
+        self.ip_address = None
         try:
-            self.ip = ipaddress.IPv4Address(ip)
+            self.ip_address = ipaddress.IPv4Address(ip_address)
         except ipaddress.AddressValueError as e:
             raise ValueError("Invalid IP address: %s" % e)
-        self.device = device
-        self.interface = interface
+        self.hostname = hostname
+        self.if_name = if_name
         self.ptr = ptr
         self.status = status
 
+    # noinspection PyTypeChecker
+    def ip_int(self):
+        return int(self.ip_address)
+
+    def get_ptr_zone(self):
+        """ Returns ptr zone in x.y.z.in-addr.arpa format """
+        # Get first 3 octets, reverse them and append '.in-addr.arpa.'
+        parts = str(self.ip_address).split('.')
+        zone = '.'.join(list(reversed(parts[:-1]))) + '.in-addr.arpa.'
+        return zone
+
     def __repr__(self):
-        return "%s (%s)" % (self.ptr, self.ip)
+        return "%s (%s)" % (self.ptr, self.ip_address)

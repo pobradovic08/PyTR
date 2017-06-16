@@ -17,6 +17,7 @@
       }
     },
     "sqlite": {
+      "db": "test/connectors/sqlite/sqlite.sql",
       "enabled": false
     }
   },
