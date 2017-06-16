@@ -57,7 +57,44 @@ class TestSqliteConnector(unittest.TestCase):
         self.assertEquals('cmts-sc-1-et0-0-0.domain.example', ptrs['10.10.10.10'].ptr)
         self.assertEquals('10.10.10.in-addr.arpa.', ptrs['10.10.10.10'].get_ptr_zone())
 
-
+    def test_save_ptrs(self):
+        self.connector.drop_ptr_table()
+        self.connector.create_ptr_table()
+        ptr1 = {
+            'ip_address': u'192.0.2.1',
+            'hostname': 'device.domain.example',
+            'if_name': 'Ethernet0/0/0',
+            'ptr': 'device-et0-0-0.domain.example'
+        }
+        ptr2 = {
+            'ip_address': u'10.9.8.7',
+            'hostname': 'host.domain.example',
+            'if_name': 'Ethernet3/2/1',
+            'ptr': 'host-et3-2-1.domain.example'
+        }
+        ptr3 = {
+            'ip_address': u'192.0.2.254',
+            'hostname': 'dns.domain.example',
+            'if_name': 'Ethernet0/0/0',
+            'ptr': 'dns-et0-0-0.domain.example'
+        }
+        ptrs = {
+            '192.0.2.1': Ptr(**ptr1),
+            '10.9.8.7': Ptr(**ptr2),
+            '192.0.2.254': Ptr(**ptr3),
+        }
+        # Save PTRs
+        self.connector.save_ptrs(ptrs=ptrs)
+        loaded_ptrs = self.connector.load_ptrs()
+        # Check if IPs are the same
+        self.assertListEqual(ptrs.keys(), loaded_ptrs.keys())
+        # Change one of the PTRs to test updating
+        ptrs['10.9.8.7'].hostname = 'changed_host.domain.example'
+        # Insert again to check handling of duplicate ip keys
+        self.connector.save_ptrs(ptrs=ptrs)
+        loaded_ptrs = self.connector.load_ptrs()
+        # Check if updated PTR record is saved to DB correctly
+        self.assertEquals('changed_host.domain.example', loaded_ptrs['10.9.8.7'].hostname)
 
     def test_drop_ptr_table(self):
         self.connector.drop_ptr_table()

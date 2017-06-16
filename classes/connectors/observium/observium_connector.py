@@ -56,6 +56,14 @@ class ObserviumConnector(BaseConnector):
         """
         pass
 
+    def save_ptrs(self, ptrs):
+        """
+        No need to update PTR in Observium
+        :param ptr:
+        :return:
+        """
+        pass
+
     def load_ptrs(self):
         """
         No PTR records in Observium

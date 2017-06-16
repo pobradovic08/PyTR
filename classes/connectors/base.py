@@ -17,6 +17,7 @@
 
 import re
 
+
 class BaseConnector:
     """
     Interface for Connectors
@@ -54,14 +55,16 @@ class BaseConnector:
 
     def save_ptr(self, ptr):
         """
-        Saves passed PTR record to destination. PTR record is in format:
-        {
-            device: FQDN,
-            interface: IF-MIB::ifIndex,
-            ptr: interface-host.domain.example,
-            ip: IP address
-        }
-        :param ptr: PTR dictionary containing: device, interface, ptr, ip_address
+        Saves passed PTR record to destination.
+        :param ptr: Ptr object
+        :return:
+        """
+        raise NotImplementedError()
+
+    def save_ptrs(self, ptrs):
+        """
+        Saves multiple PTR records provided in a form of dict
+        :param ptrs:  dict of Ptr objects
         :return:
         """
         raise NotImplementedError()

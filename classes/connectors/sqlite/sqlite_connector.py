@@ -23,6 +23,7 @@ from classes.connectors import BaseConnector
 from classes import Ptr
 
 
+# noinspection SqlResolve
 class SqliteConnector(BaseConnector):
     def __init__(self, dispatcher):
         BaseConnector.__init__(self, dispatcher)
@@ -40,8 +41,7 @@ class SqliteConnector(BaseConnector):
                   `ptr` VARCHAR(128) DEFAULT NULL,
                   `ptr_zone` VARCHAR(128) NOT NULL,
                   `status` INTEGER UNSIGNED NOT NULL,
-                  `insert_time` INTEGER UNSIGNED DEFAULT NULL,
-                  `update_time` INTEGER UNSIGNED DEFAULT NULL
+                  `insert_time` INTEGER UNSIGNED DEFAULT NULL
                 )"""
         self.c.execute(sql)
 
@@ -66,8 +66,8 @@ class SqliteConnector(BaseConnector):
         return ptrs
 
     def save_ptr(self, ptr):
-        sql = "INSERT INTO `ptrs` VALUES (" \
-              ":ip_address, :hostname, :if_name, :ptr, :ptr_zone, :status, :insert_time, :update_time" \
+        sql = "INSERT OR REPLACE INTO `ptrs` VALUES (" \
+              ":ip_address, :hostname, :if_name, :ptr, :ptr_zone, :status, :insert_time" \
               ")"
 
         data = {
@@ -77,10 +77,13 @@ class SqliteConnector(BaseConnector):
             "ptr": ptr.ptr,
             "ptr_zone": ptr.get_ptr_zone(),
             "status": ptr.status,
-            "insert_time": int(time.time()),
-            "update_time": int(time.time())
+            "insert_time": int(time.time())
         }
         self.c.execute(sql, data)
+
+    def save_ptrs(self, ptrs):
+        for ptr in ptrs:
+            self.save_ptr(ptrs[ptr])
 
     def load_devices(self):
         pass
