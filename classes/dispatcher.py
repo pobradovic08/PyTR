@@ -31,7 +31,7 @@ class Dispatcher:
 
     """
 
-    def __init__(self, config, auto_load=True):
+    def __init__(self, config, auto_load=True, connectors_dir='/connectors'):
         self.logger = logging.getLogger('dns_update.dispatcher')
         # List of registered connectors
         self.__connectors = []
@@ -46,20 +46,23 @@ class Dispatcher:
 
         if auto_load:
             # Autoload all connectors
-            ignored_files = ['base.py', '__init__.py']
-            path = os.path.dirname(os.path.abspath(__file__)) + '/connectors'
+            path = os.path.dirname(os.path.abspath(__file__)) + connectors_dir
             self.logger.info("Autoload enabled. Searching: '%s'" % path)
             for dirname in [d for d in os.listdir(path) if os.path.isdir(path + '/' + d)]:
                 filename = dirname + '_connector.py'
                 py = filename[:-3]
                 class_name = ''.join([x.capitalize() for x in py.split('_')])
-                mod = imp.load_source(class_name, path + '/' + dirname + '/' + filename)
-                # Instantiate class
-                if hasattr(mod, class_name):
-                    getattr(mod, class_name)(self)
-                    self.logger.info("Connector '%s' successfully loaded" % class_name)
-                else:
-                    self.logger.error("Connector '%s' couldn't be loaded" % class_name)
+                try:
+                    mod = imp.load_source(class_name, path + '/' + dirname + '/' + filename)
+                    # Instantiate class
+                    if hasattr(mod, class_name):
+                        getattr(mod, class_name)(self)
+                        self.logger.info("Connector '%s' successfully loaded" % class_name)
+                    else:
+                        self.logger.error("Connector '%s' couldn't be loaded" % class_name)
+                except IOError:
+                    self.logger.error("Connector's '%s' directory doesn't have '%s' file" % (class_name, filename))
+                    continue
 
     def register_connector(self, connector):
         """
@@ -78,11 +81,7 @@ class Dispatcher:
         class_name = connector.__class__.__name__
         connector_name = connector.get_connector_name()
         self.logger.debug("Search for ['%s'] in configuration file" % connector_name)
-        if connector_name:
-            self.logger.debug("Configuration for '%s' found" % class_name)
-            return self.config.get_connector_config(connector_name)
-        else:
-            self.logger.warning("Configuration for '%s' not found" % class_name)
+        return self.config.get_connector_config(connector_name)
 
     def save_ptr(self, ptr):
         """
@@ -93,6 +92,18 @@ class Dispatcher:
         self.logger.info("Dispatch save PTR command for %s to all (%d) connectors" % (ptr, len(self.__connectors)))
         for connector in self.__connectors:
             connector.save_ptr(ptr)
+
+    def save_ptrs(self, ptrs):
+        """
+        Issue save multiple PTRs command on each connector
+        :param ptr: PTR dict
+        :return:
+        """
+        self.logger.info("Dispatch save PTRs command for %d PTRs to all (%d) connectors" % (
+            len(ptrs), len(self.__connectors)
+        ))
+        for connector in self.__connectors:
+            connector.save_ptrs(ptrs)
 
     def load(self):
         """

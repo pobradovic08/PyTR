@@ -21,29 +21,32 @@ import logging
 from classes.connectors.base import BaseConnector
 from classes import Dispatcher
 from classes import Config
+from classes import Ptr
 
 
 class TestConnector(BaseConnector):
     def save_ptr(self, ptr):
         pass
 
+    def save_ptrs(self, ptrs):
+        pass
+
     def load_devices(self):
-        return ['cmts-sc-1.vektor.net', 'cmts-sc-2.vektor.net', 'cmts-gs-1.vektor.net']
+        return ['cmts-sc-1.vektor.net', 'cmts-sc-2.vektor.net', 'cmts-gs-1.domain.example']
 
 
 class Test2Connector(BaseConnector):
     def save_ptr(self, ptr):
         pass
 
+    def save_ptrs(self, ptrs):
+        pass
+
     def load_devices(self):
         return ['noc.vektor.net']
 
-class Test3Connector(BaseConnector):
-    def save_ptr(self, ptr):
-        pass
 
-    def load_devices(self):
-        pass
+class Test3Connector(BaseConnector): pass
 
 
 class TestDispatcher(unittest.TestCase):
@@ -73,16 +76,35 @@ class TestDispatcher(unittest.TestCase):
         self.assertListEqual([], self.dispatcher.devices.keys())
         TestConnector(self.dispatcher)
         self.dispatcher.load()
+        # No invalid hostnames included
         self.assertListEqual(
-            sorted(['cmts-sc-1.vektor.net', 'cmts-sc-2.vektor.net', 'cmts-gs-1.vektor.net']),
+            sorted(['cmts-sc-1.vektor.net', 'cmts-sc-2.vektor.net']),
             sorted(self.dispatcher.devices.keys())
         )
         Test2Connector(self.dispatcher)
         self.dispatcher.load()
+        # No invalid hostnames included
         self.assertListEqual(
-            sorted(['cmts-sc-1.vektor.net', 'cmts-sc-2.vektor.net', 'cmts-gs-1.vektor.net', 'noc.vektor.net']),
+            sorted(['cmts-sc-1.vektor.net', 'cmts-sc-2.vektor.net', 'noc.vektor.net']),
             sorted(self.dispatcher.devices.keys())
         )
+
+    def test_autoload(self):
+        self.dispatcher = Dispatcher(
+            Config(filename='test/configuration_examples/simple.json'),
+            connectors_dir='/../test/connectors/modules'
+        )
+
+    def test_save_ptrs(self):
+        TestConnector(self.dispatcher)
+        Test2Connector(self.dispatcher)
+        self.dispatcher.save_ptr(Ptr(
+            ip_address=u'10.10.10.10',
+            hostname='host.domain.example',
+            if_name='Ethernet1/0',
+            ptr='host-eth1/0.domain.example'
+        ))
+        self.dispatcher.save_ptrs({})
 
     def test_get_connector_config(self):
         connector = TestConnector(self.dispatcher)
@@ -92,7 +114,7 @@ class TestDispatcher(unittest.TestCase):
             },
             connector.config)
 
-        dispatcher = Dispatcher(Config(filename='test/configuration_examples/configuration.json'))
+        dispatcher = Dispatcher(Config(filename='test/configuration_examples/configuration.json'), auto_load=False)
         connector = TestConnector(dispatcher)
         self.assertDictEqual(
             {
@@ -107,3 +129,5 @@ class TestDispatcher(unittest.TestCase):
                 'enabled': True
             },
             connector2.config)
+        connector3 = Test3Connector(dispatcher)
+        dispatcher.get_connector_config(connector3)

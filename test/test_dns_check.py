@@ -69,12 +69,23 @@ class TestDnsCheck(unittest.TestCase):
         self.assertFalse(self.dns.is_authoritative('1.1.1.1'))
 
     def test_check_status(self):
+        # OK PTR
         self.assertEqual(DnsCheck.STATUS_OK,
                          self.dns.get_status('91.185.98.222', 'r-sc-1.vektor.net')[1])
+        # Authoritative
+        # Wrong PTR
         self.assertEqual(DnsCheck.STATUS_NOT_UPDATED,
                          self.dns.get_status('8.8.8.8', 'r-sc-1-lo0.vektor.net')[1])
+        # No PTR
         self.assertEqual(DnsCheck.STATUS_NOT_CREATED,
                          self.dns.get_status('8.8.8.255', 'r-sc-1-lo0.vektor.net')[1])
+        # Not authoritative
+        # Wrong PTR
         self.assertEqual(DnsCheck.STATUS_NOT_AUTHORITATIVE,
                          self.dns.get_status('109.122.98.1', 'r-sc-1-lo0.vektor.net')[1])
+        # No PTR
+        self.assertEqual(DnsCheck.STATUS_NOT_AUTHORITATIVE,
+                         self.dns.get_status('109.122.98.128', 'r-sc-1-lo0.vektor.net')[1])
+
+        # Wrong IP
         self.assertRaises(ValueError, self.dns.get_status, '109.122.96', 'r-sc-1.vektor.net')

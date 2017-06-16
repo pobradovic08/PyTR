@@ -38,3 +38,5 @@ before_install:
 install:
   - pip install -r requirements.txt
 script: python -m unittest discover
+after_sucess:
+  - CODECLIMATE_REPO_TOKEN=03b947e9cd250d7f779f49eb7024b4e467543a50b73f15a93e907bbf1f14144b codeclimate-test-reporter

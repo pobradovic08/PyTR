@@ -34,3 +34,6 @@ class TestObserviumConnector(unittest.TestCase):
         )
         self.dispatcher = Dispatcher(Config(filename='test/configuration_examples/configuration.json'))
         self.connector = ObserviumConnector(self.dispatcher)
+
+    def test_default(self):
+        self.assertEquals(ObserviumConnector, self.connector.__class__)
