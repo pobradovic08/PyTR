@@ -50,33 +50,6 @@ class Config:
                 self.logger.critical("Couldn't parse '%s' configuration file. Exiting..." % filename)
                 exit(1)
 
-    def set_check_only(self, check_only):
-        """
-        set check only flag
-        :param check_only:
-        :return:
-        """
-        self.check_only = bool(check_only)
-        self.logger.debug("Check only set to: %s" % check_only)
-
-    def set_diff_only(self, diff_only):
-        """
-        set diff only flag
-        :param diff_only:
-        :return:
-        """
-        self.diff_only = bool(diff_only)
-        self.logger.debug("Show only differences set to: %s" % diff_only)
-
-    def set_terse(self, terse):
-        """
-        Set terse output flag
-        :param terse:
-        :return:
-        """
-        self.terse = bool(terse)
-        self.logger.debug("Terse output set to: %s" % terse)
-
     def get_connector_config(self, connector_name):
         """
         Returns config specific to connector class
@@ -104,7 +77,7 @@ class Config:
 
     def get_ns_search_domains(self):
         """
-        Returns 'dns'->'search' dictionary of domains to search
+        Returns dictionary of domains to search
         :return:
         """
         try:
@@ -115,7 +88,7 @@ class Config:
 
     def get_ns_search_servers(self):
         """
-        Returns 'dns'->'search' dictionary of domains to search
+        Returns dictionary of servers to query
         :return:
         """
         try:
@@ -164,6 +137,8 @@ class Config:
                         if re.match(hostname_match, hostname):
                             self.logger.info("Community for '%s' found: '%s'" % (hostname, community))
                             return community
+                        else:
+                            self.logger.debug("Community for '%s' not found in rule '%s'" % (hostname, hostname_match))
                     except sre_constants.error:
                         self.logger.error("Custom SNMP community rule '%s' not valid." % hostname_match)
                         continue
@@ -181,7 +156,7 @@ class Config:
     def get_snmp_retries(self, default=0):
         """
         Returns number of retries for SNMP queries
-        :param default: Default value returned if there's no value in Config. Must be int >= 0
+        :param default: No value in Config - default value returned . Must be int >= 0
         :return:
         """
         # Try integer conversion (raises ValueError on failure)
@@ -206,8 +181,9 @@ class Config:
                         % default
                     )
                     return default
-                self.logger.info("Retry count value in configuration file is: %d" % config_value)
-                return config_value
+                else:
+                    self.logger.info("Retry count value in configuration file is: %d" % config_value)
+                    return config_value
 
             except ValueError:
                 self.logger.warning("Retry count not integer. Returning default value of: %d" % default)
@@ -219,7 +195,7 @@ class Config:
     def get_snmp_timeout(self, default=1):
         """
         Returns value for timeout
-        :param default: Default value returned if there's no value in Config. Must be positive value
+        :param default: No value in Config - Default value returned. Must be positive value
         :return:
         """
         default = float(default)
