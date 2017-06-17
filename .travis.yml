@@ -35,8 +35,8 @@ before_install:
 #  - net-snmp-config --version
   # Create MySQL database
   - mysql -e 'CREATE DATABASE IF NOT EXISTS dnsupdate;'
-  - cp test/system/snmpd.conf /etc/snmp/snmpd.conf
-  - service snmpd restart
+  - sudo cp test/system/snmpd.conf /etc/snmp/snmpd.conf
+  - sudo service snmpd restart
 install:
   - pip install -r requirements.txt
 script: python -m unittest discover
