@@ -160,6 +160,6 @@ with a class named `ExampleConnector`.
 All connectors should be instances of `BaseConnector` class and override all it's methods, needed or not.
 Those methods are:
 - `load_devices` - Returns a list of device hostnames
-- `load_ptrs` - Returns a dictionary of Ptr objects - `'ip_address': Ptr` 
+- `load_ptrs` - Returns a dictionary of Ptr objects - `{ 'ip_address': Ptr, ... }` 
 - `save_ptr` - Save a single Ptr object
 - `save_ptrs` - Save a dictionary of Ptr objects
