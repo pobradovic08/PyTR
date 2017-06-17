@@ -13,7 +13,7 @@
         "host": "localhost",
         "user": "travis",
         "passwd": "",
-        "db": "dnsupdate"
+        "db": "observium"
       }
     },
     "sqlite": {
