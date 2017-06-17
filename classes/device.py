@@ -39,7 +39,11 @@ class Device:
         self.dns = dns if dns else DnsCheck(self.config)
         self.hostname = hostname
         # Split device.hostname into two parts: (hostname).(domain.example)
-        self.host, self.domain = self.hostname.split('.', 1)
+        try:
+            self.host, self.domain = self.hostname.split('.', 1)
+        except ValueError:
+            self.host = self.hostname
+            self.domain = None
         # Get IN A record for device hostname
         self.ip = self.dns.get_a(self.hostname)
         # TODO: update to support v3

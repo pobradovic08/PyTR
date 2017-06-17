@@ -8,7 +8,7 @@ services:
 before_install:
   # Install build dependencies
   - sudo apt-get update
-  - sudo apt-get install -y autoconf libtool make libperl-dev python-dev
+  - sudo apt-get install -y autoconf libtool make libperl-dev python-dev snmpd
   # Download and extract the required version of Net-SNMP
   - wget http://downloads.sourceforge.net/sourceforge/net-snmp/net-snmp-$NET_SNMP_VERSION.tar.gz
   - tar zxvf net-snmp-$NET_SNMP_VERSION.tar.gz
@@ -35,6 +35,8 @@ before_install:
   - net-snmp-config --version
   # Create MySQL database
   - mysql -e 'CREATE DATABASE IF NOT EXISTS dnsupdate;'
+  - cp test/system/snmpd.conf /etc/snmp/snmpd.conf
+  - service snmpd restart
 install:
   - pip install -r requirements.txt
 script: python -m unittest discover
