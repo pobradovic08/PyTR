@@ -47,6 +47,9 @@ class TestSqliteConnector(unittest.TestCase):
     def tearDown(self):
         self.connector.drop_ptr_table()
 
+    def test_load_devices(self):
+        self.connector.load_devices()
+
     def test_load_ptrs(self):
         ptrs = self.connector.load_ptrs()
         self.assertEquals(1, len(ptrs))

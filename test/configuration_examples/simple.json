@@ -13,6 +13,10 @@
         "passwd": "password",
         "db": "observium"
       }
+    },
+    "sqlite": {
+      "db": "test/connectors/sqlite/sqlite.sql",
+      "enabled": false
     }
   },
   "dns": {

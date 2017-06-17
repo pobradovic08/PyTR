@@ -40,13 +40,17 @@ class ObserviumConnector(BaseConnector):
         :return:
         """
         device_list = []
-        sql = "SELECT hostname FROM devices WHERE disabled = 0"
-        self.logger.debug("Executing SQL: %s" % sql)
-        self.c.execute(sql)
-        for hostname in self.c.fetchall():
-            device_list.append(hostname[0])
-        self.logger.debug("Fetched %s device(s) from database" % len(device_list))
-        return device_list
+        try:
+            sql = "SELECT hostname FROM devices WHERE disabled = 0"
+            self.logger.debug("Executing SQL: %s" % sql)
+            self.c.execute(sql)
+            for hostname in self.c.fetchall():
+                device_list.append(hostname[0])
+            self.logger.debug("Fetched %s device(s) from database" % len(device_list))
+            return device_list
+        except  MySQLdb.ProgrammingError as e:
+            self.logger.error("Couldn't load devices: %s" % e)
+            return []
 
     def save_ptr(self, ptr):
         """

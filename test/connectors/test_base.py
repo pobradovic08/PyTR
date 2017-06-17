@@ -18,13 +18,16 @@
 
 import logging
 import unittest
-
-from classes import Config
+from classes.connectors.base import BaseConnector
 from classes import Dispatcher
-from classes.connectors.observium.observium_connector import ObserviumConnector
+from classes import Config
+from classes import Ptr
 
 
-class TestObserviumConnector(unittest.TestCase):
+class TestConnector(BaseConnector): pass
+
+
+class TestBaseConnector(unittest.TestCase):
     def setUp(self):
         logging.basicConfig(
             filename='test/unittest.log',
@@ -32,19 +35,14 @@ class TestObserviumConnector(unittest.TestCase):
             level=logging.DEBUG,
             filemode='w'
         )
-        self.dispatcher = Dispatcher(Config(filename='test/configuration_examples/configuration.json'))
-        self.connector = ObserviumConnector(self.dispatcher)
+        self.dispatcher = Dispatcher(
+            Config(filename='test/configuration_examples/simple.json'),
+            auto_load=False
+        )
 
-    def test_default(self):
-        self.assertEquals(ObserviumConnector, self.connector.__class__)
-        self.connector.load_devices()
-
-    def test_simple(self):
-        dispatcher = Dispatcher(Config(filename='test/configuration_examples/simple.json'))
-        connector = ObserviumConnector(dispatcher)
-        connector.load_devices()
-
-    def test_unused(self):
-        self.connector.save_ptr(None)
-        self.connector.save_ptrs(None)
-        self.connector.load_ptrs()
+    def test_rasise_exception(self):
+        t = TestConnector(self.dispatcher)
+        self.assertRaises(NotImplementedError, t.load_ptrs)
+        self.assertRaises(NotImplementedError, t.load_devices)
+        self.assertRaises(NotImplementedError, t.save_ptrs, None)
+        self.assertRaises(NotImplementedError, t.save_ptr, None)
