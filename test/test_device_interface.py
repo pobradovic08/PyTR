@@ -21,6 +21,7 @@ import logging
 from classes import Device
 from classes import Config
 from classes import DeviceInterface
+from classes import Ptr
 
 class TestDeviceInterface(unittest.TestCase):
 
@@ -32,8 +33,34 @@ class TestDeviceInterface(unittest.TestCase):
             filemode='w'
         )
         self.device = Device('localhost', Config(filename='test/configuration_examples/simple.json'))
-
-    def test_default(self):
         self.device.get_interfaces()
-        print self.device.interfaces
-        pass
+        for if_index, di in self.device.interfaces.iteritems():
+            self.di = di
+            break
+
+    def test_add_ip_address(self):
+        self.di.add_ip_address('192.0.2.1')
+        self.di.add_ip_address('192.0.2.1')
+
+    def test_get_ptr_for_ip(self):
+        self.di.device.config.terse = True
+        self.di.get_ptr_for_ip('192.0.2.1')
+        self.di.device.config.terse = False
+        self.di.get_ptr_for_ip('192.0.2.1')
+
+    def test_get_ptrs(self):
+        self.di.add_ip_address('192.0.2.x')
+        self.di.get_ptrs()
+
+    def test_update_ptr_status(self):
+        self.di.update_ptr_status('192.0.2.1', 'ptr-test.domain.example', Ptr.STATUS_NOT_CREATED)
+        self.di.add_ip_address('192.0.2.1')
+        self.di.update_ptr_status('192.0.2.1', 'ptr-test.domain.example', Ptr.STATUS_NOT_CREATED)
+
+    def test_long_if_name(self):
+        self.di.if_name = "Ethernet0/0/0"
+        self.di._make_ptr()
+        self.assertEquals('localhost-et0-0-0', self.di.ptr)
+        self.di.if_name = "GigabitEthernet"
+        self.di._make_ptr()
+

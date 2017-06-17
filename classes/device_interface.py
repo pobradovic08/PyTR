@@ -67,12 +67,10 @@ class DeviceInterface:
                 # TODO: what if interface has 10+ chars but have group(2) (number suffix)? Fix above pls
                 self.logger.warning("Unable to parse and shorten '%s' interface name" % interface)
         # Move format string to config file?
-        self.ptr = '{host}-{interface}.{domain}'.format(
-            host=self.device.host, interface=interface, domain=self.device.domain
-        )
         self.short_ptr = '{host}-{interface}'.format(
             host=self.device.host, interface=interface
         )
+        self.ptr = '.'.join(filter(None, [self.short_ptr, self.device.domain]))
         self.logger.info("PTR for interface '%s' set to: '%s'" % (self.if_name, self.ptr))
 
     def add_ip_address(self, ip_address):
@@ -147,9 +145,9 @@ class DeviceInterface:
         for ip in self.ip_addresses:
             try:
                 ptrs[ip] = Ptr(
-                    ip=ip,
-                    device=self.device.hostname,
-                    interface=self.if_name,
+                    ip_address=ip,
+                    hostname=self.device.hostname,
+                    if_name=self.if_name,
                     ptr=self._get_full_ptr(ip),
                     status=self.ip_addresses[ip]['status']
                 )
