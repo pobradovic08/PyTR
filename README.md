@@ -1,6 +1,6 @@
 **Still under development and not functional!**
 
-# DNS PTR updater [![Build Status](https://travis-ci.org/pobradovic08/dns-update.svg?branch=master)](https://travis-ci.org/pobradovic08/dns-update)
+# DNS PTR updater [![Build Status](https://travis-ci.org/pobradovic08/dns-update.svg?branch=master)](https://travis-ci.org/pobradovic08/dns-update) [![cc](https://codeclimate.com/github/pobradovic08/dns-update/badges/coverage.svg)](https://codeclimate.com/github/pobradovic08/dns-update/coverage)
 
 >This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
