@@ -9,9 +9,9 @@
     "observium": {
       "mysql": {
         "host": "localhost",
-        "user": "dnsscript",
-        "passwd": "password",
-        "db": "observium"
+        "user": "travis",
+        "passwd": "",
+        "db": "dnsupdate"
       }
     },
     "sqlite": {
