@@ -1,6 +1,6 @@
 **Still under development and not functional!**
 
-# DNS PTR updater [![Build Status](https://travis-ci.org/pobradovic08/dns-update.svg?branch=master)](https://travis-ci.org/pobradovic08/dns-update) [![cc](https://codeclimate.com/github/pobradovic08/dns-update/badges/coverage.svg)](https://codeclimate.com/github/pobradovic08/dns-update/coverage)
+# PyTR — Python DNS PTR updater [![Build Status](https://travis-ci.org/pobradovic08/dns-update.svg?branch=master)](https://travis-ci.org/pobradovic08/dns-update) [![cc](https://codeclimate.com/github/pobradovic08/dns-update/badges/coverage.svg)](https://codeclimate.com/github/pobradovic08/dns-update/coverage)
 
 >This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -16,9 +16,9 @@ GNU General Public License for more details.
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-DNS PTR updater collects interface (IP address, IF-MIB::ifName)
+PyTR collects interface (IP address, IF-MIB::ifName)
 details for a given list of devices, checks and updates PTR RR for those
-IP addresses. DNS PTR updater features [_Connectors_](#connectors) for importing and exporting list of
+IP addresses. PyTR features [_Connectors_](#connectors) for importing and exporting list of
 devices or existing PTR lists from/to 3rd party data sources. Currently
 implemented connectors:
 - Observium (requires MySQL database access)
@@ -110,7 +110,11 @@ Basic structure looks like this:
 │   ├── connectors
 │   └── output
 └── test
-    └── configuration_examples
+    ├── configuration_examples
+    ├── connectors
+    ├── output
+    └── system
+    
 ~~~~
 
 - `classes/` - main program classes
@@ -118,6 +122,9 @@ Basic structure looks like this:
 - `classes/output/` - Output classes
 - `test` - Unit tests
 - `test/configuration_examples` - Config files for unit tests
+- `test/connectors` - Connectors unit tests
+- `test/output` - Output modules unit tests
+- `test/system` - System configuration files used for testing (snmpd, named)
 
 ### PTR statuses
 |Status|Value|Description|
@@ -130,3 +137,29 @@ Basic structure looks like this:
 |`STATUS_IGNORED` | `5` | Not checked. Device, interface or IP address are on ignore list
 
 ## Connectors
+Each connector has it's own subdirectory in `classes/connectors/`. Directory, file and class naming should follow
+simple rules to make autoloading connectors easier.
+Autoloader will go through all directories in `classes/connectors/` and try to find a file with 
+a filename of `{dir_name}_connector.py` that has class `{Dir_name}Connector` defined in it.
+
+For connector named `example` structure would look like:
+ ~~~~
+├── classes
+│   └── connectors
+│       └── example
+│           ├── __init__.py
+│           └── example_connector.py
+└── test
+    └── connectors
+        └── example
+            └── test_example_connector.py
+~~~~
+with a class named `ExampleConnector`.
+
+### Connector methods
+All connectors should be instances of `BaseConnector` class and override all it's methods, needed or not.
+Those methods are:
+- `load_devices` - Returns a list of device hostnames
+- `load_ptrs` - Returns a dictionary of Ptr objects - `'ip_address': Ptr` 
+- `save_ptr` - Save a single Ptr object
+- `save_ptrs` - Save a dictionary of Ptr objects
