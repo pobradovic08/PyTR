@@ -46,5 +46,6 @@ install:
   - pip install -r requirements.txt
 script: python -m coverage run -m unittest discover
 after_sucess:
+  - echo "Code coverage stuff..."
   - coveralls
   - CODECLIMATE_REPO_TOKEN=2c0fd97f0ed7e3c76eebab55dafbd8e6158b7cc77c19ae00ca11149e3b21934d codeclimate-test-reporter

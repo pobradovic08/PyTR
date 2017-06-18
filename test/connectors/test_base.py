@@ -45,4 +45,5 @@ class TestBaseConnector(unittest.TestCase):
         self.assertRaises(NotImplementedError, t.load_ptrs)
         self.assertRaises(NotImplementedError, t.load_devices)
         self.assertRaises(NotImplementedError, t.save_ptrs, None)
-        self.assertRaises(NotImplementedError, t.save_ptr, None)
+        self.assertRaises(NotImplementedError, t.delete_ptrs, None)
+        self.assertRaises(NotImplementedError, t.delete_stale_ptrs)

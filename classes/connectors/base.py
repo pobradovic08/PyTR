@@ -53,18 +53,25 @@ class BaseConnector:
         """
         raise NotImplementedError()
 
-    def save_ptr(self, ptr):
-        """
-        Saves passed PTR record to destination.
-        :param ptr: Ptr object
-        :return:
-        """
-        raise NotImplementedError()
-
     def save_ptrs(self, ptrs):
         """
         Saves multiple PTR records provided in a form of dict
         :param ptrs:  dict of Ptr objects
+        :return:
+        """
+        raise NotImplementedError()
+
+    def delete_ptrs(self, ip_addresses):
+        """
+        Delete PTRs for given IP addresses
+        :param ip_addresses:
+        :return:
+        """
+        raise NotImplementedError()
+
+    def delete_stale_ptrs(self):
+        """
+        Delete stale PTRs. Cleanup method
         :return:
         """
         raise NotImplementedError()
