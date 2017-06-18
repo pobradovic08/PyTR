@@ -18,6 +18,7 @@
 
 import unittest
 import logging
+import os
 from classes import Device
 from classes import Config
 from classes import DeviceInterface
@@ -43,7 +44,13 @@ class TestDevice(unittest.TestCase):
         print self.device.get_ptrs()
 
     def test_get_number_of_interfaces(self):
-        self.device.get_number_of_interfaces()
+        snmp_num = self.device.get_number_of_interfaces()
+        os_num = len(os.listdir('/sys/class/net/'))
+        self.assertEquals(snmp_num, os_num)
 
     def test_get_number_of_ip_addresses(self):
         self.device.get_number_of_ip_addresses()
+
+    def test_fail_to_connect(self):
+        d = Device('ajajaj', Config(filename='test/configuration_examples/simple.json'))
+        self.assertFalse(d.get_interfaces())

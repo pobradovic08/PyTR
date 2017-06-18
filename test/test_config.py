@@ -57,6 +57,7 @@ class TestConfig(unittest.TestCase):
             "127.0.0.0/8",
             "256.0.0.0",
             "109.0.0.0/33",
+            "192.0.2.22",
             "1.1.1.1"
         ]
 
@@ -70,6 +71,16 @@ class TestConfig(unittest.TestCase):
         self.assertIsInstance(Config('test/configuration_examples/simple.json'), Config)
         self.assertRaises(IOError, Config, 'config.json')
         self.assertRaises(SystemExit, Config, 'test/configuration_examples/bad_json_file.json')
+
+    def test_empty_config_file(self):
+        # Test empty
+        config = Config('test/configuration_examples/empty.json')
+        self.assertRaises(SystemExit, config.get_ns_servers)
+        self.assertRaises(SystemExit, config.get_ns_search_servers)
+        self.assertRaises(SystemExit, config.get_ns_search_domains)
+        self.assertRaises(SystemExit, config.get_snmp_community)
+        self.assertDictEqual({}, config.get_device_ignore_rules())
+        self.assertDictEqual({}, config.get_ip_ignore_rules())
 
     def test_get_ns_list(self):
         self.assertListEqual(self.config.data['dns']['servers'], self.ns_servers)

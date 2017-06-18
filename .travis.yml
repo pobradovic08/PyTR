@@ -3,6 +3,7 @@ python:
   - "2.7"
 env:
   - NET_SNMP_VERSION=5.7.3
+cache: pip
 services:
   - mysql
 before_install:
@@ -39,8 +40,10 @@ before_install:
   - sudo apt-get install -y snmpd
   - sudo cp test/system/snmpd.conf /etc/snmp/snmpd.conf
   - sudo service snmpd restart
+  # Network bullshit
+  - sudo ifconfig lo:1 192.0.2.22
 install:
   - pip install -r requirements.txt
 script: python -m coverage run -m unittest discover
 after_sucess:
-  - CODECLIMATE_REPO_TOKEN=03b947e9cd250d7f779f49eb7024b4e467543a50b73f15a93e907bbf1f14144b codeclimate-test-reporter
+  - CODECLIMATE_REPO_TOKEN=2c0fd97f0ed7e3c76eebab55dafbd8e6158b7cc77c19ae00ca11149e3b21934d codeclimate-test-reporter
