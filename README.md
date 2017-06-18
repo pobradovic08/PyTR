@@ -19,10 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 PyTR collects interface (IP address, IF-MIB::ifName)
 details for a given list of devices, checks and updates PTR RR for those
 IP addresses. PyTR features [_Connectors_](#connectors) for importing and exporting list of
-devices or existing PTR lists from/to 3rd party data sources. Currently
-implemented connectors:
-- Observium (requires MySQL database access)
-- Local SQLite database
+devices or existing PTR lists from/to 3rd party data sources.
 
 It features flexible JSON configuration file for simple implementation
 of rules for:
@@ -137,6 +134,12 @@ Basic structure looks like this:
 |`STATUS_IGNORED` | `5` | Not checked. Device, interface or IP address are on ignore list
 
 ## Connectors
+
+Currently
+implemented connectors:
+- [ObserviumConnector](classes/connectors/observium) — Observium (requires MySQL database access)
+- [SqliteConnector](classes/connectors/sqlite) — Local SQLite database
+
 Each connector has it's own subdirectory in `classes/connectors/`. Directory, file and class naming should follow
 simple rules to make autoloading connectors easier.
 Autoloader will go through all directories in `classes/connectors/` and try to find a file with 
