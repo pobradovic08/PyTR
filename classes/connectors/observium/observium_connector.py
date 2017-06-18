@@ -41,7 +41,7 @@ class ObserviumConnector(BaseConnector):
         """
         device_list = []
         try:
-            sql = "SELECT hostname FROM devices WHERE disabled = 0"
+            sql = "SELECT `hostname` FROM `devices` WHERE `disabled` = 0"
             self.logger.debug("Executing SQL: %s" % sql)
             self.c.execute(sql)
             for hostname in self.c.fetchall():

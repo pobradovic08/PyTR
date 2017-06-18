@@ -34,10 +34,14 @@ in configuration for `ObserviumConnector`
 }
 ```
 
+`ObserviumConnector` is enabled by default.
+
 ## `load_devices` method
 Devices are selected from `devices` table usin following query:
 
-    SELECT hostname FROM devices WHERE disabled = 0
-    
+```sql
+SELECT `hostname` FROM `devices` WHERE `disabled` = 0
+```
+
 ## Other methods
 Other methods are not required and are not used.
