@@ -116,8 +116,10 @@ class DeviceInterface:
                 'status': DnsCheck.STATUS_UNKNOWN
             }
             self.logger.debug("Address added with default status (UNKNOWN)")
+            return True
         else:
             self.logger.warning("Address %s already exists on interface, skipping" % ip_address)
+            return False
 
     def update_ptr_status(self, ip_address, ptr, status):
         """
@@ -132,8 +134,10 @@ class DeviceInterface:
             self.ip_addresses[ip_address]['existing_ptr'] = ptr
             self.ip_addresses[ip_address]['status'] = status
             self.logger.debug("PTR '%s' added with status (%d)" % (ptr, status))
+            return True
         else:
             self.logger.warning("Address %s doesn't exists, skipping" % ip_address)
+            return False
 
     def get_ptr_for_ip(self, ip_address):
         """

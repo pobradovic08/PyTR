@@ -143,14 +143,14 @@ Autoloader will go through all directories in `classes/connectors/` and try to f
 a filename of `{dir_name}_connector.py` that has class `{Dir_name}Connector` defined in it.
 
 For connector named `example` structure would look like:
- ~~~~
+~~~~
 ├── classes
 │   └── connectors
 │       └── example
 │           ├── __init__.py
 │           └── example_connector.py
 └── test
-    └── connectors
+    └── connectors
         └── example
             └── test_example_connector.py
 ~~~~

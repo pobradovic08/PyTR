@@ -136,7 +136,7 @@ class Config:
             return self.data['ignored']['ip']
         except KeyError:
             self.logger.warning("No ignored IPs object rule")
-            return {}
+            return []
 
     def _get_snmp_overridden_communities(self):
         try:
@@ -273,7 +273,7 @@ class Config:
         for ip_rule in self.get_ip_ignore_rules():
             try:
                 network = ipaddress.IPv4Network(ip_rule)
-                if ipaddress.IPv4Address(ip_address) in network:
+                if ipaddress.IPv4Address(ip_address.decode('utf-8')) in network:
                     self.logger.info("IP '%s' is on ignore list." % ip_address)
                     return True
             except ipaddress.AddressValueError:

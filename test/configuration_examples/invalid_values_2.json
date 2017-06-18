@@ -1,0 +1,21 @@
+{
+  "snmp": {
+    "community": {
+      "default": {}
+    },
+    "retries": "zzz",
+    "timeout": "yyy"
+  },
+  "dns": {
+    "servers": {},
+    "search": {
+      "domains": {},
+      "servers": {}
+    }
+  },
+  "ignored": {
+    "device": {
+      "": []
+    }
+  }
+}

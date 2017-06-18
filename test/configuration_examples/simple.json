@@ -45,12 +45,9 @@
   },
   "snmp": {
     "community": {
-      "default": "public",
-      "override": {}
+      "default": "public"
     }
   },
   "ignored": {
-    "device": {},
-    "ip": []
   }
 }

@@ -36,6 +36,12 @@ class TestDevice(unittest.TestCase):
         self.device = Device('localhost', Config(filename='test/configuration_examples/simple.json'))
         self.device.get_interfaces()
 
+    def test_get_interfaces(self):
+        device = Device('localhost', Config(filename='test/configuration_examples/simple.json'))
+        device.ignored = True
+        self.assertTrue(device.get_interfaces())
+        self.assertDictEqual({}, device.interfaces)
+
     def test_get_ptrs(self):
         self.device.get_ptrs()
 

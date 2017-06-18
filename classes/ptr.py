@@ -33,7 +33,10 @@ class Ptr:
         self.logger = logging.getLogger('dns_update.ptr')
         self.ip_address = None
         try:
-            self.ip_address = ipaddress.IPv4Address(ip_address)
+            if isinstance(ip_address, (int, long)):
+                self.ip_address = ipaddress.IPv4Address(ip_address)
+            else:
+                self.ip_address = ipaddress.IPv4Address(ip_address.decode('utf-8'))
         except ipaddress.AddressValueError as e:
             raise ValueError("Invalid IP address: %s" % e)
         self.hostname = hostname

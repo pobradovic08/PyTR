@@ -52,6 +52,19 @@ class TestDeviceInterface(unittest.TestCase):
         self.di.add_ip_address('192.0.2.x')
         self.di.get_ptrs()
 
+    def test_ignored_interface_ptrs(self):
+        self.di.ignored = True
+        self.assertTrue(self.di.add_ip_address('192.0.2.1'))
+        self.assertTrue(self.di.update_ptr_status('192.0.2.1', 'ptr-test.domain.example', Ptr.STATUS_UNKNOWN))
+        self.di.check_ptr()
+        self.assertEquals(Ptr.STATUS_UNKNOWN, self.di.get_ptrs()['192.0.2.1'].status)
+
+    def test_ignored_ip_address_ptr(self):
+        self.device.config = Config(filename='test/configuration_examples/configuration.json')
+        self.assertTrue(self.di.add_ip_address('192.0.2.22'))
+        self.assertTrue(self.device.config.is_ip_ignored('192.0.2.22'))
+        self.di.check_ptr()
+
     def test_update_ptr_status(self):
         self.di.update_ptr_status('192.0.2.1', 'ptr-test.domain.example', Ptr.STATUS_NOT_CREATED)
         self.di.add_ip_address('192.0.2.1')
