@@ -150,17 +150,17 @@ class TabularUtf8Output(BaseOutput):
         output_array = []
         for ip in device_interface.ip_addresses:
             ip_status = device_interface.ip_addresses[ip]['status']
-            if ip_status == DnsCheck.STATUS_OK:
+            if ip_status == DnsCheck.STATUS_OK and not device_interface.device.config.diff_only:
                 output_array.append(TabularUtf8Output.print_ok_row(device_interface, ip))
             elif ip_status == DnsCheck.STATUS_NOT_UPDATED:
                 output_array.append(TabularUtf8Output.print_not_updated_row(device_interface, ip))
             elif ip_status == DnsCheck.STATUS_NOT_CREATED:
                 output_array.append(TabularUtf8Output.print_not_created_row(device_interface, ip))
-            elif ip_status == DnsCheck.STATUS_UNKNOWN:
+            elif ip_status == DnsCheck.STATUS_UNKNOWN and not device_interface.device.config.diff_only:
                 output_array.append(TabularUtf8Output.print_unknown_row(device_interface, ip))
-            elif ip_status == DnsCheck.STATUS_IGNORED:
+            elif ip_status == DnsCheck.STATUS_IGNORED and not device_interface.device.config.diff_only:
                 output_array.append(TabularUtf8Output.print_ignored_row(device_interface, ip))
-            else:
+            elif not device_interface.device.config.diff_only:
                 output_array.append(TabularUtf8Output.print_default_row(device_interface, ip))
         string = ''.join(filter(None, output_array))
 
@@ -170,8 +170,6 @@ class TabularUtf8Output(BaseOutput):
 
     @staticmethod
     def print_ok_row(interface, ip):
-        if interface.device.config.diff_only:
-            return None
         color = "\033[92m"  # Green
         icon = '●'
         return "│%s%-24s %s %-44s %-23s\033[0;0m│\n" % (
@@ -214,8 +212,6 @@ class TabularUtf8Output(BaseOutput):
 
     @staticmethod
     def print_unknown_row(interface, ip):
-        if interface.device.config.diff_only:
-            return None
         color = "\033[90m"  # Grey
         icon = ' '
         return "│%s%-24s %s %-44s %-23s\033[0;0m│\n" % (
@@ -228,8 +224,6 @@ class TabularUtf8Output(BaseOutput):
 
     @staticmethod
     def print_ignored_row(interface, ip):
-        if interface.device.config.diff_only:
-            return None
         color = "\033[90m"  # Grey
         icon = 'i'
         return "│%s%-24s %s %-44s %-23s\033[0;0m│\n" % (
@@ -242,8 +236,6 @@ class TabularUtf8Output(BaseOutput):
 
     @staticmethod
     def print_default_row(interface, ip):
-        if interface.device.config.diff_only:
-            return None
         color = "\033[90m"  # Grey
         icon = '☓'
         return "│%s%-24s %s %-44s %-23s\033[0;0m│\n" % (
