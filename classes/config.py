@@ -83,10 +83,10 @@ class Config:
         try:
             return self.data['dns']['search']['domains']
         except KeyError:
-            self.logger.critical("Couldn't find list of domains to search for in configuration file. Exiting...")
+            self.logger.critical("No list of search domains defined. Exiting...")
             exit(1)
 
-    def get_ns_search_servers(self):
+    def get_ns_query_servers(self):
         """
         Returns dictionary of servers to query
         :return:
@@ -94,29 +94,29 @@ class Config:
         try:
             return self.data['dns']['search']['servers']
         except KeyError:
-            self.logger.critical("Couldn't find list of DNS servers to query in configuration file. Exiting...")
+            self.logger.critical("No list of DNS servers to query. Exiting...")
             exit(1)
 
     def get_device_ignore_rules(self):
         """
-        Returns 'ignore' dictionary
+        Returns ignore devices
         :return:
         """
         try:
             return self.data['ignored']['device']
         except KeyError:
-            self.logger.warning("No ignored devices object in configuration file")
+            self.logger.warning("No ignored devices object rule")
             return {}
 
     def get_ip_ignore_rules(self):
         """
-        Returs 'ignore' -> 'ip'
+        Returns ignore ip
         :return:
         """
         try:
             return self.data['ignored']['ip']
         except KeyError:
-            self.logger.warning("No ignored IPs object in configuration file")
+            self.logger.warning("No ignored IPs object rule")
             return {}
 
     def get_snmp_community(self, hostname=None):

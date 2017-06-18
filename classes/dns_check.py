@@ -36,7 +36,7 @@ class DnsCheck:
         self.logger = logging.getLogger('dns_update.dns_check')
         self.config = config if config else Config()
         self.resolver = dns.resolver.Resolver()
-        self.resolver.nameservers = self.config.get_ns_search_servers()
+        self.resolver.nameservers = self.config.get_ns_query_servers()
         self.logger.info("There are %d NS server(s) to query" % len(self.resolver.nameservers))
         self.resolver.search = []
         for domain in self.config.get_ns_search_domains():
@@ -50,7 +50,7 @@ class DnsCheck:
         try:
             answers = self.resolver.query(hostname, 'A')
             fqdn = answers.qname.to_text().rstrip('.')
-            self.logger.debug("FQDN for '%s' is '%s'" % (hostname, fqdn))
+            self.logger.debug("FQDN ('%s') = '%s'" % (hostname, fqdn))
             return fqdn
         except dns.exception.DNSException as e:
             self.logger.error("DNSException raised for '%s': %s" % (hostname, e))
@@ -64,7 +64,7 @@ class DnsCheck:
             answers = self.resolver.query(hostname, 'A')
             for rdata in answers:
                 ip = rdata.to_text()
-                self.logger.debug("IP for '%s' is '%s'" % (hostname, ip))
+                self.logger.debug("'%s' = '%s'" % (hostname, ip))
                 return ip
         except dns.exception.DNSException as e:
             self.logger.error("DNSException raised for '%s': %s" % (hostname, e))
@@ -72,7 +72,7 @@ class DnsCheck:
 
     @staticmethod
     def get_ptr(ip_address):
-        DnsCheck.check_ip(ip_address)
+        ipaddress.IPv4Address(ip_address.decode('utf-8'))
         return socket.getfqdn(ip_address)
 
     def get_status(self, ip_address, expected_ptr):
@@ -89,7 +89,7 @@ class DnsCheck:
         :param expected_ptr:    Expected PTR for provided IP address
         :return:
         """
-        DnsCheck.check_ip(ip_address)
+        ipaddress.IPv4Address(ip_address.decode('utf-8'))
         existing_ptr = DnsCheck.get_ptr(ip_address)
 
         # There is no PTR
@@ -139,14 +139,14 @@ class DnsCheck:
         Checks if we are responsible for PTR zone.
         Queries for SOA record for PTR zone and checks if mname is in servers list defined in config file
         """
-        DnsCheck.check_ip(ip_address)
+        ipaddress.IPv4Address(ip_address.decode('utf-8'))
         ns_list = self.config.get_ns_servers()
 
         # Get SOA record. If master name is in ns servers list return true
         ptr_zone = DnsCheck.get_ptr_zone(ip_address)
         try:
-            answers = dns.resolver.query(ptr_zone, 'SOA')
-            for rdata in answers:
+            soa_answers = dns.resolver.query(ptr_zone, 'SOA')
+            for rdata in soa_answers:
                 # Remove fqdn dot from the end of the master name in SOA and check if in our NS servers list
                 if str(rdata.mname).rstrip('.') in ns_list:
                     self.logger.debug("Server responsible for '%s' is in NS list" % ip_address)
@@ -161,17 +161,8 @@ class DnsCheck:
     @staticmethod
     def get_ptr_zone(ip_address):
         """ Returns ptr zone in x.y.z.in-addr.arpa format """
-        DnsCheck.check_ip(ip_address)
+        ipaddress.IPv4Address(ip_address.decode('utf-8'))
         # Get first 3 octets, reverse them and append '.in-addr.arpa.'
         parts = ip_address.split('.')
         zone = '.'.join(list(reversed(parts[:-1]))) + '.in-addr.arpa.'
         return zone
-
-    @staticmethod
-    # TODO: replace with real check from ipaddress module
-    def check_ip(ip_address):
-        try:
-            ipaddress.IPv4Network(unicode(ip_address))
-            return True
-        except ipaddress.AddressValueError:
-            raise ValueError("IP address '%s' is invalid" % ip_address)

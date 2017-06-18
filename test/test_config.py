@@ -76,7 +76,7 @@ class TestConfig(unittest.TestCase):
         # Test empty
         config = Config('test/configuration_examples/empty.json')
         self.assertRaises(SystemExit, config.get_ns_servers)
-        self.assertRaises(SystemExit, config.get_ns_search_servers)
+        self.assertRaises(SystemExit, config.get_ns_query_servers)
         self.assertRaises(SystemExit, config.get_ns_search_domains)
         self.assertRaises(SystemExit, config.get_snmp_community)
         self.assertDictEqual({}, config.get_device_ignore_rules())
