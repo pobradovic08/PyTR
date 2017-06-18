@@ -33,6 +33,7 @@ class DeviceInterface:
         self.ptr = None
         self.short_ptr = None
         self.get_if_name()
+        self.ignored = self.device.config.is_interface_ignored(self.device.hostname,self.if_name)
 
     def get_if_name(self):
         """
@@ -72,6 +73,35 @@ class DeviceInterface:
         )
         self.ptr = '.'.join(filter(None, [self.short_ptr, self.device.domain]))
         self.logger.info("PTR for interface '%s' set to: '%s'" % (self.if_name, self.ptr))
+
+    def check_ptr(self):
+        self.logger.debug(
+            "Interface '%s' has %d IP address(es)" % (
+                self.if_name,
+                len(self.ip_addresses)
+            )
+        )
+        if self.ignored:
+            return
+        for ip_address in self.ip_addresses:
+            # Check if interface or IP is ignored
+            if self.device.config.is_ip_ignored(ip_address):
+                self.update_ptr_status(ip_address, None, DnsCheck.STATUS_IGNORED)
+                self.logger.info("Interface '%s' or IP address '%s' are on ignore list" % (
+                    self.if_name,
+                    ip_address
+                ))
+                return
+
+            # If IP matches loopback IP, expected PTR is device.hostname
+            if ip_address == self.device.ip:
+                existing_ptr, status = self.device.dns.get_status(ip_address, self.device.hostname)
+            else:
+                existing_ptr, status = self.device.dns.get_status(ip_address, self.ptr)
+
+            # Update PTR status in interfaces dictionary
+            self.logger.debug("Update DeviceInterface PTR status for '%s' to '%d'" % (ip_address, status))
+            self.update_ptr_status(ip_address, existing_ptr, status)
 
     def add_ip_address(self, ip_address):
         """

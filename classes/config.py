@@ -97,21 +97,21 @@ class Config:
 
     def get_ns_servers(self):
         """
-        Returns 'dns'->'servers' dictionary
+        Returns list of DNS servers we can update
         :return:
         """
         return self.data['dns']['servers']
 
     def get_ns_search_domains(self):
         """
-        Returns dictionary of domains to search
+        Returns a list of domain names (search list)
         :return:
         """
         return self.data['dns']['search']['domains']
 
     def get_ns_query_servers(self):
         """
-        Returns dictionary of servers to query
+        Returns a list of DNS servers to query for records
         :return:
         """
         return self.data['dns']['search']['servers']
@@ -175,17 +175,7 @@ class Config:
         :param default: No value in Config - default value returned . Must be int >= 0
         :return:
         """
-        # Try integer conversion (raises ValueError on failure)
-        try:
-            default = int(default)
-            self.logger.debug("Called with default number of retries of: %s" % default)
-        except ValueError:
-            self.logger.critical("Retry count not integer, raise ValueError")
-            raise ValueError("Default number of retries must be integer")
-        # Raise ValueError if value is not positive (or 0)
-        if default < 0:
-            raise ValueError("SNMP retries value must be 0 or positive integer")
-
+        default = int(default)
         # Fetches snmp->retries from config file if it exists
         if 'retries' in self.data['snmp']:
             try:
@@ -215,10 +205,6 @@ class Config:
         :return:
         """
         default = float(default)
-        if default <= 0:
-            self.logger.critical("Timeout must be positive, raise ValueError")
-            raise ValueError("Timeout must be positive")
-
         if 'timeout' in self.data['snmp']:
             try:
                 config_value = float(self.data['snmp']['timeout'])

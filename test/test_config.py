@@ -145,8 +145,6 @@ class TestConfig(unittest.TestCase):
         self.assertEquals(config.get_snmp_retries(1.0), 1)
         self.assertEquals(config.get_snmp_retries(1.9), 1)
         self.assertEquals(config.get_snmp_retries(2.4), 2)
-        self.assertRaises(ValueError, config.get_snmp_retries, 'asd')
-        self.assertRaises(ValueError, config.get_snmp_retries, -1)
 
     def test_get_snmp_timeoeut(self):
         self.assertEquals(self.config.get_snmp_timeout(), 23)
@@ -155,7 +153,3 @@ class TestConfig(unittest.TestCase):
         self.assertEquals(config.get_snmp_timeout(443), 443)
         self.assertEquals(config.get_snmp_timeout(0.1), 0.1)
         self.assertEquals(config.get_snmp_timeout(1.9), 1.9)
-        self.assertRaises(ValueError, config.get_snmp_timeout, 'asd')
-        self.assertRaises(ValueError, config.get_snmp_timeout, -1)
-        self.assertRaises(ValueError, config.get_snmp_timeout, 0)
-        self.assertRaises(ValueError, config.get_snmp_timeout, 0.0)

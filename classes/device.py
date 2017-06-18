@@ -130,35 +130,7 @@ class Device:
         """
         self.logger.debug("Check PTRs for %d interfaces" % len(self.interfaces))
         for interface in self.interfaces:
-            self.logger.debug(
-                "Interface '%s' has %d IP address(es)" % (
-                    self.interfaces[interface].if_name,
-                    len(self.interfaces[interface].ip_addresses)
-                )
-            )
-            for ip_address in self.interfaces[interface].ip_addresses:
-                # Check if interface or IP is ignored
-                # TODO: Move interface ignore check up one level to avoid checking the same interface multiple times
-                if self.config.is_interface_ignored(
-                        self.hostname,
-                        self.interfaces[interface].if_name
-                ) or self.config.is_ip_ignored(ip_address):
-                    self.interfaces[interface].update_ptr_status(ip_address, None, DnsCheck.STATUS_IGNORED)
-                    self.logger.info("Interface '%s' or IP address '%s' are on ignore list" % (
-                        self.interfaces[interface].if_name,
-                        ip_address
-                    ))
-                    continue
-
-                # If IP matches loopback IP, expected PTR is device.hostname
-                if ip_address == self.ip:
-                    existing_ptr, status = self.dns.get_status(ip_address, self.hostname)
-                else:
-                    existing_ptr, status = self.dns.get_status(ip_address, self.interfaces[interface].ptr)
-
-                # Update PTR status in interfaces dictionary
-                self.logger.debug("Update DeviceInterface PTR status for '%s' to '%d'" % (ip_address, status))
-                self.interfaces[interface].update_ptr_status(ip_address, existing_ptr, status)
+            self.interfaces[interface].check_ptr()
 
     def get_number_of_interfaces(self):
         """
