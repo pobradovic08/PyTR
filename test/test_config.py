@@ -74,13 +74,7 @@ class TestConfig(unittest.TestCase):
 
     def test_empty_config_file(self):
         # Test empty
-        config = Config('test/configuration_examples/empty.json')
-        self.assertRaises(SystemExit, config.get_ns_servers)
-        self.assertRaises(SystemExit, config.get_ns_query_servers)
-        self.assertRaises(SystemExit, config.get_ns_search_domains)
-        self.assertRaises(SystemExit, config.get_snmp_community)
-        self.assertDictEqual({}, config.get_device_ignore_rules())
-        self.assertDictEqual({}, config.get_ip_ignore_rules())
+        self.assertRaises(SystemExit, Config, 'test/configuration_examples/empty.json')
 
     def test_get_ns_list(self):
         self.assertListEqual(self.config.data['dns']['servers'], self.ns_servers)

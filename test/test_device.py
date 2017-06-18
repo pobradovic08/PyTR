@@ -41,7 +41,6 @@ class TestDevice(unittest.TestCase):
 
     def test_check_ptrs(self):
         self.device.check_ptrs()
-        print self.device.get_ptrs()
 
     def test_get_number_of_interfaces(self):
         snmp_num = self.device.get_number_of_interfaces()

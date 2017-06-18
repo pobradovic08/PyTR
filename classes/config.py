@@ -49,6 +49,37 @@ class Config:
             except ValueError:
                 self.logger.critical("Couldn't parse '%s' configuration file. Exiting..." % filename)
                 exit(1)
+        required = {
+            'snmp': {
+                'community': {
+                    'default': {}
+                }
+            },
+            "dns": {
+                "servers": {},
+                "search": {
+                    "domains": {},
+                    "servers": {}
+                }
+            }
+        }
+        self._check_required_keys(required, self.data)
+
+    def _check_required_keys(self, keys, dictionary):
+        """
+        Recursively go trough `keys` structure and check if it exists within `dictionary`
+        :param keys:
+        :param dictionary:
+        :return:
+        """
+        for key in keys:
+            # If the key is not in dictionary raise error
+            if key not in dictionary:
+                self.logger.critical("Config file missing required parameters. Exiting...")
+                exit(1)
+            # If dictionary[key] has substructure go trough it
+            if dictionary[key]:
+                self._check_required_keys(keys[key], dictionary[key])
 
     def get_connector_config(self, connector_name):
         """
@@ -69,33 +100,21 @@ class Config:
         Returns 'dns'->'servers' dictionary
         :return:
         """
-        try:
-            return self.data['dns']['servers']
-        except KeyError:
-            self.logger.critical("Couldn't find list of DNS servers in configuration file. Exiting...")
-            exit(1)
+        return self.data['dns']['servers']
 
     def get_ns_search_domains(self):
         """
         Returns dictionary of domains to search
         :return:
         """
-        try:
-            return self.data['dns']['search']['domains']
-        except KeyError:
-            self.logger.critical("No list of search domains defined. Exiting...")
-            exit(1)
+        return self.data['dns']['search']['domains']
 
     def get_ns_query_servers(self):
         """
         Returns dictionary of servers to query
         :return:
         """
-        try:
-            return self.data['dns']['search']['servers']
-        except KeyError:
-            self.logger.critical("No list of DNS servers to query. Exiting...")
-            exit(1)
+        return self.data['dns']['search']['servers']
 
     def get_device_ignore_rules(self):
         """
@@ -119,39 +138,36 @@ class Config:
             self.logger.warning("No ignored IPs object rule")
             return {}
 
+    def _get_snmp_overridden_communities(self):
+        try:
+            return self.data['snmp']['community']['override']
+        except KeyError:
+            self.logger.warning("No custom community object in configuration file")
+            return {}
+
     def get_snmp_community(self, hostname=None):
         """
         Returns SNMP community for given hostname
         :return:
         """
-        try:
-            default = self.data['snmp']['community']['default']
-            if not hostname:
-                self.logger.info("No device specified, returning default community '%s'" % default)
-                return default
-
-            try:
-                overridden = self.data['snmp']['community']['override']
-                for hostname_match, community in overridden.iteritems():
-                    try:
-                        if re.match(hostname_match, hostname):
-                            self.logger.info("Community for '%s' found: '%s'" % (hostname, community))
-                            return community
-                        else:
-                            self.logger.debug("Community for '%s' not found in rule '%s'" % (hostname, hostname_match))
-                    except sre_constants.error:
-                        self.logger.error("Custom SNMP community rule '%s' not valid." % hostname_match)
-                        continue
-            except KeyError:
-                self.logger.warning("No custom community object in configuration file")
-                pass
-
-            self.logger.info("No custom rules found for hostname, returning default community '%s'" % default)
+        default = self.data['snmp']['community']['default']
+        if not hostname:
+            self.logger.info("No device specified, returning default community '%s'" % default)
             return default
 
-        except KeyError:
-            self.logger.critical("No default snmp community found configuration file. Exiting...")
-            exit(1)
+        for hostname_match, community in self._get_snmp_overridden_communities().iteritems():
+            try:
+                if re.match(hostname_match, hostname):
+                    self.logger.info("Community for '%s' found: '%s'" % (hostname, community))
+                    return community
+                else:
+                    self.logger.debug("Community for '%s' not found in rule '%s'" % (hostname, hostname_match))
+            except sre_constants.error:
+                self.logger.error("Custom SNMP community rule '%s' not valid." % hostname_match)
+                continue
+
+        self.logger.info("No custom rules found for hostname, returning default community '%s'" % default)
+        return default
 
     def get_snmp_retries(self, default=0):
         """

@@ -45,7 +45,8 @@
   },
   "snmp": {
     "community": {
-      "default": "public"
+      "default": "public",
+      "override": {}
     }
   },
   "ignored": {
