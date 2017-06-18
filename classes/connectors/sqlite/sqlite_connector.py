@@ -32,6 +32,12 @@ class SqliteConnector(BaseConnector):
         self.connection = sqlite3.connect(self.config['db'])
         self.logger.info("Database file '%s' loaded" % self.config['db'])
         self.c = self.connection.cursor()
+        try:
+            self.c.execute("SELECT COUNT(*) FROM `ptrs`")
+            self.logger.info("%s existing PTRs in database." % self.c.fetchall()[0][0])
+        except sqlite3.OperationalError:
+            self.logger.warning("Table `ptrs` doesn't exists. Creating...")
+            self.create_ptr_table()
 
     def create_ptr_table(self):
         sql = """CREATE TABLE IF NOT EXISTS `ptrs` (
@@ -62,7 +68,6 @@ class SqliteConnector(BaseConnector):
                 status=ptr_row[4]
             )
             ptrs[str(ptr.ip_address)] = ptr
-
         return ptrs
 
     def save_ptr(self, ptr):
@@ -82,8 +87,11 @@ class SqliteConnector(BaseConnector):
         self.c.execute(sql, data)
 
     def save_ptrs(self, ptrs):
+        self.logger.info("Saving %d PTRs to database..." % len(ptrs))
         for ptr in ptrs:
             self.save_ptr(ptrs[ptr])
+        self.connection.commit()
+        self.logger.info("Saved %d PTRs to database." % len(ptrs))
 
     def load_devices(self):
-        pass
+        return []

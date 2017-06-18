@@ -73,4 +73,4 @@ class ObserviumConnector(BaseConnector):
         No PTR records in Observium
         :return:
         """
-        pass
+        return {}

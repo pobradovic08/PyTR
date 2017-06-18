@@ -16,11 +16,11 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-import re
 import os
 import imp
 import logging
-from classes.dns_check import DnsCheck
+from classes import DnsCheck
+from classes import Device
 
 
 class Dispatcher:
@@ -78,7 +78,6 @@ class Dispatcher:
         return [x.__class__.__name__ for x in self.__connectors]
 
     def get_connector_config(self, connector):
-        class_name = connector.__class__.__name__
         connector_name = connector.get_connector_name()
         self.logger.debug("Search for ['%s'] in configuration file" % connector_name)
         return self.config.get_connector_config(connector_name)
@@ -96,7 +95,7 @@ class Dispatcher:
     def save_ptrs(self, ptrs):
         """
         Issue save multiple PTRs command on each connector
-        :param ptr: PTR dict
+        :param ptrs: PTR dict
         :return:
         """
         self.logger.info("Dispatch save PTRs command for %d PTRs to all (%d) connectors" % (
@@ -117,16 +116,16 @@ class Dispatcher:
         self.logger.info("Dispatch load command to all (%d) connectors" % len(self.__connectors))
         # Concatenate device list from each connector to temporary list
         for connector in self.__connectors:
-            device_list += connector.load_devices()
+            device_list += filter(lambda x: len(x) > 0, connector.load_devices())
 
         # Populate devices dict from temporary list
         for device in device_list:
             hostname = self.dns.get_fqdn(device)
             if hostname:
                 if hostname not in self.devices:
-                    self.devices[hostname] = None
+                    self.devices[hostname] = Device(hostname, self.config, self.dns)
             else:
-                self.logger.warning("Hostname '%s' couldn't be resolved" % hostname)
+                self.logger.warning("Hostname '%s' couldn't be resolved. SKipping..." % device)
                 pass
 
         self.logger.info("Loaded %d device(s) from %d connectors" % (len(device_list), len(self.__connectors)))

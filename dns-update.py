@@ -19,6 +19,7 @@
 
 import argparse
 import sys
+import logging
 
 from classes import Config
 from classes import Device
@@ -27,6 +28,12 @@ from classes.output.tabular_utf8 import TabularUtf8Output
 
 reload(sys)
 sys.setdefaultencoding('utf8')
+
+logging.basicConfig(
+    filename=__file__.rstrip('.py|.pyc') + '.log',
+    format="%(asctime)s - %(levelname)s - %(name)s:%(funcName)s - %(message)s",
+    level=logging.INFO
+)
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-c", "--check", help="check PTRs but don't update them",
@@ -42,12 +49,13 @@ check_only = args.check
 diff_only = not args.full
 terse = args.terse
 
+ptrs = {}
+
 config = Config(check_only=check_only,
                 diff_only=diff_only,
                 terse=terse)
 
 dispatcher = Dispatcher(config)
-
 output = TabularUtf8Output()
 
 print "Loaded connectors: %s" % ', '.join(dispatcher.get_connector_list())
@@ -59,7 +67,7 @@ print "Fetching data from devices:"
 iterator = 0
 for device in dispatcher.devices.keys():
     # Create Device instance from hostname
-    dispatcher.devices[device] = Device(device, config, dispatcher.dns)
+    # dispatcher.devices[device] = Device(device, config, dispatcher.dns)
     # Fetch interfaces
     if dispatcher.devices[device].get_interfaces():
         # Check PTRs
@@ -70,10 +78,14 @@ for device in dispatcher.devices.keys():
     iterator += 1
     # Print progress bar.
     # It will not go to a new line after finishing. Has to be done manually
-    percent_complete = int(iterator*100/total_devices)
+    percent_complete = int(iterator * 100 / total_devices)
     output.print_progress_bar(percent_complete)
+    ptrs.update(dispatcher.devices[device].get_ptrs())
 
 # New line to fix the progress bar \r magic.
 print
 
-print output.display_summary(dispatcher)
+# print output.display_summary(dispatcher)
+print "Saving %d PTRs..." % len(ptrs),
+dispatcher.save_ptrs(ptrs)
+print " done."
