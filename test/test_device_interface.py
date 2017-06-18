@@ -57,7 +57,7 @@ class TestDeviceInterface(unittest.TestCase):
         self.assertTrue(self.di.add_ip_address('192.0.2.1'))
         self.assertTrue(self.di.update_ptr_status('192.0.2.1', 'ptr-test.domain.example', Ptr.STATUS_UNKNOWN))
         self.di.check_ptr()
-        self.assertEquals(Ptr.STATUS_UNKNOWN, self.di.get_ptrs()['192.0.2.1'].status)
+        self.assertEquals(Ptr.STATUS_IGNORED, self.di.get_ptrs()['192.0.2.1'].status)
 
     def test_ignored_ip_address_ptr(self):
         self.device.config = Config(filename='test/configuration_examples/configuration.json')
