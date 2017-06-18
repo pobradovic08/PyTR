@@ -1,6 +1,6 @@
 **Still under development and not functional!**
 
-# PyTR — Python DNS PTR updater [![Build Status](https://travis-ci.org/pobradovic08/dns-update.svg?branch=master)](https://travis-ci.org/pobradovic08/dns-update) [![cc](https://codeclimate.com/github/pobradovic08/PyTR/badges/coverage.svg)](https://codeclimate.com/github/pobradovic08/PyTR/coverage)
+# PyTR — Python DNS PTR updater [![Build Status](https://travis-ci.org/pobradovic08/PyTR.svg?branch=master)](https://travis-ci.org/pobradovic08/PyTR) [![cc](https://codeclimate.com/github/pobradovic08/PyTR/badges/coverage.svg)](https://codeclimate.com/github/pobradovic08/PyTR/coverage)
 
 >This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
