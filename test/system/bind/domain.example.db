@@ -1,10 +1,17 @@
 $TTL    604800
 @       IN      SOA     localhost. root.localhost. (
-                              1         ; Serial
+                              4         ; Serial
                          604800         ; Refresh
                           86400         ; Retry
                         2419200         ; Expire
                          604800 )       ; Negative Cache TTL
 ;
 @       IN      NS      localhost.
-22      IN      PTR     test.domain.example.
+@       IN      A       127.0.0.1
+@       IN      AAAA    ::1
+
+host1       IN      A       192.0.2.1
+host2       IN      A       192.0.2.2
+host3       IN      A       192.0.2.3
+
+localhost   IN      A       192.0.2.22

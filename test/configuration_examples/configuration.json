@@ -27,24 +27,16 @@
       "key": "key"
     },
     "servers": [
-      "ns1.google.com",
-      "ns2.google.com",
-      "ns3.google.com",
-      "ns4.google.com",
-      "dns2.domain.example",
-      "dns3.domain.example",
-      "dns4.domain.example"
+      "localhost",
+      "root.localhost"
     ],
     "search": {
       "servers": [
-        "109.122.98.6",
-        "109.122.98.114",
-        "109.122.98.119",
-        "109.122.98.115"
+        "127.0.0.1"
       ],
       "domains": [
-        "vektor.net",
-        "radijusvektor.rs"
+        "domain.example",
+        "domain2.example"
       ]
     }
   },

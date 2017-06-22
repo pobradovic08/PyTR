@@ -36,22 +36,24 @@ class TestDnsCheck(unittest.TestCase):
         self.assertFalse(self.dns.get_fqdn('asdasd'))
         self.assertFalse(self.dns.get_fqdn(''))
         self.assertFalse(self.dns.get_fqdn('.'))
-        self.assertEquals('pavle.vektor.net', self.dns.get_fqdn('pavle'))
-        self.assertEquals('cmts-sc-1.vektor.net', self.dns.get_fqdn('cmts-sc-1'))
-        self.assertEquals('imap.radijusvektor.rs', self.dns.get_fqdn('imap'))
+        self.assertEquals('host1.domain.example', self.dns.get_fqdn('host1'))
+        self.assertEquals('host2.domain.example', self.dns.get_fqdn('host2'))
+        self.assertEquals('host3.domain.example', self.dns.get_fqdn('host3'))
 
     def test_a_query(self):
         self.assertFalse(self.dns.get_a('asdasd'))
         self.assertFalse(self.dns.get_a(''))
         self.assertFalse(self.dns.get_a('.'))
-        self.assertEquals('109.122.96.23', self.dns.get_a('pavle'))
-        self.assertEquals('91.185.98.237', self.dns.get_a('cmts-sc-1'))
-        self.assertEquals('109.122.98.37', self.dns.get_a('imap'))
+        self.assertEquals('192.0.2.1', self.dns.get_a('host1'))
+        self.assertEquals('192.0.2.2', self.dns.get_a('host2'))
+        self.assertEquals('192.0.2.3', self.dns.get_a('host3'))
 
     def test_ptr_query(self):
-        self.assertRaises(ipaddress.AddressValueError, DnsCheck.get_ptr, 'x.x.x.x')
-        self.assertEqual('noc.vektor.net', DnsCheck.get_ptr('109.122.98.168'))
-        self.assertRaises(ValueError, DnsCheck.get_ptr_zone, '109.122.96')
+        self.assertRaises(ipaddress.AddressValueError, self.dns.get_ptr, 'x.x.x.x')
+        self.assertEquals('host1.domain.example.', self.dns.get_ptr('192.0.2.1'))
+        self.assertEquals('host2.domain.example.', self.dns.get_ptr('192.0.2.2'))
+        self.assertEquals('host3.domain.example.', self.dns.get_ptr('192.0.2.3'))
+        self.assertRaises(ValueError, DnsCheck.get_ptr_zone, '192.0.2')
 
     def test_get_ptr_zone(self):
         self.assertRaises(ipaddress.AddressValueError, DnsCheck.get_ptr_zone, 'x.x.x.x')
@@ -60,8 +62,8 @@ class TestDnsCheck(unittest.TestCase):
 
     def test_is_authoritative(self):
         self.assertRaises(ipaddress.AddressValueError, self.dns.is_authoritative, 'x.x.x.x')
-        self.assertTrue(self.dns.is_authoritative('8.8.8.8'))
-        self.assertTrue(self.dns.is_authoritative('8.8.8.255'))
+        self.assertTrue(self.dns.is_authoritative('192.0.2.1'))
+        self.assertTrue(self.dns.is_authoritative('192.0.2.255'))
         self.assertFalse(self.dns.is_authoritative('89.216.119.169'))
         self.assertFalse(self.dns.is_authoritative('109.122.98.1'))
         self.assertFalse(self.dns.is_authoritative('1.1.1.1'))
@@ -70,21 +72,21 @@ class TestDnsCheck(unittest.TestCase):
         self.assertRaises(ipaddress.AddressValueError, self.dns.get_status, 'x.x.x.x', 'test')
         # OK PTR
         self.assertEqual(DnsCheck.STATUS_OK,
-                         self.dns.get_status('91.185.98.222', 'r-sc-1.vektor.net')[1])
+                         self.dns.get_status('192.0.2.1', 'host1.domain.example.')[1])
         # Authoritative
         # Wrong PTR
         self.assertEqual(DnsCheck.STATUS_NOT_UPDATED,
-                         self.dns.get_status('8.8.8.8', 'r-sc-1-lo0.vektor.net')[1])
+                         self.dns.get_status('192.0.2.22', 'localhost.domain.example.')[1])
         # No PTR
         self.assertEqual(DnsCheck.STATUS_NOT_CREATED,
-                         self.dns.get_status('8.8.8.255', 'r-sc-1-lo0.vektor.net')[1])
+                         self.dns.get_status('192.0.2.4', 'host4.domain.example.')[1])
         # Not authoritative
         # Wrong PTR
         self.assertEqual(DnsCheck.STATUS_NOT_AUTHORITATIVE,
-                         self.dns.get_status('109.122.98.1', 'r-sc-1-lo0.vektor.net')[1])
+                         self.dns.get_status('8.8.8.8', 'wrong.domain.example.')[1])
         # No PTR
         self.assertEqual(DnsCheck.STATUS_NOT_AUTHORITATIVE,
-                         self.dns.get_status('109.122.98.128', 'r-sc-1-lo0.vektor.net')[1])
+                         self.dns.get_status('8.8.8.255', 'empty.domain.example.')[1])
 
         # Wrong IP
-        self.assertRaises(ValueError, self.dns.get_status, '109.122.96', 'r-sc-1.vektor.net')
+        self.assertRaises(ValueError, self.dns.get_status, '192.0.2', 'something.domain.example.')

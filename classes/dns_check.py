@@ -18,10 +18,12 @@
 
 import socket
 import dns.resolver
+import dns.reversename
 import dns.exception
 import logging
 import ipaddress
 from config import Config
+from pprint import pprint
 
 
 class DnsCheck:
@@ -70,10 +72,17 @@ class DnsCheck:
             self.logger.error("DNSException raised for '%s': %s" % (hostname, e))
             return False
 
-    @staticmethod
-    def get_ptr(ip_address):
+    def get_ptr(self, ip_address):
         ipaddress.IPv4Address(ip_address.decode('utf-8'))
-        return socket.getfqdn(ip_address)
+        try:
+            answers = self.resolver.query(dns.reversename.from_address(ip_address), 'PTR')
+            for rdata in answers:
+                ptr = rdata.to_text()
+                self.logger.debug("'%s' = '%s'" % (ptr, ip_address))
+                return ptr
+        except dns.exception.DNSException as e:
+            self.logger.error("DNSException raised for '%s': %s" % (ip_address, e))
+            return False
 
     def get_status(self, ip_address, expected_ptr):
         """
@@ -90,10 +99,10 @@ class DnsCheck:
         :return:
         """
         ipaddress.IPv4Address(ip_address.decode('utf-8'))
-        existing_ptr = DnsCheck.get_ptr(ip_address)
+        existing_ptr = self.get_ptr(ip_address)
 
         # There is no PTR
-        if existing_ptr == ip_address:
+        if not existing_ptr:
             # Are we responsible for that PTR zone?
             if self.is_authoritative(ip_address):
                 self.logger.info("PTR for '%s' doesn't exists and should be created. Returning status %d" % (
@@ -145,8 +154,9 @@ class DnsCheck:
         # Get SOA record. If master name is in ns servers list return true
         ptr_zone = DnsCheck.get_ptr_zone(ip_address)
         try:
-            soa_answers = dns.resolver.query(ptr_zone, 'SOA')
+            soa_answers = self.resolver.query(ptr_zone, 'SOA')
             for rdata in soa_answers:
+                self.logger.debug("NS servers found in SOA for %s: %s" % (ptr_zone, str(rdata.mname).rstrip('.')))
                 # Remove fqdn dot from the end of the master name in SOA and check if in our NS servers list
                 if str(rdata.mname).rstrip('.') in ns_list:
                     self.logger.debug("Server responsible for '%s' is in NS list" % ip_address)

@@ -38,16 +38,16 @@ before_install:
   - mysql -e 'CREATE DATABASE IF NOT EXISTS dnsupdate;'
   # Install snmpd for testing stuff...
   - sudo apt-get install -y snmpd
-  - sudo cp test/system/snmpd.conf /etc/snmp/snmpd.conf
+  - sudo cp test/system/snmp/snmpd.conf /etc/snmp/snmpd.conf
   - sudo service snmpd restart
   # Network bullshit
   - sudo ifconfig lo:1 192.0.2.22
   # BIND dns server
   - sudo apt-get install -y bind9 bind9utils bind9-doc
-  - sudo cp test/system/bind9 /etc/default/bind9
-  - sudo cp test/system/named.conf.local /etc/bind/named.conf.local
-  - sudo cp test/system/192.0.2.db /etc/bind/192.0.2.db
-  - sudo cp test/system/domain.example.db /etc/bind/domain.example.db
+  - sudo cp test/system/bind/bind9 /etc/default/bind9
+  - sudo cp test/system/bind/named.conf.local /etc/bind/named.conf.local
+  - sudo cp test/system/bind/192.0.2.db /etc/bind/192.0.2.db
+  - sudo cp test/system/bind/domain.example.db /etc/bind/domain.example.db
   - sudo service bind9 restart
 install:
   - pip install -r requirements.txt
