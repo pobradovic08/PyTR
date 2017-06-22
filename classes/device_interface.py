@@ -90,7 +90,7 @@ class DeviceInterface:
                 continue
 
             # If IP matches loopback IP, expected PTR is device.hostname
-            if ip_address == self.device.ip:
+            if self.is_loopback(ip_address):
                 existing_ptr, status = self.device.dns.get_status(ip_address, self.device.hostname)
             else:
                 existing_ptr, status = self.device.dns.get_status(ip_address, self.ptr)
@@ -147,13 +147,26 @@ class DeviceInterface:
         else:
             return self._get_full_ptr(ip_address)
 
+    def is_loopback(self, ip_address):
+        """
+        IP address is loopback address if interface name matches the one of loopback
+        or if IP address is the same one as in the A record for this device
+        :param ip_address:
+        :return:
+        """
+        if re.match('lo|loopback', self.if_name, re.IGNORECASE):
+            return True
+        if ip_address == self.device.ip:
+            return True
+        return False
+
     def _get_short_ptr(self, ip_address):
         """
         Returns short (no domain) PTR for given IP address
         :param ip_address:  IP address
         :return:
         """
-        return self.short_ptr if not ip_address == self.device.ip else self.device.host
+        return self.short_ptr if not self.is_loopback(ip_address) else self.device.host
 
     def _get_full_ptr(self, ip_address):
         """
@@ -161,7 +174,7 @@ class DeviceInterface:
         :param ip_address:
         :return:
         """
-        return self.ptr if not ip_address == self.device.ip else self.device.hostname
+        return self.ptr if not self.is_loopback(ip_address) else self.device.hostname
 
     def get_ptrs(self):
         """
