@@ -57,8 +57,8 @@ class TestDnsCheck(unittest.TestCase):
 
     def test_get_ptr_zone(self):
         self.assertRaises(ipaddress.AddressValueError, DnsCheck.get_ptr_zone, 'x.x.x.x')
-        self.assertEqual('96.122.109.in-addr.arpa.', DnsCheck.get_ptr_zone('109.122.96.23'))
-        self.assertRaises(ValueError, DnsCheck.get_ptr_zone, '109.122.96')
+        self.assertEqual('2.0.192.in-addr.arpa.', DnsCheck.get_ptr_zone('192.0.2.1'))
+        self.assertRaises(ValueError, DnsCheck.get_ptr_zone, '192.0.2')
 
     def test_is_authoritative(self):
         self.assertRaises(ipaddress.AddressValueError, self.dns.is_authoritative, 'x.x.x.x')
