@@ -102,3 +102,40 @@ class TestSqliteConnector(unittest.TestCase):
     def test_drop_ptr_table(self):
         self.connector.drop_ptr_table()
         self.assertRaises(sqlite3.OperationalError, self.connector.load_ptrs)
+
+    def test_delete_ptrs(self):
+        # Load one (default) ptr from database
+        db_ptrs = self.connector.load_ptrs()
+        # Check if there's really one
+        self.assertEquals(1, len(db_ptrs))
+
+        # Delete ptr from database
+        self.connector.delete_ptrs(db_ptrs.keys())
+        # Load ptrs again and check that the db is empty
+        db_ptrs = self.connector.load_ptrs()
+        self.assertEquals(0, len(db_ptrs))
+
+        # Generate 256 addresses and PTRs
+        tmp = [ "192.0.2.%s" % i for i in xrange(0, 256, 1)]
+        ptr_dict = {}
+        for ip in tmp:
+            ptr_dict[ip] = Ptr(ip_address=ip, hostname='test', if_name='test', ptr='test')
+        self.connector.save_ptrs(ptr_dict)
+        db_ptrs = self.connector.load_ptrs()
+        self.assertEquals(256, len(db_ptrs))
+
+        ptr = {
+            'ip_address': u'10.10.10.10',
+            'hostname': 'cmts-sc-1.domain.example',
+            'if_name': 'Ethernet0/0/0',
+            'ptr': 'cmts-sc-1-et0-0-0.domain.example'
+        }
+        self.connector.save_ptr(Ptr(**ptr))
+
+        db_ptrs = self.connector.load_ptrs()
+        self.assertEquals(257, len(db_ptrs))
+
+        self.connector.delete_ptrs(tmp)
+
+        db_ptrs = self.connector.load_ptrs()
+        self.assertEquals(1, len(db_ptrs))

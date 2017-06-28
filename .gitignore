@@ -3,3 +3,4 @@
 /configuration.json
 *.log
 .coverage
+sqlite.sql

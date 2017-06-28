@@ -40,6 +40,10 @@ class SqliteConnector(BaseConnector):
             self.create_ptr_table()
 
     def create_ptr_table(self):
+        """
+        Create PTR table
+        :return:
+        """
         sql = """CREATE TABLE IF NOT EXISTS `ptrs` (
                   `ip_address` INTEGER  NOT NULL PRIMARY KEY ,
                   `hostname` VARCHAR(128) DEFAULT NULL,
@@ -52,10 +56,18 @@ class SqliteConnector(BaseConnector):
         self.c.execute(sql)
 
     def drop_ptr_table(self):
+        """
+        Drop PTR table
+        :return:
+        """
         sql = "DROP TABLE IF EXISTS `ptrs`"
         self.c.execute(sql)
 
     def load_ptrs(self):
+        """
+        Load all PTRs from Database
+        :return:
+        """
         ptrs = {}
         sql = "SELECT `ip_address`, `hostname`, `if_name`, `ptr`, `status` FROM `ptrs`"
         self.c.execute(sql)
@@ -70,7 +82,12 @@ class SqliteConnector(BaseConnector):
             ptrs[str(ptr.ip_address)] = ptr
         return ptrs
 
-    def save_ptr(self, ptr):
+    def save_ptr(self, ptr, commit=True):
+        """
+        Save a single Ptr to database
+        :param ptr:
+        :return:
+        """
         sql = "INSERT OR REPLACE INTO `ptrs` VALUES (" \
               ":ip_address, :hostname, :if_name, :ptr, :ptr_zone, :status, :insert_time" \
               ")"
@@ -85,13 +102,35 @@ class SqliteConnector(BaseConnector):
             "insert_time": int(time.time())
         }
         self.c.execute(sql, data)
+        if commit:
+            self.connection.commit()
 
     def save_ptrs(self, ptrs):
+        """
+        Save multiple Ptrs to database. Uses `save_ptr` method
+        :param ptrs:
+        :return:
+        """
         self.logger.info("Saving %d PTRs to database..." % len(ptrs))
         for ptr in ptrs:
-            self.save_ptr(ptrs[ptr])
+            self.save_ptr(ptrs[ptr], commit=False)
         self.connection.commit()
         self.logger.info("Saved %d PTRs to database." % len(ptrs))
 
+    def delete_ptrs(self, ip_addresses):
+        """
+        Delete Ptrs for a list of IP addresses
+        :param ptrs:
+        :return:
+        """
+        for ip in ip_addresses:
+            sql = "DELETE FROM `ptrs` WHERE ip_address == :ip"
+            self.c.execute(sql, {"ip": Ptr.get_ip_int(ip)})
+        self.connection.commit()
+
     def load_devices(self):
+        """
+        Not used.
+        :return:
+        """
         return []

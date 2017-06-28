@@ -48,6 +48,19 @@ class Ptr:
     def ip_int(self):
         return int(self.ip_address)
 
+    @classmethod
+    def get_ip_int(cls, ip_address):
+        """
+        Get int (long) representation of the IP address
+        :param ip_address:
+        :return:
+        """
+        try:
+            ip = ipaddress.IPv4Address(ip_address.decode('utf-8'))
+            return int(ip)
+        except ipaddress.AddressValueError as e:
+            raise ValueError("Invalid IP address: %s" % e)
+
     def get_ptr_zone(self):
         """ Returns ptr zone in x.y.z.in-addr.arpa format """
         # Get first 3 octets, reverse them and append '.in-addr.arpa.'
