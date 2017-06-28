@@ -2,3 +2,4 @@
 .idea/
 /configuration.json
 *.log
+.coverage
