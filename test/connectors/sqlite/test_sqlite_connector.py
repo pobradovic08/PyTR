@@ -129,7 +129,6 @@ class TestSqliteConnector(unittest.TestCase):
             '10.9.8.7': Ptr(**ptr2),
             '192.0.2.254': Ptr(**ptr3),
         }
-        print ptrs['192.0.2.1'].create_time()
         # Save PTRs
         self.connector.save_ptrs(ptrs=ptrs)
         self.assertEquals(self.connector.ptr_count(), len(self.connector.load_ptrs()))

@@ -57,5 +57,12 @@ class TestPtr(unittest.TestCase):
     def test_ptr_zone(self):
         self.assertEquals('30.20.10.in-addr.arpa.', self.obj.get_ptr_zone())
 
+    def test_ip_int(self):
+        self.assertEquals(3221225985, Ptr.get_ip_int('192.0.2.1'))
+        self.assertRaises(ValueError, Ptr.get_ip_int, '192.0.2.')
+
+    def test_create_time(self):
+        self.obj.create_time()
+
     def test_representation(self):
         self.assertEquals('cmts-sc-1-et0-0-0.vektor.net (10.20.30.40)', str(self.obj))
