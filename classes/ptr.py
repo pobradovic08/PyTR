@@ -18,6 +18,7 @@
 
 import ipaddress
 import logging
+import time
 
 
 class Ptr:
@@ -28,7 +29,7 @@ class Ptr:
     STATUS_NOT_AUTHORITATIVE = 4
     STATUS_IGNORED = 5
 
-    def __init__(self, ip_address, ptr, hostname, if_name, status=STATUS_UNKNOWN):
+    def __init__(self, ip_address, ptr, hostname, if_name, status=STATUS_UNKNOWN, create_time=None):
         # type: (unicode, str, str, str, str) -> None
         self.logger = logging.getLogger('dns_update.ptr')
         self.ip_address = None
@@ -43,6 +44,7 @@ class Ptr:
         self.if_name = if_name
         self.ptr = ptr
         self.status = status
+        self.time = time.gmtime(create_time)
 
     # noinspection PyTypeChecker
     def ip_int(self):
@@ -67,6 +69,9 @@ class Ptr:
         parts = str(self.ip_address).split('.')
         zone = '.'.join(list(reversed(parts[:-1]))) + '.in-addr.arpa.'
         return zone
+
+    def create_time(self):
+        return time.strftime("%a, %d %b %Y %H:%M:%S +0000", self.time)
 
     def __repr__(self):
         return "%s (%s)" % (self.ptr, self.ip_address)

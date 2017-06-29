@@ -18,6 +18,7 @@
 
 import logging
 import time
+import calendar
 import sqlite3
 from classes.connectors import BaseConnector
 from classes import Ptr
@@ -63,6 +64,15 @@ class SqliteConnector(BaseConnector):
         sql = "DROP TABLE IF EXISTS `ptrs`"
         self.c.execute(sql)
 
+    def ptr_count(self):
+        """
+        Returns number of PTRs in database
+        :return:
+        """
+        sql = "SELECT COUNT(`ip_address`) FROM `ptrs`"
+        self.c.execute(sql)
+        return self.c.fetchone()[0]
+
     def load_ptrs(self):
         """
         Load all PTRs from Database
@@ -99,7 +109,7 @@ class SqliteConnector(BaseConnector):
             "ptr": ptr.ptr,
             "ptr_zone": ptr.get_ptr_zone(),
             "status": ptr.status,
-            "insert_time": int(time.time())
+            "insert_time": calendar.timegm(ptr.time)
         }
         self.c.execute(sql, data)
         if commit:
@@ -127,6 +137,17 @@ class SqliteConnector(BaseConnector):
             sql = "DELETE FROM `ptrs` WHERE ip_address == :ip"
             self.c.execute(sql, {"ip": Ptr.get_ip_int(ip)})
         self.connection.commit()
+
+    def delete_stale_ptrs(self):
+        """
+        Deletes PTR records that are not seen in more than 72h
+        :return: Number of deleted rows
+        """
+        stale_hours = self.config['stale_hours'] if 'stale_hours' in self.config else 72
+        time_threshold = time.time() - stale_hours * 3600
+        sql = "DELETE FROM `ptrs` WHERE `insert_time` < :time"
+        self.c.execute(sql, { "time": time_threshold })
+        return self.c.rowcount
 
     def load_devices(self):
         """

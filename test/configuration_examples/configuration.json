@@ -18,7 +18,8 @@
     },
     "sqlite": {
       "db": "test/connectors/sqlite/sqlite.sql",
-      "enabled": false
+      "enabled": false,
+      "stale_hours": 72
     }
   },
   "dns": {

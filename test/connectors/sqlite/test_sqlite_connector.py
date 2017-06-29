@@ -18,6 +18,7 @@
 import logging
 import unittest
 import sqlite3
+import time
 
 from classes import Config
 from classes import Dispatcher
@@ -60,6 +61,10 @@ class TestSqliteConnector(unittest.TestCase):
         self.assertEquals('cmts-sc-1-et0-0-0.domain.example', ptrs['10.10.10.10'].ptr)
         self.assertEquals('10.10.10.in-addr.arpa.', ptrs['10.10.10.10'].get_ptr_zone())
 
+    def test_drop_ptr_table(self):
+        self.connector.drop_ptr_table()
+        self.assertRaises(sqlite3.OperationalError, self.connector.load_ptrs)
+
     def test_save_ptrs(self):
         self.connector.drop_ptr_table()
         self.connector.create_ptr_table()
@@ -99,9 +104,35 @@ class TestSqliteConnector(unittest.TestCase):
         # Check if updated PTR record is saved to DB correctly
         self.assertEquals('changed_host.domain.example', loaded_ptrs['10.9.8.7'].hostname)
 
-    def test_drop_ptr_table(self):
-        self.connector.drop_ptr_table()
-        self.assertRaises(sqlite3.OperationalError, self.connector.load_ptrs)
+    def test_ptr_count(self):
+        self.assertEquals(self.connector.ptr_count(), len(self.connector.load_ptrs()))
+        ptr1 = {
+            'ip_address': u'192.0.2.1',
+            'hostname': 'device.domain.example',
+            'if_name': 'Ethernet0/0/0',
+            'ptr': 'device-et0-0-0.domain.example'
+        }
+        ptr2 = {
+            'ip_address': u'10.9.8.7',
+            'hostname': 'host.domain.example',
+            'if_name': 'Ethernet3/2/1',
+            'ptr': 'host-et3-2-1.domain.example'
+        }
+        ptr3 = {
+            'ip_address': u'192.0.2.254',
+            'hostname': 'dns.domain.example',
+            'if_name': 'Ethernet0/0/0',
+            'ptr': 'dns-et0-0-0.domain.example'
+        }
+        ptrs = {
+            '192.0.2.1': Ptr(**ptr1),
+            '10.9.8.7': Ptr(**ptr2),
+            '192.0.2.254': Ptr(**ptr3),
+        }
+        print ptrs['192.0.2.1'].create_time()
+        # Save PTRs
+        self.connector.save_ptrs(ptrs=ptrs)
+        self.assertEquals(self.connector.ptr_count(), len(self.connector.load_ptrs()))
 
     def test_delete_ptrs(self):
         # Load one (default) ptr from database
@@ -139,3 +170,18 @@ class TestSqliteConnector(unittest.TestCase):
 
         db_ptrs = self.connector.load_ptrs()
         self.assertEquals(1, len(db_ptrs))
+
+
+    def test_delete_stale_ptrs(self):
+        self.assertEquals(1, self.connector.ptr_count())
+        ptr = {
+            'ip_address': u'10.10.10.11',
+            'hostname': 'cmts-sc-2.domain.example',
+            'if_name': 'Ethernet0/0/1',
+            'ptr': 'cmts-sc-2-et0-0-1.domain.example',
+            'create_time': time.time() - 72*3600
+        }
+        self.connector.save_ptr(Ptr(**ptr))
+        self.assertEquals(2, self.connector.ptr_count())
+        self.connector.delete_stale_ptrs()
+        self.assertEquals(1, self.connector.ptr_count())
