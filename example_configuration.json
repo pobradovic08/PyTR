@@ -1,6 +1,9 @@
 {
   "connector": {
-
+    "dns": {
+      "hostname": "dns.domain.example",
+      "key": "XXXXXXXXXXXXXXXXXXXXXX=="
+    }
   },
   "dns": {
     "update": {

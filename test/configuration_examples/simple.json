@@ -1,5 +1,9 @@
 {
   "connector": {
+    "dns": {
+      "hostname": "dns.domain.example",
+      "key": "XXXXXXXXXXXXXXXXXXXXXX=="
+    },
     "test": {
       "enabled": true
     },
