@@ -48,7 +48,7 @@ before_install:
   - sudo cp test/system/bind/named.conf.local /etc/bind/named.conf.local
   - sudo cp test/system/bind/192.0.2.db /etc/bind/192.0.2.db
   - sudo cp test/system/bind/domain.example.db /etc/bind/domain.example.db
-  - sudo chmod -R named:named /etc/bind
+  - sudo chown -R named:named /etc/bind
   - sudo service bind9 restart
 install:
   - pip install -r requirements.txt
