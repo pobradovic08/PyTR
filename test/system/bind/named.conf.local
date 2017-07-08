@@ -1,3 +1,9 @@
+key "nsupdate_key" {
+    algorithm hmac-md5;
+    secret "Qk1iALEMqKANUDbcMw1DSoo54PLxUGw9EeWrrOXyY6XuB40pL69uf1qkHEquAEoLC8Z1JEoaxOgDE+j5hGEKPg==";
+};
+
+
 zone "domain.example" {
     type master;
     file "/etc/bind/domain.example.db"; # zone file path
@@ -6,4 +12,5 @@ zone "domain.example" {
 zone "2.0.192.in-addr.arpa" {
     type master;
     file "/etc/bind/192.0.2.db";
+    allow-update { key "nsupdate_key"; };
 };
