@@ -1,8 +1,8 @@
 {
   "connector": {
     "dns": {
-      "hostname": "dns.domain.example",
-      "key": "XXXXXXXXXXXXXXXXXXXXXX=="
+      "hostname": "localhost",
+      "key": "Qk1iALEMqKANUDbcMw1DSoo54PLxUGw9EeWrrOXyY6XuB40pL69uf1qkHEquAEoLC8Z1JEoaxOgDE+j5hGEKPg=="
     },
     "test": {
       "enabled": true,
