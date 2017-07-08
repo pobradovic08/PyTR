@@ -19,6 +19,7 @@ from classes.connectors.base import BaseConnector
 import dns.query
 import dns.tsigkeyring
 import dns.update
+from dns.tsig import HMAC_SHA256
 import logging
 
 
@@ -27,7 +28,7 @@ class DnsConnector(BaseConnector):
         BaseConnector.__init__(self, dispatcher)
         self.logger = logging.getLogger('dns_update.connector.dns')
         self.keyring = dns.tsigkeyring.from_text({
-            'keyname.': self.config['key']
+            'nsupdate_key': self.config['key']
         })
 
     def delete_stale_ptrs(self):

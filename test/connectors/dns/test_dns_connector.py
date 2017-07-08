@@ -19,9 +19,11 @@
 import logging
 import unittest
 import dns.update
+from dns.tsig import HMAC_MD5
 
 from classes import Config
 from classes import Dispatcher
+from classes import DnsCheck
 from classes.connectors.dns.dns_connector import DnsConnector
 
 
@@ -35,4 +37,10 @@ class TestDnsConnector(unittest.TestCase):
         )
         self.dispatcher = Dispatcher(Config(filename='test/configuration_examples/configuration.json'))
         self.connector = DnsConnector(self.dispatcher)
+        self.dns = DnsCheck(config=Config('test/configuration_examples/configuration.json'))
 
+    def test_update(self):
+        update = dns.update.Update('2.0.192.in-addr.arpa', keyring=self.connector.keyring, keyalgorithm=HMAC_MD5)
+        update.replace('255', 300, 'PTR', '255-test.domain.example.')
+        dns.query.tcp(update, 'localhost')
+        self.assertEquals('255-test.domain.example.', self.dns.get_ptr('192.0.2.255'))
