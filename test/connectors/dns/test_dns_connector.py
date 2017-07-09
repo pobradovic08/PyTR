@@ -40,6 +40,17 @@ class TestDnsConnector(unittest.TestCase):
         self.connector = DnsConnector(self.dispatcher)
         self.dns = DnsCheck(config=Config('test/configuration_examples/configuration.json'))
 
+    def test_create(self):
+        ptr_dict = {
+            'ip_address': u'192.0.2.255',
+            'hostname': 'host255.domain.example',
+            'if_name': 'Ethernet2/5/5',
+            'ptr': 'host255-et2-5-5.domain.example.'
+        }
+        ptr = Ptr(**ptr_dict)
+        self.connector.create_ptr(ptr)
+        self.assertEquals('host255-et2-5-5.domain.example.', self.dns.get_ptr('192.0.2.255'))
+
     def test_update(self):
         ptr_dict = {
             'ip_address': u'192.0.2.255',
@@ -48,11 +59,14 @@ class TestDnsConnector(unittest.TestCase):
             'ptr': 'host255-et2-5-5.domain.example.'
         }
         ptr = Ptr(**ptr_dict)
-        self.assertNotEquals('host255-et2-5-5.domain.example.', self.dns.get_ptr('192.0.2.255'))
         self.connector.create_ptr(ptr)
         self.assertEquals('host255-et2-5-5.domain.example.', self.dns.get_ptr('192.0.2.255'))
+        ptr_dict['ptr'] = 'host-et2-5-5.domain.example.'
+        ptr = Ptr(**ptr_dict)
+        self.connector.create_ptr(ptr)
+        self.assertEquals('host-et2-5-5.domain.example.', self.dns.get_ptr('192.0.2.255'))
 
     def test_delete(self):
-        self.assertEquals('host255-et2-5-5.domain.example.', self.dns.get_ptr('192.0.2.255'))
         self.connector.delete_ptr('192.0.2.255')
+        self.assertNotEquals('host-et2-5-5.domain.example.', self.dns.get_ptr('192.0.2.255'))
         self.assertNotEquals('host255-et2-5-5.domain.example.', self.dns.get_ptr('192.0.2.255'))
