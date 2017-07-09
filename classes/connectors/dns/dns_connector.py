@@ -44,7 +44,6 @@ class DnsConnector(BaseConnector):
             raise ValueError("Argument must be of Ptr class.")
         update = dns.update.Update(ptr.get_ptr_zone(), keyring=self.keyring, keyalgorithm=HMAC_MD5)
         update.replace(ptr.get_ptr_zone_name(), 300, 'PTR', ptr.ptr)
-        print ptr.ptr
         dns.query.tcp(update, self.dns_hostname)
 
     def delete_stale_ptrs(self):

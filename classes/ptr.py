@@ -71,7 +71,7 @@ class Ptr:
         return zone
 
     def get_ptr_zone_name(self):
-        return str(self.ip_address).split('.', -1)[0]
+        return str(self.ip_address).rsplit('.', 1)[1]
 
     def create_time(self):
         return time.strftime("%a, %d %b %Y %H:%M:%S +0000", self.time)

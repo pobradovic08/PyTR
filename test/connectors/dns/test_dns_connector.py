@@ -24,6 +24,7 @@ from dns.tsig import HMAC_MD5
 from classes import Config
 from classes import Dispatcher
 from classes import DnsCheck
+from classes import Ptr
 from classes.connectors.dns.dns_connector import DnsConnector
 
 
@@ -40,12 +41,18 @@ class TestDnsConnector(unittest.TestCase):
         self.dns = DnsCheck(config=Config('test/configuration_examples/configuration.json'))
 
     def test_update(self):
-        update = dns.update.Update('2.0.192.in-addr.arpa', keyring=self.connector.keyring, keyalgorithm=HMAC_MD5)
-        update.replace('255', 300, 'PTR', '255-test.domain.example.')
-        dns.query.tcp(update, 'localhost')
-        self.assertEquals('255-test.domain.example.', self.dns.get_ptr('192.0.2.255'))
-
+        ptr_dict = {
+            'ip_address': u'192.0.2.255',
+            'hostname': 'host255.domain.example',
+            'if_name': 'Ethernet2/5/5',
+            'ptr': 'host255-et2-5-5.domain.example.'
+        }
+        ptr = Ptr(**ptr_dict)
+        self.assertNotEquals('host255-et2-5-5.domain.example.', self.dns.get_ptr('192.0.2.255'))
+        self.connector.create_ptr(ptr)
+        self.assertEquals('host255-et2-5-5.domain.example.', self.dns.get_ptr('192.0.2.255'))
 
     def test_delete(self):
+        self.assertEquals('host255-et2-5-5.domain.example.', self.dns.get_ptr('192.0.2.255'))
         self.connector.delete_ptr('192.0.2.255')
-        self.assertNotEquals('255-test.domain.example.', self.dns.get_ptr('192.0.2.255'))
+        self.assertNotEquals('host255-et2-5-5.domain.example.', self.dns.get_ptr('192.0.2.255'))
