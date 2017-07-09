@@ -44,3 +44,8 @@ class TestDnsConnector(unittest.TestCase):
         update.replace('255', 300, 'PTR', '255-test.domain.example.')
         dns.query.tcp(update, 'localhost')
         self.assertEquals('255-test.domain.example.', self.dns.get_ptr('192.0.2.255'))
+
+
+    def test_delete(self):
+        self.connector.delete_ptr('192.0.2.255')
+        self.assertNotEquals('255-test.domain.example.', self.dns.get_ptr('192.0.2.255'))

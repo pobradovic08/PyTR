@@ -16,10 +16,11 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from classes.connectors.base import BaseConnector
+from classes import Ptr
 import dns.query
 import dns.tsigkeyring
 import dns.update
-from dns.tsig import HMAC_SHA256
+from dns.tsig import HMAC_MD5
 import logging
 
 
@@ -27,9 +28,24 @@ class DnsConnector(BaseConnector):
     def __init__(self, dispatcher):
         BaseConnector.__init__(self, dispatcher)
         self.logger = logging.getLogger('dns_update.connector.dns')
+        self.dns_hostname = self.config['hostname']
         self.keyring = dns.tsigkeyring.from_text({
             'nsupdate_key': self.config['key']
         })
+
+    def delete_ptr(self, ip_address):
+        name, zone = str(dns.reversename.from_address(ip_address)).split('.', 1)
+        update = dns.update.Update(zone, keyring=self.keyring, keyalgorithm=HMAC_MD5)
+        update.delete(name)
+        dns.query.tcp(update, self.dns_hostname)
+
+    def create_ptr(self, ptr):
+        if not isinstance(ptr, Ptr):
+            raise ValueError("Argument must be of Ptr class.")
+        update = dns.update.Update(ptr.get_ptr_zone(), keyring=self.keyring, keyalgorithm=HMAC_MD5)
+        update.replace(ptr.get_ptr_zone_name(), 300, 'PTR', ptr.ptr)
+        print ptr.ptr
+        dns.query.tcp(update, self.dns_hostname)
 
     def delete_stale_ptrs(self):
         pass

@@ -31,10 +31,10 @@ class TestPtr(unittest.TestCase):
             filemode='w'
         )
         self.ptr = {
-            'ip_address': u'10.20.30.40',
-            'hostname': 'cmts-sc-1.vektor.net',
+            'ip_address': u'192.0.2.200',
+            'hostname': 'host.domain.example',
             'if_name': 'Ethernet0/0/0',
-            'ptr': 'cmts-sc-1-et0-0-0.vektor.net'
+            'ptr': 'host-et0-0-0.domain.example'
         }
 
         self.obj = Ptr(**self.ptr)
@@ -55,7 +55,7 @@ class TestPtr(unittest.TestCase):
         self.assertRaises(ValueError, Ptr, **self.ptr)
 
     def test_ptr_zone(self):
-        self.assertEquals('30.20.10.in-addr.arpa.', self.obj.get_ptr_zone())
+        self.assertEquals('2.0.192.in-addr.arpa.', self.obj.get_ptr_zone())
 
     def test_ip_int(self):
         self.assertEquals(3221225985, Ptr.get_ip_int('192.0.2.1'))
@@ -65,4 +65,4 @@ class TestPtr(unittest.TestCase):
         self.obj.create_time()
 
     def test_representation(self):
-        self.assertEquals('cmts-sc-1-et0-0-0.vektor.net (10.20.30.40)', str(self.obj))
+        self.assertEquals('host-et0-0-0.domain.example (192.0.2.200)', str(self.obj))
