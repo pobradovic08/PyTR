@@ -38,6 +38,9 @@ class Device:
         self.ignored = False
         self.dns = dns if dns else DnsCheck(self.config)
         self.hostname = hostname
+        # Ensure it looks like a FQDN
+        if self.hostname[-1] != '.':
+            self.hostname += '.'
         # Split device.hostname into two parts: (hostname).(domain.example)
         try:
             self.host, self.domain = self.hostname.split('.', 1)
