@@ -20,6 +20,7 @@ from classes import Ptr
 import dns.query
 import dns.tsigkeyring
 import dns.update
+import ipaddress
 from dns.tsig import HMAC_MD5
 import logging
 
@@ -50,7 +51,12 @@ class DnsConnector(BaseConnector):
         pass
 
     def delete_ptrs(self, ip_addresses):
-        pass
+        for ip_address in ip_addresses:
+            try:
+                ipaddress.IPv4Address(ip_address.decode('utf-8'))
+                self.delete_ptr(ip_address)
+            except ipaddress.AddressValueError:
+                continue
 
     def load_devices(self):
         return []

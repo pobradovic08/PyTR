@@ -70,3 +70,37 @@ class TestDnsConnector(unittest.TestCase):
         self.connector.delete_ptr('192.0.2.255')
         self.assertNotEquals('host-et2-5-5.domain.example.', self.dns.get_ptr('192.0.2.255'))
         self.assertNotEquals('host255-et2-5-5.domain.example.', self.dns.get_ptr('192.0.2.255'))
+
+    def test_multiple_delete(self):
+        ptr1_dict = {
+            'ip_address': u'192.0.2.201',
+            'hostname': 'host201.domain.example',
+            'if_name': 'Ethernet2/0/1',
+            'ptr': 'host201-et2-0-1.domain.example.'
+        }
+        ptr2_dict = {
+            'ip_address': u'192.0.2.202',
+            'hostname': 'host202.domain.example',
+            'if_name': 'Ethernet2/0/2',
+            'ptr': 'host202-et2-0-2.domain.example.'
+        }
+        ptr3_dict = {
+            'ip_address': u'192.0.2.203',
+            'hostname': 'host203.domain.example',
+            'if_name': 'Ethernet2/0/3',
+            'ptr': 'host203-et2-0-3.domain.example.'
+        }
+        ptr1 = Ptr(**ptr1_dict)
+        ptr2 = Ptr(**ptr2_dict)
+        ptr3 = Ptr(**ptr3_dict)
+
+        self.connector.create_ptr(ptr1)
+        self.connector.create_ptr(ptr2)
+        self.connector.create_ptr(ptr3)
+        self.assertEquals('host201-et2-0-1.domain.example.', self.dns.get_ptr('192.0.2.201'))
+        self.assertEquals('host202-et2-0-2.domain.example.', self.dns.get_ptr('192.0.2.202'))
+        self.assertEquals('host203-et2-0-3.domain.example.', self.dns.get_ptr('192.0.2.203'))
+        self.connector.delete_ptrs(['192.0.2.201','192.0.2.202','192.0.2.203'])
+        self.assertNotEquals('host201-et2-0-1.domain.example.', self.dns.get_ptr('192.0.2.201'))
+        self.assertNotEquals('host202-et2-0-2.domain.example.', self.dns.get_ptr('192.0.2.202'))
+        self.assertNotEquals('host203-et2-0-3.domain.example.', self.dns.get_ptr('192.0.2.203'))
