@@ -7,6 +7,8 @@ cache: pip
 services:
   - mysql
 before_install:
+  # Make localhost a FQDN :/
+  - sudo sh -c 'echo "127.0.0.1 localhost." >> /etc/hosts'
   # Install build dependencies
   - sudo apt-get update
   - sudo apt-get install -y autoconf libtool make libperl-dev python-dev
