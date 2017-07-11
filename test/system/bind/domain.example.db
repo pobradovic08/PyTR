@@ -1,6 +1,6 @@
 $TTL    604800
 @       IN      SOA     localhost. root.localhost. (
-                              4         ; Serial
+                              6         ; Serial
                          604800         ; Refresh
                           86400         ; Retry
                         2419200         ; Expire
@@ -15,3 +15,8 @@ host2       IN      A       192.0.2.2
 host3       IN      A       192.0.2.3
 
 localhost   IN      A       192.0.2.22
+
+;For testing valid hostnames in DnsCheck
+cmts-1      IN      A       192.0.2.30
+cmts-2      IN      A       192.0.2.31
+server      IN      A       192.0.2.40

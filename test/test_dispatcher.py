@@ -32,7 +32,7 @@ class TestConnector(BaseConnector):
         pass
 
     def load_devices(self):
-        return ['cmts-sc-1.vektor.net', 'cmts-sc-2.vektor.net', 'cmts-gs-1.domain.example']
+        return ['cmts-1.domain.example.', 'cmts-2.domain.example.', 'cmts-3.domain.example.']
 
 
 class Test2Connector(BaseConnector):
@@ -43,7 +43,7 @@ class Test2Connector(BaseConnector):
         pass
 
     def load_devices(self):
-        return ['noc.vektor.net']
+        return ['server.domain.example.']
 
 
 class Test3Connector(BaseConnector): pass
@@ -78,14 +78,14 @@ class TestDispatcher(unittest.TestCase):
         self.dispatcher.load()
         # No invalid hostnames included
         self.assertListEqual(
-            sorted(['cmts-sc-1.vektor.net', 'cmts-sc-2.vektor.net']),
+            sorted(['cmts-1.domain.example.', 'cmts-2.domain.example.']),
             sorted(self.dispatcher.devices.keys())
         )
         Test2Connector(self.dispatcher)
         self.dispatcher.load()
         # No invalid hostnames included
         self.assertListEqual(
-            sorted(['cmts-sc-1.vektor.net', 'cmts-sc-2.vektor.net', 'noc.vektor.net']),
+            sorted(['cmts-1.domain.example.', 'cmts-2.domain.example.', 'server.domain.example.']),
             sorted(self.dispatcher.devices.keys())
         )
 

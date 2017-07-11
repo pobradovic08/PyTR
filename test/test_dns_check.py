@@ -36,9 +36,9 @@ class TestDnsCheck(unittest.TestCase):
         self.assertFalse(self.dns.get_fqdn('asdasd'))
         self.assertFalse(self.dns.get_fqdn(''))
         self.assertFalse(self.dns.get_fqdn('.'))
-        self.assertEquals('host1.domain.example', self.dns.get_fqdn('host1'))
-        self.assertEquals('host2.domain.example', self.dns.get_fqdn('host2'))
-        self.assertEquals('host3.domain.example', self.dns.get_fqdn('host3'))
+        self.assertEquals('host1.domain.example.', self.dns.get_fqdn('host1'))
+        self.assertEquals('host2.domain.example.', self.dns.get_fqdn('host2'))
+        self.assertEquals('host3.domain.example.', self.dns.get_fqdn('host3'))
 
     def test_a_query(self):
         self.assertFalse(self.dns.get_a('asdasd'))

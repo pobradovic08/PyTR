@@ -39,7 +39,10 @@ class DnsCheck:
         self.config = config if config else Config()
         self.resolver = dns.resolver.Resolver()
         self.resolver.nameservers = self.config.get_ns_query_servers()
-        self.logger.info("There are %d NS server(s) to query" % len(self.resolver.nameservers))
+        self.logger.info("There are %d NS server(s) to query: %s" % (
+				len(self.resolver.nameservers),
+				', '.join(self.resolver.nameservers)
+			))
         self.resolver.search = []
         for domain in self.config.get_ns_search_domains():
             self.resolver.search.append(dns.name.from_text(domain))
