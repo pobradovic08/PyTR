@@ -51,7 +51,7 @@ class DnsCheck:
             return False
         try:
             answers = self.resolver.query(hostname, 'A')
-            fqdn = answers.qname.to_text().rstrip('.')
+            fqdn = answers.qname.to_text()
             self.logger.debug("FQDN ('%s') = '%s'" % (hostname, fqdn))
             return fqdn
         except dns.exception.DNSException as e:
