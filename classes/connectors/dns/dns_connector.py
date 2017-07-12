@@ -65,4 +65,5 @@ class DnsConnector(BaseConnector):
         return {}
 
     def save_ptrs(self, ptrs):
-        pass
+        for ptr in ptrs:
+            self.create_ptr(ptr)
