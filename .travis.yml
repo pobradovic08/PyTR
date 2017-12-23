@@ -28,7 +28,7 @@ before_install:
     --with-logfile="/var/log/snmpd.log"
     --with-mib-modules="host misc/ipfwacc ucd-snmp/diskio tunnel ucd-snmp/dlmod"
     --with-persistent-directory="/var/net-snmp"
-  - make -j4 NETSNMP_DONT_CHECK_VERSION=1
+  - make -j4 NETSNMP_DONT_CHECK_VERSION=1 LIBS="-lcrypto"
   - sudo make install
   - sudo ldconfig
   - cd ..
