@@ -29,8 +29,7 @@ before_install:
     --with-mib-modules="host misc/ipfwacc ucd-snmp/diskio tunnel ucd-snmp/dlmod"
     --with-persistent-directory="/var/net-snmp"
     --with-libdir=lib64
-    -lcrypto -lm
-  - make -j4 NETSNMP_DONT_CHECK_VERSION=1 LIBS="-lcrypto"
+  - make -j4 NETSNMP_DONT_CHECK_VERSION=1 LIBS="-lcrypto -lm"
   - sudo make install
   - sudo ldconfig
   - cd ..
