@@ -41,10 +41,12 @@ class DnsConnector(BaseConnector):
         dns.query.tcp(update, self.dns_hostname)
 
     def create_ptr(self, ptr):
+        print ptr.get_ptr_zone()
         if not isinstance(ptr, Ptr):
             raise ValueError("Argument must be of Ptr class.")
         update = dns.update.Update(ptr.get_ptr_zone(), keyring=self.keyring, keyalgorithm=HMAC_MD5)
         update.replace(ptr.get_ptr_zone_name(), 300, 'PTR', ptr.ptr)
+        self.logger.debug("Updating %s" % self.dns_hostname)
         dns.query.tcp(update, self.dns_hostname)
 
     def delete_stale_ptrs(self):
@@ -65,5 +67,7 @@ class DnsConnector(BaseConnector):
         return {}
 
     def save_ptrs(self, ptrs):
+        self.logger.info("Saving %d PTRs to database..." % len(ptrs))
         for ptr in ptrs:
-            self.create_ptr(ptr)
+            self.create_ptr(ptrs[ptr])
+        self.logger.info("Saved %d PTRs to database." % len(ptrs))

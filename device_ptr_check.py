@@ -24,6 +24,7 @@ import sys
 from classes import Config
 from classes import Device
 from classes import DnsCheck
+from classes import Dispatcher
 from classes.output.tabular_utf8 import TabularUtf8Output
 
 reload(sys)
@@ -55,6 +56,10 @@ config = Config(check_only=check_only,
                 diff_only=diff_only,
                 terse=terse)
 
+dispatcher = Dispatcher(config)
+
+print "Loaded connectors: %s" % ', '.join(dispatcher.get_connector_list())
+
 dns = DnsCheck(config=config)
 output = TabularUtf8Output()
 
@@ -72,5 +77,9 @@ if fqdn:
                (DnsCheck.STATUS_NOT_UPDATED, DnsCheck.STATUS_NOT_CREATED)
         }
         #print ptrs_for_update
+
+        print ptrs_for_update
+
+        dispatcher.save_ptrs(ptrs_for_update)
     else:
         print "Error connecting to %s" % d.hostname
