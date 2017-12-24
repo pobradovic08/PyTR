@@ -1,4 +1,6 @@
 language: python
+dist: trusty
+group: deprecated-2017Q4
 python:
   - "2.7"
 env:
@@ -29,7 +31,7 @@ before_install:
     --with-mib-modules="host misc/ipfwacc ucd-snmp/diskio tunnel ucd-snmp/dlmod"
     --with-persistent-directory="/var/net-snmp"
     --with-libdir=lib64
-  - make -j4 NETSNMP_DONT_CHECK_VERSION=1 LIBS="-lnetsnmp"
+  - make -j4 NETSNMP_DONT_CHECK_VERSION=1
   - sudo make install
   - sudo ldconfig
   - cd ..
