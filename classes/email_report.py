@@ -41,6 +41,7 @@ class EmailReport:
         """
         self.logger = logging.getLogger('dns_update.email_report')
         self.config = config if config else Config()
+        self.base_path = os.path.dirname(os.path.abspath(__file__)) + '/../templates/email/'
 
         self.device = device
         self.interface_number = interface_number
@@ -54,8 +55,10 @@ class EmailReport:
         self.email_to = config.get_email_to()
         self.email_from = config.get_email_from()
         self.email_time = datetime.now().strftime('%d.%m.%Y %H:%M')
+
         self.email_subject = "PyTR update report - %s" % self.email_time
         self.logger.info("Emails receiving report: %s" % ",".join(self.email_to))
+
         self.msg = None
 
     def send_report(self):
@@ -70,10 +73,6 @@ class EmailReport:
             except smtplib.SMTPException as e:
                 self.logger.error(e)
 
-    def _header(self):
-        return """
-        """
-
     def generate_report(self, ptrs):
         lines = [self._header()]
         if len(ptrs):
@@ -81,8 +80,9 @@ class EmailReport:
         else:
             lines.append("\n\nNo changes detected.\n\n")
         lines.append(self._footer())
+
+        # Html part
         self._generate_html(ptrs)
-        # self.msg = MIMEText("\n".join(lines))
         self.msg = MIMEMultipart('alternative')
         self.msg['Subject'] = self.email_subject
         self.msg['From'] = self.email_from
@@ -91,13 +91,27 @@ class EmailReport:
         self.msg.attach(MIMEText(self.html, 'html'))
         self.send_report()
 
+    def _generate_error(self, message):
+        """
+        Builds error message HTML from template
+        :param message:
+        :return:
+        """
+        error_raw = self.base_path + 'error.html'
+        with open(error_raw) as error_template_file:
+            error_template =  error_template_file.read()
+
+        error_html = Environment().from_string(error_template).render(
+            error_message=message
+        )
+
+        return error_html
+
     def _generate_html(self, ptrs):
 
-        base_path = os.path.dirname(os.path.abspath(__file__)) + '/../templates/email/'
-
-        html_base_raw = base_path + 'base.html'
-        html_report_raw = base_path + 'report.html'
-        updated_rows_file = base_path + 'updated_rows.html'
+        html_base_raw = self.base_path + 'base.html'
+        html_report_raw = self.base_path + 'report.html'
+        updated_rows_file = self.base_path + 'updated_rows.html'
 
         with open(html_base_raw) as html_base_template:
             self.html_base_raw = html_base_template.read()
