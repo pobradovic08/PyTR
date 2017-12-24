@@ -20,6 +20,7 @@
 import argparse
 import logging
 import sys
+import time
 
 from classes import Config
 from classes import Device
@@ -28,8 +29,12 @@ from classes import Dispatcher
 from classes import EmailReport
 from classes.output.tabular_utf8 import TabularUtf8Output
 
+__version__ = '2017.12a1'
+
 reload(sys)
 sys.setdefaultencoding('utf8')
+
+start_time = time.time()
 
 logging.basicConfig(
     filename=__file__.rstrip('.py|.pyc') + '.log',
@@ -62,7 +67,6 @@ dispatcher = Dispatcher(config)
 print "Loaded connectors: %s" % ', '.join(dispatcher.get_connector_list())
 
 dns = DnsCheck(config=config)
-email = EmailReport(config=config)
 output = TabularUtf8Output()
 
 fqdn = dns.get_fqdn(hostname)
@@ -80,6 +84,19 @@ if fqdn:
         }
         #print ptrs_for_update
         dispatcher.save_ptrs(ptrs_for_update)
+
+        email = EmailReport(
+            config=config,
+            device=fqdn,
+            interface_number=d.get_number_of_interfaces(),
+            ip_number=d.get_number_of_ip_addresses(),
+            delta_time=time.time() - start_time,
+            connector_number=len(dispatcher.get_connector_list()),
+            app_name='device_ptr_check',
+            app_version=__version__
+        )
         email.generate_report(ptrs_for_update)
     else:
         print "Error connecting to %s" % d.hostname
+else:
+    print "Error resolving %s" % hostname

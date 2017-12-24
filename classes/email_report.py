@@ -24,13 +24,32 @@ from jinja2 import Environment
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
+__version__ = '2017.12a1'
+
 
 class EmailReport:
-    def __init__(self, config=None, device=None):
+    def __init__(self,
+                 config=None,
+                 device=None,
+                 interface_number=None,
+                 ip_number=None,
+                 delta_time=None,
+                 connector_number=None,
+                 app_name=None,
+                 app_version=__version__):
         """
         """
         self.logger = logging.getLogger('dns_update.email_report')
         self.config = config if config else Config()
+
+        self.device = device
+        self.interface_number = interface_number
+        self.delta_time = delta_time
+        self.connector_number = connector_number
+        self.ip_number = ip_number
+        self.app_name = app_name
+        self.app_version = app_version
+
         self.email_server = config.get_email_server()
         self.email_to = config.get_email_to()
         self.email_from = config.get_email_from()
@@ -98,7 +117,14 @@ class EmailReport:
             time=self.email_time,
             up_to_date_row=self.html_up_to_date_row,
             updated_rows=self.html_updated_rows,
-            ptrs_updated=True if len(ptrs) else False
+            ptrs_updated=True if len(ptrs) else False,
+            hostname=self.device,
+            interface_number=self.interface_number,
+            ip_number=self.ip_number,
+            delta_time=self.delta_time,
+            connectors=self.connector_number,
+            app_name=self.app_name,
+            app_version=self.app_version
         )
 
     def _prepare_ptrs(self, ptrs):

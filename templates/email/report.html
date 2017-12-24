@@ -145,6 +145,18 @@
                         DNS UPDATE REPORT
                     </td>
                 </tr>
+                {% if hostname %}
+                <tr>
+                    <td align="center" valign="top" style="border-collapse: collapse;
+                    border-spacing: 0; margin: 0; padding: 0;  padding-left: 6.25%; padding-right: 6.25%; width: 87.5%;
+                    font-size: 16px; font-weight: bold; line-height: 130%;
+			        padding-top: 5px; padding-bottom: 10px;
+			        color: #FFFFFF;
+			        font-family: sans-serif;" class="header">
+                        {{hostname}}
+                    </td>
+                </tr>
+                {% endif %}
                 {% if ptrs_updated is defined and ptrs_updated %}
                 <!-- PARAGRAPH -->
                 <!-- Set text color and font family ("sans-serif" or "Georgia, serif"). Duplicate all text styles in links, including line-height -->
@@ -167,12 +179,27 @@
                     <!-- No updates -->
                     {{up_to_date_row}}
                 {% endif %}
-
+                <!-- Statistics -->
+                <tr>
+                    <td align="center" valign="top" style="border-collapse: collapse; border-spacing: 0; margin: 0;
+                    padding: 0; padding-left: 6.25%; padding-right: 6.25%; width: 87.5%; font-size: 10px;
+                    font-weight: 400; line-height: 150%;
+                    padding-top: 30px;
+                    padding-bottom: 20px;
+                    color: white;
+                    font-family: sans-serif;" class="center">
+                        Enabled connectors: {{connectors}}<br/>
+                        Interfaces: <b>{{interface_number}}</b>, IPv4 addresses: <b>{{ip_number}}</b><br/>
+                        Time it took: <b>{{'%0.2f'| format(delta_time|float)}}</b> sec.<br/>
+                        {{app_name}} ({{app_version}})<br/>
+                    </td>
+                </tr>
                 <!-- LINE -->
                 <!-- Set line color -->
                 <tr>
-                    <td align="center" valign="top" style="border-collapse: collapse; border-spacing: 0; margin: 0; padding: 0; padding-left: 6.25%; padding-right: 6.25%; width: 87.5%;
-			padding-top: 30px;" class="line">
+                    <td align="center" valign="top" style="border-collapse: collapse; border-spacing: 0; margin: 0;
+                    padding: 0; padding-left: 6.25%; padding-right: 6.25%; width: 87.5%;"
+                        class="line">
                         <hr
                                 color="#565F73" align="center" width="100%" size="1" noshade
                                 style="margin: 0; padding: 0;"/>

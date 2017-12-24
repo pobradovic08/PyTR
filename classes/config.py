@@ -23,6 +23,7 @@ import sre_constants
 import logging
 import os
 
+__version__ = '2017.12a1'
 
 class Config:
     def __init__(
