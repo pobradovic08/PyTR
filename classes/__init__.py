@@ -22,3 +22,4 @@ from device import Device
 from device_interface import DeviceInterface
 from ptr import Ptr
 from dispatcher import Dispatcher
+from email_report import EmailReport

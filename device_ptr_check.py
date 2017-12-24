@@ -25,6 +25,7 @@ from classes import Config
 from classes import Device
 from classes import DnsCheck
 from classes import Dispatcher
+from classes import EmailReport
 from classes.output.tabular_utf8 import TabularUtf8Output
 
 reload(sys)
