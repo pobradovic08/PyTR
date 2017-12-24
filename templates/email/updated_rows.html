@@ -1,0 +1,18 @@
+{% for ptr in ptrs %}
+    {% if ptr.status == 2 %}
+                            <tr class="updated">
+                                <td><span>&#9650;</span>{{ptr.ptr}}</td>
+                                <td class="center">{{ptr.ip}}</td>
+                            </tr>
+    {% elif ptr.status == 3 %}
+                            <tr class="created">
+                                <td><span>&#10010;</span>{{ptr.ptr}}</td>
+                                <td class="center">{{ptr.ip}}</td>
+                            </tr>
+    {% else %}
+                            <tr class="deleted">
+                                <td><span>&#9635;</span>{{ptr.ptr}}</td>
+                                <td class="center">{{ptr.ip}}</td>
+                            </tr>
+    {% endif %}
+{% endfor %}

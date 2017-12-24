@@ -95,6 +95,27 @@ class Config:
             self.logger.warning("No config found for connector '%s'" % connector_name)
             return {}
 
+    def get_email_server(self):
+        """
+        Returns SMTP server for sending reports
+        :return:
+        """
+        return self.data['email']['server']
+
+    def get_email_from(self):
+        """
+        Returns 'From' email address for sending reports
+        :return:
+        """
+        return self.data['email']['from']
+
+    def get_email_to(self):
+        """
+        Returns list of 'To' email addresses for sending reports
+        :return:
+        """
+        return self.data['email']['to']
+
     def get_ns_servers(self):
         """
         Returns list of DNS servers we can update

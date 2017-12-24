@@ -62,6 +62,7 @@ dispatcher = Dispatcher(config)
 print "Loaded connectors: %s" % ', '.join(dispatcher.get_connector_list())
 
 dns = DnsCheck(config=config)
+email = EmailReport(config=config)
 output = TabularUtf8Output()
 
 fqdn = dns.get_fqdn(hostname)
@@ -79,5 +80,6 @@ if fqdn:
         }
         #print ptrs_for_update
         dispatcher.save_ptrs(ptrs_for_update)
+        email.generate_report(ptrs_for_update)
     else:
         print "Error connecting to %s" % d.hostname
