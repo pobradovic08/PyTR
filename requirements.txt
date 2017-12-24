@@ -3,6 +3,7 @@ dnspython>=1.15.0
 easysnmp>=0.2.4
 MySQL-python>=1.2.5
 Jinja2==2.10
+bumpversion==0.5.3
 coverage==4.3
 coveralls
 codeclimate-test-reporter

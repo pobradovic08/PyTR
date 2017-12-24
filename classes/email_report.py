@@ -24,7 +24,7 @@ from jinja2 import Environment
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
-__version__ = '2017.12a1'
+__version__ = '0.1.1'
 
 
 class EmailReport:
@@ -95,27 +95,25 @@ class EmailReport:
 
         base_path = os.path.dirname(os.path.abspath(__file__)) + '/../templates/email/'
 
-        html_template_file = base_path + 'report.html'
-        up_to_date_row_file = base_path + 'up_to_date_row.html'
+        html_base_raw = base_path + 'base.html'
+        html_report_raw = base_path + 'report.html'
         updated_rows_file = base_path + 'updated_rows.html'
 
-        with open(html_template_file) as html_template:
-            self.html_raw = html_template.read()
+        with open(html_base_raw) as html_base_template:
+            self.html_base_raw = html_base_template.read()
 
-        with open(up_to_date_row_file) as up_to_date_row_template:
-            self.html_up_to_date_row_raw = up_to_date_row_template.read()
+        with open(html_report_raw) as html_report_template:
+            self.html_report_raw = html_report_template.read()
 
         with open(updated_rows_file) as updated_rows_template:
             self.html_updated_rows_raw = updated_rows_template.read()
 
-        self.html_up_to_date_row = Environment().from_string(self.html_up_to_date_row_raw).render()
         self.html_updated_rows = Environment().from_string(self.html_updated_rows_raw).render(
             ptrs=self._prepare_ptrs(ptrs)
         )
 
-        self.html = Environment().from_string(self.html_raw).render(
+        self.html_content = Environment().from_string(self.html_report_raw).render(
             time=self.email_time,
-            up_to_date_row=self.html_up_to_date_row,
             updated_rows=self.html_updated_rows,
             ptrs_updated=True if len(ptrs) else False,
             hostname=self.device,
@@ -125,6 +123,10 @@ class EmailReport:
             connectors=self.connector_number,
             app_name=self.app_name,
             app_version=self.app_version
+        )
+
+        self.html = Environment().from_string(self.html_base_raw).render(
+            content=self.html_content
         )
 
     def _prepare_ptrs(self, ptrs):
