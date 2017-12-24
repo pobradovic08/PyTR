@@ -77,9 +77,6 @@ if fqdn:
                (DnsCheck.STATUS_NOT_UPDATED, DnsCheck.STATUS_NOT_CREATED)
         }
         #print ptrs_for_update
-
-        print ptrs_for_update
-
         dispatcher.save_ptrs(ptrs_for_update)
     else:
         print "Error connecting to %s" % d.hostname

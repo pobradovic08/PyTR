@@ -85,7 +85,8 @@ for device in dispatcher.devices.keys():
 # New line to fix the progress bar \r magic.
 print
 
-# print output.display_summary(dispatcher)
-print "Saving %d PTRs..." % len(ptrs),
-dispatcher.save_ptrs(ptrs)
-print " done."
+print output.display_summary(dispatcher)
+if not check_only:
+    print "Saving %d PTRs..." % len(ptrs),
+    dispatcher.save_ptrs(ptrs)
+    print " done."

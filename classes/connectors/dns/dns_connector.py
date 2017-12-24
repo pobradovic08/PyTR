@@ -41,7 +41,6 @@ class DnsConnector(BaseConnector):
         dns.query.tcp(update, self.dns_hostname)
 
     def create_ptr(self, ptr):
-        print ptr.get_ptr_zone()
         if not isinstance(ptr, Ptr):
             raise ValueError("Argument must be of Ptr class.")
         update = dns.update.Update(ptr.get_ptr_zone(), keyring=self.keyring, keyalgorithm=HMAC_MD5)
