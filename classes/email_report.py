@@ -44,6 +44,8 @@ class EmailReport:
         self.logger = logging.getLogger('dns_update.email_report')
         self.config = config if config else Config()
         self.base_path = os.path.dirname(os.path.abspath(__file__)) + '/../templates/email/'
+        self.base_html_path = self.base_path + 'html/'
+        self.base_text_path = self.base_path + 'text/'
 
         self.device = device
         self.interface_number = interface_number
@@ -75,30 +77,40 @@ class EmailReport:
             except smtplib.SMTPException as e:
                 self.logger.error(e)
 
-    def generate_report(self, ptrs=None, error_message=None):
+    def generate_report(self, ptrs=None, error_message=None, devices_skipped=None):
         # Html part
         if error_message:
-            content = self._generate_error(error_message)
+            content = self._generate_error_html(error_message)
         else:
-            content = self._generate_html(ptrs)
+            content = self._generate_html(
+                ptrs=self._prepare_ptrs(ptrs),
+                devices_skipped=devices_skipped
+            )
         self.html = self._generate_base_html(content)
+
+        # Plaintext part
+        self.plaintext = self._generate_plaintext(
+            ptrs=self._prepare_ptrs(ptrs),
+            devices_skipped=devices_skipped,
+            error_message=error_message
+        )
 
         # Make mail
         self.msg = MIMEMultipart('alternative')
         self.msg['Subject'] = self.email_subject
         self.msg['From'] = self.email_from
         self.msg['To'] = ','.join(self.email_to)
-        self.msg.attach(MIMEText("\n".join([]), 'text'))
+        self.msg.attach(MIMEText(self.plaintext, 'plain'))
         self.msg.attach(MIMEText(self.html, 'html'))
         self.send_report()
 
-    def _generate_error(self, message):
+    def _generate_error_html(self, message):
         """
         Builds error message HTML from template
         :param message:
         :return:
         """
-        error_raw = self.base_path + 'error.html'
+        error_raw = self.base_html_path + 'error.html'
         with open(error_raw) as error_template_file:
             error_template =  error_template_file.read()
 
@@ -110,7 +122,7 @@ class EmailReport:
 
     def _generate_base_html(self, content):
 
-        html_base_raw = self.base_path + 'base.html'
+        html_base_raw = self.base_html_path + 'base.html'
         with open(html_base_raw) as html_base_template:
             self.html_base_raw = html_base_template.read()
 
@@ -118,10 +130,10 @@ class EmailReport:
             content=content
         )
 
-    def _generate_html(self, ptrs):
+    def _generate_html(self, ptrs, devices_skipped):
 
-        html_report_raw = self.base_path + 'report.html'
-        updated_rows_file = self.base_path + 'updated_rows.html'
+        html_report_raw = self.base_html_path + 'report.html'
+        updated_rows_file = self.base_html_path + 'updated_rows.html'
 
         with open(html_report_raw) as html_report_template:
             self.html_report_raw = html_report_template.read()
@@ -130,13 +142,14 @@ class EmailReport:
             self.html_updated_rows_raw = updated_rows_template.read()
 
         self.html_updated_rows = Environment().from_string(self.html_updated_rows_raw).render(
-            ptrs=self._prepare_ptrs(ptrs)
+            ptrs=ptrs
         )
 
         return Environment().from_string(self.html_report_raw).render(
             time=self.email_time,
             updated_rows=self.html_updated_rows,
             ptrs_updated=True if len(ptrs) else False,
+            devices_skipped=devices_skipped,
             hostname=self.device,
             interface_number=self.interface_number,
             ip_number=self.ip_number,
@@ -148,14 +161,54 @@ class EmailReport:
 
     def _prepare_ptrs(self, ptrs):
         prepared_ptrs = []
+        if not ptrs:
+            return []
+
         for ptr in ptrs:
             if ptrs[ptr].status in [Ptr.STATUS_NOT_CREATED, Ptr.STATUS_NOT_UPDATED]:
                 prepared_ptrs.append({
                     "ip": "%s" % ptrs[ptr].ip_address,
                     "status": ptrs[ptr].status,
+                    "status_verbose": ptrs[ptr].get_status_action_took_string(),
                     "ptr": ptrs[ptr].ptr
                 })
         return prepared_ptrs
+
+    def _generate_plaintext(self, ptrs, devices_skipped, error_message):
+        lines = [
+                    'DNS UPDATE REPORT',
+                    '========================================================================'
+                ]
+        if error_message:
+            lines.append(
+                "Error message:\n%s\n\n" % error_message
+            )
+        else:
+            if self.device:
+                lines.append("Device: %s\n" % self.device)
+            if ptrs and len(ptrs):
+                lines.append("%-40s\t%10s\t%s" % ("PTR", 'Action', 'IP'))
+                lines.append('------------------------------------------------------------------------')
+                for ptr in ptrs:
+                    lines.append("  %-38s\t%10s\t%s" % (
+                        ptr['ptr'], ptr['status_verbose'], ptr['ip']
+                    ))
+                lines.append('------------------------------------------------------------------------')
+                lines.append("\n\n")
+            else:
+                lines.append("Everything is up to date!")
+
+            if devices_skipped and len(devices_skipped):
+                lines.append("Some devices could not be connected to. Check SNMP community configuration.")
+                lines.append("Devices skipped:")
+                for device in devices_skipped:
+                    lines.append(device)
+                lines.append("\n\n")
+
+            lines.append("\n\n")
+
+        lines.append("\n\n%s" % self._footer())
+        return "\n".join(lines)
 
     def _footer(self):
         return """

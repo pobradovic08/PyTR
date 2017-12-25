@@ -57,6 +57,7 @@ diff_only = not args.full
 terse = args.terse
 
 ptrs = {}
+failed_devices = []
 
 interface_number = 0
 ip_address_number = 0
@@ -84,6 +85,8 @@ for device in dispatcher.devices.keys():
         dispatcher.devices[device].check_ptrs()
         # print output.display_device_detailed(dispatcher.devices[device])
         # print output.display_device_summary(dispatcher.devices[device])
+    else:
+        failed_devices.append(device)
 
     interface_number += dispatcher.devices[device].get_number_of_interfaces()
     ip_address_number += dispatcher.devices[device].get_number_of_ip_addresses()
@@ -112,4 +115,4 @@ if not check_only:
         app_name=os.path.basename(__file__),
         app_version=__version__
     )
-    email.generate_report(ptrs=ptrs)
+    email.generate_report(ptrs=ptrs, devices_skipped=failed_devices)

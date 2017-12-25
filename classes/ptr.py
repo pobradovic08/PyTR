@@ -79,3 +79,15 @@ class Ptr:
 
     def __repr__(self):
         return "%s (%s)" % (self.ptr, self.ip_address)
+
+    def get_status_action_took_string(self):
+        statuses = {
+            0: "Unknown",
+            1: "None",
+            2: "Updated",
+            3: "Created",
+            4: "None",
+            5: "None",
+            6: "Deleted"
+        }
+        return statuses[self.status]
