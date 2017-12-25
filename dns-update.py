@@ -26,6 +26,10 @@ from classes import Device
 from classes import Dispatcher
 from classes.output.tabular_utf8 import TabularUtf8Output
 
+
+__version__ = '0.1.2'
+
+
 reload(sys)
 sys.setdefaultencoding('utf8')
 

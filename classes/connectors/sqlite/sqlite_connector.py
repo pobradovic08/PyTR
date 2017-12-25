@@ -23,6 +23,8 @@ import sqlite3
 from classes.connectors import BaseConnector
 from classes import Ptr
 
+__version__ = '0.1.2'
+
 
 # noinspection SqlResolve
 class SqliteConnector(BaseConnector):
@@ -146,7 +148,7 @@ class SqliteConnector(BaseConnector):
         stale_hours = self.config['stale_hours'] if 'stale_hours' in self.config else 72
         time_threshold = time.time() - stale_hours * 3600
         sql = "DELETE FROM `ptrs` WHERE `insert_time` < :time"
-        self.c.execute(sql, { "time": time_threshold })
+        self.c.execute(sql, {"time": time_threshold})
         return self.c.rowcount
 
     def load_devices(self):
