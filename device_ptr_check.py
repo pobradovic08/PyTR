@@ -95,8 +95,17 @@ if fqdn:
             app_name='device_ptr_check',
             app_version=__version__
         )
-        email.generate_report(ptrs_for_update)
+        email.generate_report(ptrs=ptrs_for_update)
     else:
+        email = EmailReport(
+            config=config,
+            device=fqdn,
+            delta_time=time.time() - start_time,
+            connector_number=len(dispatcher.get_connector_list()),
+            app_name='device_ptr_check',
+            app_version=__version__
+        )
+        email.generate_report(error_message="Error connecting to %s" % d.hostname)
         print "Error connecting to %s" % d.hostname
 else:
     print "Error resolving %s" % hostname

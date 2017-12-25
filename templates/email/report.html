@@ -60,9 +60,13 @@
                     padding-bottom: 20px;
                     color: white;
                     font-family: sans-serif;" class="center">
+                        {% if connectors %}
                         Enabled connectors: {{connectors}}<br/>
+                        {% endif %}
+                        {% if interface_number and ip_number %}
                         Interfaces: <b>{{interface_number}}</b>, IPv4 addresses: <b>{{ip_number}}</b><br/>
+                        {% endif %}
                         Time it took: <b>{{'%0.2f'| format(delta_time|float)}}</b> sec.<br/>
-                        {{app_name}} ({{app_version}})<br/>
+                        <i><b>{app_name}} ({{app_version}})</b></i><br/>
                     </td>
                 </tr>

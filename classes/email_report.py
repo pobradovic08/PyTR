@@ -73,21 +73,20 @@ class EmailReport:
             except smtplib.SMTPException as e:
                 self.logger.error(e)
 
-    def generate_report(self, ptrs):
-        lines = [self._header()]
-        if len(ptrs):
-            lines.append("\n\n\n\n")
-        else:
-            lines.append("\n\nNo changes detected.\n\n")
-        lines.append(self._footer())
-
+    def generate_report(self, ptrs=None, error_message=None):
         # Html part
-        self._generate_html(ptrs)
+        if error_message:
+            content = self._generate_error(error_message)
+        else:
+            content = self._generate_html(ptrs)
+        self.html = self._generate_base_html(content)
+
+        # Make mail
         self.msg = MIMEMultipart('alternative')
         self.msg['Subject'] = self.email_subject
         self.msg['From'] = self.email_from
         self.msg['To'] = ','.join(self.email_to)
-        self.msg.attach(MIMEText("\n".join(lines), 'text'))
+        self.msg.attach(MIMEText("\n".join([]), 'text'))
         self.msg.attach(MIMEText(self.html, 'html'))
         self.send_report()
 
@@ -107,14 +106,20 @@ class EmailReport:
 
         return error_html
 
-    def _generate_html(self, ptrs):
+    def _generate_base_html(self, content):
 
         html_base_raw = self.base_path + 'base.html'
-        html_report_raw = self.base_path + 'report.html'
-        updated_rows_file = self.base_path + 'updated_rows.html'
-
         with open(html_base_raw) as html_base_template:
             self.html_base_raw = html_base_template.read()
+
+        return Environment().from_string(self.html_base_raw).render(
+            content=content
+        )
+
+    def _generate_html(self, ptrs):
+
+        html_report_raw = self.base_path + 'report.html'
+        updated_rows_file = self.base_path + 'updated_rows.html'
 
         with open(html_report_raw) as html_report_template:
             self.html_report_raw = html_report_template.read()
@@ -126,7 +131,7 @@ class EmailReport:
             ptrs=self._prepare_ptrs(ptrs)
         )
 
-        self.html_content = Environment().from_string(self.html_report_raw).render(
+        return Environment().from_string(self.html_report_raw).render(
             time=self.email_time,
             updated_rows=self.html_updated_rows,
             ptrs_updated=True if len(ptrs) else False,
@@ -137,10 +142,6 @@ class EmailReport:
             connectors=self.connector_number,
             app_name=self.app_name,
             app_version=self.app_version
-        )
-
-        self.html = Environment().from_string(self.html_base_raw).render(
-            content=self.html_content
         )
 
     def _prepare_ptrs(self, ptrs):
