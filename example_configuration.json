@@ -3,7 +3,28 @@
     "dns": {
       "hostname": "dns.domain.example",
       "key": "XXXXXXXXXXXXXXXXXXXXXX=="
+    },
+    "observium": {
+      "enabled": true,
+      "mysql": {
+        "host": "localhost",
+        "user": "username",
+        "passwd": "password",
+        "db": "observium"
+      }
+    },
+    "sqlite": {
+      "db": "classes/connectors/sqlite/db.sqlite",
+      "enabled": true,
+      "stale_hours": 72
     }
+  },
+  "email": {
+    "server": "smtp.domain.example",
+    "from": "pytr@server.domain.example",
+    "to": [
+      "server.reports@domain.example"
+    ]
   },
   "dns": {
     "update": {
