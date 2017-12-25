@@ -20,7 +20,7 @@ from classes.connectors.base import BaseConnector
 import logging
 import MySQLdb
 
-__version__ = '0.1.4'
+__version__ = '0.1.5'
 
 
 class ObserviumConnector(BaseConnector):
