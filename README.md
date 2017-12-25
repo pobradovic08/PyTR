@@ -141,6 +141,7 @@ Basic structure looks like this:
 |`STATUS_NOT_CREATED` | `3` | PTR doesn't exists
 |`STATUS_NOT_AUTHORITATIVE` | `4` | None of the configured DNS servers are authoritative for this PTR zone
 |`STATUS_IGNORED` | `5` | Not checked. Device, interface or IP address are on ignore list
+|`STATUS_FOR_DELETION` | `6` | PTR marked to be deleted
 
 ## Connectors
 
