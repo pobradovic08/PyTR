@@ -27,7 +27,7 @@ from classes import Dispatcher
 from classes.output.tabular_utf8 import TabularUtf8Output
 
 
-__version__ = '0.1.3'
+__version__ = '0.1.4'
 
 
 reload(sys)
