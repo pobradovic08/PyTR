@@ -1,0 +1,45 @@
+========================================================================
+DNS UPDATE REPORT   {% if hostname %}{{hostname}}{% endif %}
+========================================================================
+{% if error_message is defined and error_message %}
+-------------------------------  ERROR  --------------------------------
+{{error_message|wordwrap(73)}}
+------------------------------------------------------------------------
+
+{% else %}
+{% if ptrs_updated is defined and ptrs_updated %}
+========================================================================
+PTR                                           Action     IP address
+------------------------------------------------------------------------
+{% for ptr in ptrs -%}
+{{ "%-46s%-11s%s"|format(ptr.ptr, ptr.status_verbose, ptr.ip) }}
+{% endfor -%}
+========================================================================
+{% else %}
+------------------------------------------------------------------------
+Everything is up to date!
+------------------------------------------------------------------------
+{% endif %}
+
+{% if devices_skipped %}
+Some devices couldn't be polled. Check SNMP community configuration.
+========================================================================
+Devices skipped (connection error)
+------------------------------------------------------------------------
+{% for device in devices_skipped -%}
+{{device}}
+{% endfor -%}
+========================================================================
+{% endif %}
+
+{% if connectors %}Enabled connectors: {{connectors}}{% endif %}
+{% if interface_number and ip_number %}Interfaces: {{interface_number}}, IPv4 addresses: {{ip_number}}{% endif %}
+{% endif -%}
+Time it took: {{'%0.2f'| format(delta_time|float)}} sec.
+{{app_name}} ({{app_version}})
+
+---
+PyTR - DNS Updater
+https://github.com/pobradovic08/PyTR
+Copyright (C) 2017  Pavle Obradovic (pajaja)
+https://www.gnu.org/licenses/gpl-3.0.en.html

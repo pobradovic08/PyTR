@@ -175,46 +175,21 @@ class EmailReport:
         return prepared_ptrs
 
     def _generate_plaintext(self, ptrs, devices_skipped, error_message):
-        lines = [
-                    'DNS UPDATE REPORT',
-                    '========================================================================'
-                ]
-        if error_message:
-            lines.append(
-                "Error message:\n%s\n\n" % error_message
-            )
-        else:
-            if self.device:
-                lines.append("Device: %s\n" % self.device)
-            if ptrs and len(ptrs):
-                lines.append("%-40s\t%10s\t%s" % ("PTR", 'Action', 'IP'))
-                lines.append('------------------------------------------------------------------------')
-                for ptr in ptrs:
-                    lines.append("  %-38s\t%10s\t%s" % (
-                        ptr['ptr'], ptr['status_verbose'], ptr['ip']
-                    ))
-                lines.append('------------------------------------------------------------------------')
-                lines.append("\n\n")
-            else:
-                lines.append("Everything is up to date!")
+        text_raw_file = self.base_text_path + 'report.txt'
+        with open(text_raw_file) as text_template:
+            self.text_raw = text_template.read()
 
-            if devices_skipped and len(devices_skipped):
-                lines.append("Some devices could not be connected to. Check SNMP community configuration.")
-                lines.append("Devices skipped:")
-                for device in devices_skipped:
-                    lines.append(device)
-                lines.append("\n\n")
-
-            lines.append("\n\n")
-
-        lines.append("\n\n%s" % self._footer())
-        return "\n".join(lines)
-
-    def _footer(self):
-        return """
----
-PyTR - DNS Updater
-https://github.com/pobradovic08/PyTR
-Copyright (C) 2017  Pavle Obradovic (pajaja)
-https://www.gnu.org/licenses/gpl-3.0.en.html
-        """
+        return Environment().from_string(self.text_raw).render(
+            error_message=error_message,
+            time=self.email_time,
+            ptrs=ptrs,
+            ptrs_updated=True if len(ptrs) else False,
+            devices_skipped=devices_skipped,
+            hostname=self.device,
+            interface_number=self.interface_number,
+            ip_number=self.ip_number,
+            delta_time=self.delta_time,
+            connectors=self.connector_number,
+            app_name=self.app_name,
+            app_version=self.app_version
+        )
