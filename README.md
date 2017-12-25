@@ -34,6 +34,16 @@ Resulting PTR has a form of:
 
 `hostname-ifname.domain.example`
 
+## Installation
+
+- Install pip and Python headers (`python-pip`, `python-devel` on CentOS)
+- Clone git repo: `git clone https://github.com/pobradovic08/PyTR.git`
+- Install dependencies `cd PyTR && pip install -r requirements.txt`
+- Create configuration file using provided example:
+`cp example_configuration.json configuration.json`
+- Make sure that you have configured all connectors or to remove `enabled: true`
+from configuration file.
+
 ## Device PTR check
 `device_ptr_check` is a Python script that displays info about specific device.
 It shows a list of interfaces that have IP addresses configured, existing
