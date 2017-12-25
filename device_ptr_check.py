@@ -20,6 +20,7 @@
 import argparse
 import logging
 import sys
+import os
 import time
 
 from classes import Config
@@ -92,7 +93,7 @@ if fqdn:
             ip_number=d.get_number_of_ip_addresses(),
             delta_time=time.time() - start_time,
             connector_number=len(dispatcher.get_connector_list()),
-            app_name='device_ptr_check',
+            app_name=os.path.basename(__file__),
             app_version=__version__
         )
         email.generate_report(ptrs=ptrs_for_update)
@@ -102,7 +103,7 @@ if fqdn:
             device=fqdn,
             delta_time=time.time() - start_time,
             connector_number=len(dispatcher.get_connector_list()),
-            app_name='device_ptr_check',
+            app_name=os.path.basename(__file__),
             app_version=__version__
         )
         email.generate_report(error_message="Error connecting to %s" % d.hostname)

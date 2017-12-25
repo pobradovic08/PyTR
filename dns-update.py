@@ -19,19 +19,22 @@
 
 import argparse
 import sys
+import os
 import logging
+import time
 
 from classes import Config
 from classes import Device
+from classes import EmailReport
 from classes import Dispatcher
 from classes.output.tabular_utf8 import TabularUtf8Output
 
-
 __version__ = '0.1.4'
-
 
 reload(sys)
 sys.setdefaultencoding('utf8')
+
+start_time = time.time()
 
 logging.basicConfig(
     filename=__file__.rstrip('.py|.pyc') + '.log',
@@ -54,6 +57,9 @@ diff_only = not args.full
 terse = args.terse
 
 ptrs = {}
+
+interface_number = 0
+ip_address_number = 0
 
 config = Config(check_only=check_only,
                 diff_only=diff_only,
@@ -79,6 +85,9 @@ for device in dispatcher.devices.keys():
         # print output.display_device_detailed(dispatcher.devices[device])
         # print output.display_device_summary(dispatcher.devices[device])
 
+    interface_number += dispatcher.devices[device].get_number_of_interfaces()
+    ip_address_number += dispatcher.devices[device].get_number_of_ip_addresses()
+
     iterator += 1
     # Print progress bar.
     # It will not go to a new line after finishing. Has to be done manually
@@ -94,3 +103,13 @@ if not check_only:
     print "Saving %d PTRs..." % len(ptrs),
     dispatcher.save_ptrs(ptrs)
     print " done."
+    email = EmailReport(
+        config=config,
+        interface_number=interface_number,
+        ip_number=ip_address_number,
+        delta_time=time.time() - start_time,
+        connector_number=len(dispatcher.get_connector_list()),
+        app_name=os.path.basename(__file__),
+        app_version=__version__
+    )
+    email.generate_report(ptrs=ptrs)

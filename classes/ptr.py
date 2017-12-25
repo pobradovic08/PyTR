@@ -28,6 +28,7 @@ class Ptr:
     STATUS_NOT_CREATED = 3
     STATUS_NOT_AUTHORITATIVE = 4
     STATUS_IGNORED = 5
+    STATUS_FOR_DELETION = 6
 
     def __init__(self, ip_address, ptr, hostname, if_name, status=STATUS_UNKNOWN, create_time=None):
         # type: (unicode, str, str, str, str) -> None

@@ -18,6 +18,8 @@
 
 import logging
 import os
+from classes.ptr import Ptr
+from classes.config import Config
 from datetime import datetime
 import smtplib
 from jinja2 import Environment
@@ -147,11 +149,12 @@ class EmailReport:
     def _prepare_ptrs(self, ptrs):
         prepared_ptrs = []
         for ptr in ptrs:
-            prepared_ptrs.append({
-                "ip": "%s" % ptrs[ptr].ip_address,
-                "status": ptrs[ptr].status,
-                "ptr": ptrs[ptr].ptr
-            })
+            if ptrs[ptr].status in [Ptr.STATUS_NOT_CREATED, Ptr.STATUS_NOT_UPDATED]:
+                prepared_ptrs.append({
+                    "ip": "%s" % ptrs[ptr].ip_address,
+                    "status": ptrs[ptr].status,
+                    "ptr": ptrs[ptr].ptr
+                })
         return prepared_ptrs
 
     def _footer(self):

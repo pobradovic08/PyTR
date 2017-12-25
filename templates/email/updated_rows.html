@@ -9,7 +9,7 @@
                                 <td><span>&#10010;</span>{{ptr.ptr}}</td>
                                 <td class="center">{{ptr.ip}}</td>
                             </tr>
-    {% else %}
+    {% elif ptr.status == 6 %}
                             <tr class="deleted">
                                 <td><span>&#9635;</span>{{ptr.ptr}}</td>
                                 <td class="center">{{ptr.ip}}</td>
