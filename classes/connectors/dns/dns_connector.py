@@ -24,7 +24,7 @@ import ipaddress
 from dns.tsig import HMAC_MD5
 import logging
 
-__version__ = '0.2.0'
+__version__ = '0.2.1'
 
 
 class DnsConnector(BaseConnector):
