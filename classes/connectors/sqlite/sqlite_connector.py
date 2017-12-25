@@ -23,7 +23,7 @@ import sqlite3
 from classes.connectors import BaseConnector
 from classes import Ptr
 
-__version__ = '0.1.6'
+__version__ = '0.2.0'
 
 
 # noinspection SqlResolve
