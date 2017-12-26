@@ -35,6 +35,7 @@ class Device:
         self.session = None
         self.config = config
         self.interfaces = {}
+        self.hsrp_addresses = {}
         self.ignored = False
         self.dns = dns if dns else DnsCheck(self.config)
         self.hostname = hostname
@@ -76,6 +77,9 @@ class Device:
                 abort_on_nonexistent=True
             )
 
+            # Fetch HSRP VIP addresses
+            hsrp_addresses = self._get_hsrp_addresses()
+
             """
             Implemented OID IP-MIB::ipAdEntIfIndex (1.3.6.1.2.1.4.20.1.2) is apparently deprecated.
             The new IP-MIB::ipAddressIfIndex is not implemented on most network devices.
@@ -86,8 +90,8 @@ class Device:
 
             # Walk trough the IP-MIB::ipAdEntIfIndex tree. Results are in format:
             # .1.3.6.1.2.1.4.20.1.2.10.170.0.129 = INTEGER: 8
-            # .1.3.6.1.2.1.4.20.1.2.10.170.1.1 = INTEGER: 10
-            #       OID ends here-^|^- IP starts here     ^- ifIndex
+            # .1.3.6.1.2.1.4.20.1.2.10.170.1.1   = INTEGER: 10
+            #       OID ends here-^|^- IP starts here       ^- ifIndex
             # etc...
             interface_address_results = self.session.walk('.1.3.6.1.2.1.4.20.1.2')
             self.logger.info("Device has %d IP addresses" % len(interface_address_results))
@@ -114,12 +118,62 @@ class Device:
                     interface_address_result.oid_index
                 ])
                 self.logger.debug("Found '%s' address on ifIndex:%d" % (self.host, if_index))
+
+                # If there's HSRP VIP address on this interface add it to interface vip addresses
+                # Pop removes the key from dict so we don't add the same list multiple times
+                self.interfaces[if_index].add_vip_addresses(hsrp_addresses.pop(if_index, []))
+
+                # Add polled IP to interface IP list
                 self.interfaces[if_index].add_ip_address(ip_address)
 
             return True
         except easysnmp.EasySNMPError as e:
             self.logger.error("Failed to connect to '%s': %s" % (self.hostname, e))
             return False
+
+    def _get_hsrp_addresses(self):
+        """
+        Walks through the CISCO-HSRP-MIB::cHsrpGrpVirtualIpAddr and fetches ip addresses used as VIPs.
+        These should be ignored when making PTRs.
+        :param snmp:
+        :return:
+        """
+
+        hsrp_addresses = {}
+        if not self.session:
+            self.logger.error("Method %s called without initializing SNMP session first." % __name__)
+            return hsrp_addresses
+
+        # Compiled regexp pattern - ipAdEntIfIndex + important dot ;)
+        oid_pattern = re.compile(re.escape(".1.3.6.1.4.1.9.9.106.1.2.1.1.11.")+"(\d+)")
+
+        # Walk trough the CISCO-HSRP-MIB::cHsrpGrpVirtualIpAddr tree. Results are in format:
+        # .1.3.6.1.4.1.9.9.106.1.2.1.1.11.151061087.607 = IpAddress: 109.122.98.1
+        # .1.3.6.1.4.1.9.9.106.1.2.1.1.11.151061088.608 = IpAddress: 109.122.98.65
+        #                 OID ends here-^|^-iFindex ^-HSRP group     ^- VIP IP address
+        # etc...
+        try:
+            hsrp_address_results = self.session.walk('.1.3.6.1.4.1.9.9.106.1.2.1.1.11')
+            self.logger.info("Device has %d VIP addresses" % len(hsrp_address_results))
+            for hsrp_address_result in hsrp_address_results:
+                vip_address = hsrp_address_result.value
+                ifIndex_match = oid_pattern.match(hsrp_address_result.oid)
+                if ifIndex_match:
+                    ifIndex = int(ifIndex_match.group(1))
+                    if ifIndex not in hsrp_addresses:
+                        hsrp_addresses[ifIndex] = []
+                    hsrp_addresses[ifIndex].append(vip_address)
+                    self.logger.debug("HSRP group VIP address: %s (ifIndex#%s) - should be ignored" % (vip_address, ifIndex))
+                else:
+                    self.logger.warn("Regexp match failed on %s" % hsrp_address_result.oid)
+        except easysnmp.EasySNMPNoSuchObjectError as e:
+            self.logger.info("HSRP not supported on '%s', skipping..." % self.hostname)
+        except easysnmp.EasySNMPNoSuchInstanceError as e:
+            self.logger.info("HSRP not configured on '%s', skipping..." % self.hostname)
+        except easysnmp.EasySNMPError as e:
+            self.logger.error("Failed to fetch HSRP addresses from '%s': %s" % (self.hostname, e))
+        return hsrp_addresses
+
 
     def check_ptrs(self):
         """

@@ -34,6 +34,7 @@ class DeviceInterface:
         self.short_ptr = None
         self.get_if_name()
         self.ignored = self.device.config.is_interface_ignored(self.device.hostname, self.if_name)
+        self.vip_addresses = []
 
     def get_if_name(self):
         """
@@ -82,9 +83,9 @@ class DeviceInterface:
             )
         )
         for ip_address in self.ip_addresses:
-            # Check if interface or IP is ignored
+            # Check if interface or IP is ignored or if IP address is a VIP address
             # And set PTR status to STATUS_IGNORED
-            if self.device.config.is_ip_ignored(ip_address) or self.ignored:
+            if self.device.config.is_ip_ignored(ip_address) or ip_address in self.vip_addresses or self.ignored:
                 self.update_ptr_status(ip_address, None, DnsCheck.STATUS_IGNORED)
                 self.logger.debug("Interface '%s' or IP address '%s' are on ignore list" % (self.if_name, ip_address))
                 continue
@@ -99,7 +100,7 @@ class DeviceInterface:
             self.logger.debug("Update DeviceInterface PTR status for '%s' to '%d'" % (ip_address, status))
             self.update_ptr_status(ip_address, existing_ptr, status)
 
-    def add_ip_address(self, ip_address):
+    def add_ip_address(self, ip_address, vip_addresses=None):
         """
         Add ip address to address list in case interface has multiple addresses
         :param ip_address:  IP address
@@ -116,6 +117,14 @@ class DeviceInterface:
         else:
             self.logger.warning("Address %s already exists on interface, skipping" % ip_address)
             return False
+
+    def add_vip_addresses(self, vip_addresses):
+        """
+        Update list of VIP addresses
+        :param vip_addresses:
+        :return:
+        """
+        self.vip_addresses.extend(vip_addresses)
 
     def update_ptr_status(self, ip_address, ptr, status):
         """
