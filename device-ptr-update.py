@@ -30,7 +30,7 @@ from classes import Dispatcher
 from classes import EmailReport
 from classes.output.tabular_utf8 import TabularUtf8Output
 
-__version__ = '0.4.2'
+__version__ = '0.4.3'
 
 reload(sys)
 sys.setdefaultencoding('utf8')

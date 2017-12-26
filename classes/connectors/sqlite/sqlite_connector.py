@@ -24,7 +24,7 @@ import sqlite3
 from classes.connectors import BaseConnector
 from classes import Ptr
 
-__version__ = '0.4.2'
+__version__ = '0.4.3'
 
 
 # noinspection SqlResolve
@@ -32,7 +32,7 @@ class SqliteConnector(BaseConnector):
     def __init__(self, dispatcher):
         BaseConnector.__init__(self, dispatcher)
         self.logger = logging.getLogger('dns_update.connector.sqlite')
-        db_file = os.path.dirname(os.path.abspath(__file__)) + '/../' + self.config['db']
+        db_file = os.path.dirname(os.path.abspath(__file__)) + '/../../../' + self.config['db']
         self.logger.debug("Database file: '%s'" % db_file)
         self.connection = sqlite3.connect(db_file)
         self.logger.info("Database file '%s' loaded" % db_file)
