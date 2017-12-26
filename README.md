@@ -22,9 +22,10 @@ It features flexible JSON configuration file for simple implementation
 of rules for:
 - Ignoring devices or/and interfaces (regexp matching of hostname or `ifName`)
 - Ignoring IP addresses (matching prefixes in CIDR notation — `192.0.2.0/24`)
+- Exclusion of HSRP VIP addresses
 - Default and per host community strings (regexp matching of hostname)
 - List of name servers to query
-- List of name servers to update
+- List of name servers to update (*not working atm*)
 - List of domain names to build FQDN with
 - Connector configuration
 
@@ -147,6 +148,7 @@ Currently
 implemented connectors:
 - [ObserviumConnector](classes/connectors/observium) — Observium (requires MySQL database access)
 - [SqliteConnector](classes/connectors/sqlite) — Local SQLite database
+- [DnsConnector](classes/connectors/dns) - DNS server (BIND)
 
 Each connector has it's own subdirectory in `classes/connectors/`. Directory, file and class naming should follow
 simple rules to make autoloading connectors easier.
