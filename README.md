@@ -1,5 +1,3 @@
-**Still under development and not functional!**
-
 # PyTR — Python DNS PTR updater [![Build Status](https://travis-ci.org/pobradovic08/PyTR.svg?branch=master)](https://travis-ci.org/pobradovic08/PyTR) [![Coverage Status](https://coveralls.io/repos/github/pobradovic08/PyTR/badge.svg?branch=master)](https://coveralls.io/github/pobradovic08/PyTR?branch=master)
 >This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -45,7 +43,7 @@ Resulting PTR has a form of:
 from configuration file.
 
 ## Device PTR check
-`device_ptr_check` is a Python script that displays info about specific device.
+`device-ptr-update` is a Python script that displays info about specific device.
 It shows a list of interfaces that have IP addresses configured, existing
 PTR, IP address and a current status of PTR.
 ~~~~
@@ -84,7 +82,7 @@ PTR, IP address and a current status of PTR.
 ~~~~
 
 ## Batch PTR update
-`dns-update.py` is a Python script that loads devices and PTRs from external sources
+`ptr-update` is a Python script that loads devices and PTRs from external sources
 (via Connectors). It merges the list of PTRs loaded through Connectors with
 the PTR list it obtained from each device.
 ~~~~
