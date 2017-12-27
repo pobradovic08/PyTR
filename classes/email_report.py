@@ -26,7 +26,7 @@ from jinja2 import Environment
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
-__version__ = '0.4.3'
+__version__ = '0.4.4'
 
 
 class EmailReport:

@@ -159,3 +159,12 @@ class TestConfig(unittest.TestCase):
         self.assertEquals(config.get_snmp_timeout(123.4), 123.4)
         config = Config('test/configuration_examples/invalid_values_2.json')
         self.assertEquals(config.get_snmp_timeout(123.4), 123.4)
+
+    def test_get_email_server(self):
+        self.assertEqual(self.config.get_email_server(), 'smtp.domain.example')
+
+    def test_get_email_to(self):
+        self.assertListEqual(self.config.get_email_to(), ["rcp@server.domain.example"])
+
+    def test_get_email_from(self):
+        self.assertEqual(self.config.get_email_from(), 'pytr@server.domain.example')

@@ -45,6 +45,13 @@
       ]
     }
   },
+  "email": {
+    "server": "smtp.domain.example",
+    "from": "pytr@server.domain.example",
+    "to": [
+      "rcp@server.domain.example"
+    ]
+  },
   "snmp" : {
     "community": {
       "default": "public",
