@@ -37,7 +37,7 @@ in configuration for `ObserviumConnector`
 `ObserviumConnector` is enabled by default.
 
 ## `load_devices` method
-Devices are selected from `devices` table usin following query:
+Devices are selected from `devices` table using following query:
 
 ```sql
 SELECT `hostname` FROM `devices` WHERE `disabled` = 0
